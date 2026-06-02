@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify
 from services.search_service import trova_categoria
 app = Flask(__name__)
 
+
+
 @app.route('/')
 def index():
     return render_template('index.html')

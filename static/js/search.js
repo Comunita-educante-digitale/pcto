@@ -1,7 +1,7 @@
-window.doSearchMain = async function() {
+window.doSearch = window.doSearchMain = async function() {
 
-    const mainQuery = document.getElementById("mainSearch")?.value.trim();
-    const navQuery = document.getElementById("navSearch")?.value.trim();
+    const mainQuery = document.getElementById("mainSearch")?.value?.trim();
+    const navQuery = document.getElementById("navSearch")?.value?.trim();
     const query = mainQuery || navQuery;
 
     if (!query) return;
@@ -34,4 +34,15 @@ window.doSearchMain = async function() {
         );
 
     }
+}
+
+// Register click listeners for search buttons (safer than inline onclick)
+try {
+    const navBtn = document.getElementById('navSearchButton');
+    if (navBtn) navBtn.addEventListener('click', window.doSearch);
+
+    const mainBtn = document.getElementById('mainSearchButton');
+    if (mainBtn) mainBtn.addEventListener('click', window.doSearch);
+} catch (e) {
+    console.error('Error attaching search button listeners', e);
 }
