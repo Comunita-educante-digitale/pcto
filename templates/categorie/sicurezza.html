@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sicurezza digitale</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container py-5">
+    <a href="{{ url_for('index') }}" class="btn btn-link mb-4">← Torna alla home</a>
+    <h1>Sicurezza digitale</h1>
+    <p class="lead">Scopri le best practice per proteggere dispositivi, account e privacy in rete.</p>
+    <section>
+      <h2>Che cosa significa</h2>
+      <p>La sicurezza digitale riguarda le azioni concrete per ridurre i rischi online, come password sicure, aggiornamenti e attenzione ai contenuti.</p>
+    </section>
+    <section>
+      <h2>Perché è importante</h2>
+      <p>Applicare buone pratiche digitali riduce il rischio di truffe, malware e contatti indesiderati.</p>
+    </section>
+    <section>
+      <h2>Consigli per la famiglia</h2>
+      <ul>
+        <li>Utilizzate password robuste e aggiornate regolarmente.</li>
+        <li>Attivate autenticazione a due fattori dove possibile.</li>
+        <li>Insegnate ai ragazzi a non cliccare su link sospetti e a condividere informazioni con cautela.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

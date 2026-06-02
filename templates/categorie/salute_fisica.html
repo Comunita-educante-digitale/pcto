@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Salute fisica</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container py-5">
+    <a href="{{ url_for('index') }}" class="btn btn-link mb-4">← Torna alla home</a>
+    <h1>Salute fisica</h1>
+    <p class="lead">Scopri come l'uso del digitale incide sul riposo, sulla postura e sui ritmi quotidiani dei ragazzi.</p>
+    <section>
+      <h2>Che cosa significa</h2>
+      <p>Salute fisica include il sonno, la postura, l'attività motoria e l'equilibrio tra vita online e offline.</p>
+    </section>
+    <section>
+      <h2>Perché è importante</h2>
+      <p>Un uso eccessivo del digitale può causare disturbi del sonno, affaticamento visivo e postura scorretta.</p>
+    </section>
+    <section>
+      <h2>Consigli per la famiglia</h2>
+      <ul>
+        <li>Stabilite orari di sospensione dei dispositivi prima di dormire.</li>
+        <li>Incoraggiate pause attive e attività fisiche regolari.</li>
+        <li>Controllate l'ergonomia degli spazi in cui i ragazzi usano i dispositivi.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

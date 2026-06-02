@@ -9,10 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- FILE CSS ESTERNO -->
-  <link rel="stylesheet" href="style.css">
+   
 </head>
-
-<body>
 
   <!-- NAVBAR -->
   <nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -28,7 +26,7 @@
 
       <div class="d-flex gap-2 ms-2">
         <input class="search-bar" type="search" placeholder="Cerca la tua preoccupazione…" id="navSearch"/>
-        <button class="btn-search" onclick="doSearch()">Cerca</button>
+        <button class="btn-search" onclick="doSearchMain()"> Cerca</button>
       </div>
     </div>
   </nav>
@@ -75,14 +73,14 @@
       </div>
 
       <div class="topic-pills">
-        <a href="#" class="pill">📱 Dipendenza dagli schermi</a>
-        <a href="#" class="pill pill-coral">🔞 Contenuti inappropriati</a>
-        <a href="#" class="pill pill-amber">🔒 Privacy e sicurezza</a>
-        <a href="#" class="pill">😔 Isolamento sociale</a>
-        <a href="#" class="pill pill-coral">🎮 Gaming eccessivo</a>
-        <a href="#" class="pill">💬 Social media e cyberbullismo</a>
-        <a href="#" class="pill pill-amber">😴 Disturbi del sonno</a>
-        <a href="#" class="pill">📚 Rendimento scolastico</a>
+        <a href="#" class="pill">Dipendenza dagli schermi</a>
+        <a href="#" class="pill pill-coral">Contenuti inappropriati</a>
+        <a href="#" class="pill pill-amber">Privacy e sicurezza</a>
+        <a href="#" class="pill">Isolamento sociale</a>
+        <a href="#" class="pill pill-coral">Gaming eccessivo</a>
+        <a href="#" class="pill">Social media e cyberbullismo</a>
+        <a href="#" class="pill pill-amber">Disturbi del sonno</a>
+        <a href="#" class="pill">Rendimento scolastico</a>
       </div>
 
     </div>
@@ -220,5 +218,6 @@
     </section>
   
 
+  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </body>
 </html>
