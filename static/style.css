@@ -598,3 +598,11 @@ footer {
   line-height: 1.6;
   border-top: 1px solid #f0ede6;
 }
+
+/* NAVBAR HIDE ON SCROLL */
+.navbar-custom {
+  transition: transform 0.3s ease;
+}
+.navbar-hidden {
+  transform: translateY(-100%);
+}

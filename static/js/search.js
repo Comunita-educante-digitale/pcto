@@ -41,3 +41,18 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('mainSearchButton');
     if (btn) btn.addEventListener('click', window.doSearch);
 });
+
+// NAVBAR HIDE ON SCROLL
+(function() {
+  var lastY = 0;
+  var navbar = document.querySelector('.navbar-custom');
+  window.addEventListener('scroll', function() {
+    var currentY = window.scrollY;
+    if (currentY > lastY && currentY > 60) {
+      navbar.classList.add('navbar-hidden');
+    } else {
+      navbar.classList.remove('navbar-hidden');
+    }
+    lastY = currentY;
+  });
+})();
