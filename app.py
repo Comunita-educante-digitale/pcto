@@ -29,7 +29,10 @@ def search():
         "success": False
     })
 
-
+@app.route("/test")
+def test():
+    return render_template("test.html")
+    
 @app.route("/categoria/<categoria>")
 def categoria(categoria):
 
