@@ -20,6 +20,13 @@ def search():
 def risultati():
     return render_template('risultati.html')
 
+@app.route('/api/categorie')
+def api_categorie():
+    from services.search_service import carica_dati
+    import json
+    _, categorie = carica_dati()
+    return json.dumps(categorie), 200, {'Content-Type': 'application/json'}
+
 @app.route('/test')
 def test():
     return render_template('test.html')

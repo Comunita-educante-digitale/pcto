@@ -21,7 +21,7 @@
     <h2 class="section-title">Le aree piu rilevanti per te</h2>
     <p class="section-sub">Clicca su una categoria per leggere la spiegazione e accedere al percorso guidato.</p>
 
-    <div id="risultati-container"></div>
+    <div id="risultati-container"><p style="color:var(--text-muted)">Caricamento...</p></div>
 
     <div style="margin-top:2rem;text-align:center;">
       <a href="/" class="btn-secondary-hero">Torna alla ricerca</a>
@@ -41,28 +41,43 @@
       }
     }
 
-    try {
-      var params = new URLSearchParams(window.location.search);
-      var raw = params.get('data');
-      var risultati = JSON.parse(decodeURIComponent(raw));
+    async function caricaRisultati() {
       var container = document.getElementById('risultati-container');
-      risultati.forEach(function(r) {
-        var card = document.createElement('div');
-        card.className = 'risultato-card';
-        card.innerHTML =
-          '<div class="risultato-header" onclick="toggleDesc(this)">' +
-            '<span class="risultato-nome">' + r.nome + '</span>' +
-            '<span class="risultato-arrow">&#9660;</span>' +
-          '</div>' +
-          '<div class="risultato-desc">' +
-            '<p>' + r.descrizione + '</p>' +
-            '<a href="/categoria/' + r.id + '" class="btn-search" style="display:inline-block;margin-top:0.8rem;text-decoration:none;">Vai al percorso &rarr;</a>' +
-          '</div>';
-        container.appendChild(card);
-      });
-    } catch(e) {
-      document.getElementById('risultati-container').innerHTML = '<p>Errore nel caricamento dei risultati.</p>';
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var raw = params.get('data');
+        var risultati = JSON.parse(decodeURIComponent(raw));
+
+        // Carica dati aggiornati dal database
+        var res = await fetch('/api/categorie');
+        var categorie = await res.json();
+
+        container.innerHTML = '';
+        risultati.forEach(function(r) {
+          var info = categorie[r.id] || {};
+          var nome = info.nome || r.nome;
+          var descrizione = info.descrizione || r.descrizione;
+          var link = info.link || '';
+
+          var card = document.createElement('div');
+          card.className = 'risultato-card';
+          card.innerHTML =
+            '<div class="risultato-header" onclick="toggleDesc(this)">' +
+              '<span class="risultato-nome">' + nome + '</span>' +
+              '<span class="risultato-arrow">&#9660;</span>' +
+            '</div>' +
+            '<div class="risultato-desc">' +
+              '<p>' + descrizione + '</p>' +
+              (link ? '<a href="' + link + '" target="_blank" class="btn-search" style="display:inline-block;margin-top:0.8rem;text-decoration:none;">Vai al percorso &rarr;</a>' : '') +
+            '</div>';
+          container.appendChild(card);
+        });
+      } catch(e) {
+        container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento dei risultati.</p>';
+      }
     }
+
+    caricaRisultati();
   </script>
 </body>
 </html>
