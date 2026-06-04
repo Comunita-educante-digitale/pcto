@@ -58,25 +58,22 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    // bottone search principale (già presente)
-    var btn = document.getElementById('mainSearchButton');
-    if (btn) btn.addEventListener('click', window.doSearch);
+var navBtn = document.getElementById('navSearchButton');
+if (navBtn) navBtn.addEventListener('click', async function() {
+    var val = document.getElementById('navSearch').value.trim();
+    if (!val) return;
 
-    // ← AGGIUNGI QUESTO per la navbar
-    var navBtn = document.getElementById('navSearchButton');
-    if (navBtn) navBtn.addEventListener('click', function() {
-        var val = document.getElementById('navSearch').value.trim();
-        if (!val) return;
-        // popola il primo campo della search principale e lancia
-        var el = document.getElementById('search0');
-        if (el) el.value = val;
-        window.doSearch();
+    // chiama direttamente /search senza toccare search0
+    var response = await fetch('/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queries: [val] })
     });
-
-    // permette di premere Invio nella navbar search
-    var navInput = document.getElementById('navSearch');
-    if (navInput) navInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') navBtn.click();
-    });
+    var data = await response.json();
+    if (data.success) {
+        var params = encodeURIComponent(JSON.stringify(data.risultati));
+        window.location.href = '/risultati?data=' + params;
+    } else {
+        alert('Nessuna categoria trovata. Prova con parole diverse.');
+    }
 });
