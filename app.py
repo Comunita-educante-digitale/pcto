@@ -3,6 +3,10 @@ from services.search_service import trova_top3_categorie, trova_categoria
 
 app = Flask(__name__)
 
+# Precarica cache all'avvio
+from services.search_service import carica_dati
+carica_dati()
+
 @app.route('/')
 def index():
     return render_template('index.html')
