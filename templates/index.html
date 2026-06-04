@@ -62,21 +62,20 @@
         Cerca un problema specifico: ti aiutiamo a capirlo e a trovare soluzioni pratiche per la tua famiglia.
       </p>
 
-      <div class="search-big-wrap">
-        <input
-          class="search-big"
-          type="search"
-          placeholder="es. mio figlio passa troppo tempo sullo smartphone…"
-          id="mainSearch"
-        />
-
-        <button id="mainSearchButton" class="btn-search">Cerca</button>
+      <div class="multi-search-wrap" id="searchWrap">
+        <div class="search-input-row" id="row-0">
+          <input class="search-big" type="search" id="search0" placeholder="es. mio figlio passa troppo tempo sullo smartphone..."/>
+          <button class="btn-add" id="addBtn" onclick="aggiungiCampo()">+</button>
+        </div>
       </div>
-
-		<div class="test-banner">
-			<span>Non sai quali sono le tue preoccupazioni?</span>
+      <button id="mainSearchButton" class="btn-search" style="margin-top:1rem;">Cerca</button>
+      <br><br>
+      <br><br>
+		
+			<h4><span>Non sai quali sono le tue preoccupazioni?</span></h4>
+      
 		<a href="/test" class="btn-test">Fai il test per scoprirlo →</a>
-		</div>
+		
 
     </div>
   </section>

@@ -1,48 +1,58 @@
-window.doSearch = window.doSearchMain = async function() {
+window.campiCount = 1;
 
-    const mainQuery = document.getElementById("mainSearch")?.value?.trim();
-    const navQuery = document.getElementById("navSearch")?.value?.trim();
-    const query = mainQuery || navQuery;
-
-    if (!query) return;
-
-    const response = await fetch("/search", {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-            query: query
-        })
-
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-
-        window.location.href =
-            data.redirect;
-
-    } else {
-
-        alert(
-            "Nessuna categoria trovata"
-        );
-
+window.aggiungiCampo = function() {
+    if (window.campiCount >= 3) return;
+    window.campiCount++;
+    var idx = window.campiCount - 1;
+    var wrap = document.getElementById('searchWrap');
+    var row = document.createElement('div');
+    row.className = 'search-input-row';
+    row.id = 'row-' + idx;
+    row.innerHTML = '<input class="search-big" type="search" id="search' + idx + '" placeholder="Aggiungi unaltra preoccupazione..."/>';
+    wrap.appendChild(row);
+    if (window.campiCount >= 3) {
+        document.getElementById('addBtn').style.display = 'none';
     }
-}
+    document.getElementById('search' + idx).focus();
+};
 
-// Register click listeners for search buttons (safer than inline onclick)
-try {
-    const navBtn = document.getElementById('navSearchButton');
-    if (navBtn) navBtn.addEventListener('click', window.doSearch);
+window.doSearch = async function() {
+    var queries = [];
+    for (var i = 0; i < window.campiCount; i++) {
+        var el = document.getElementById('search' + i);
+        if (el && el.value.trim()) queries.push(el.value.trim());
+    }
+    if (queries.length === 0) return;
+    var response = await fetch('/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queries: queries })
+    });
+    var data = await response.json();
+    if (data.success) {
+        var params = encodeURIComponent(JSON.stringify(data.risultati));
+        window.location.href = '/risultati?data=' + params;
+    } else {
+        alert('Nessuna categoria trovata. Prova con parole diverse.');
+    }
+};
 
-    const mainBtn = document.getElementById('mainSearchButton');
-    if (mainBtn) mainBtn.addEventListener('click', window.doSearch);
-} catch (e) {
-    console.error('Error attaching search button listeners', e);
-}
+document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('mainSearchButton');
+    if (btn) btn.addEventListener('click', window.doSearch);
+});
+
+// NAVBAR HIDE ON SCROLL
+(function() {
+  var lastY = 0;
+  var navbar = document.querySelector('.navbar-custom');
+  window.addEventListener('scroll', function() {
+    var currentY = window.scrollY;
+    if (currentY > lastY && currentY > 60) {
+      navbar.classList.add('navbar-hidden');
+    } else {
+      navbar.classList.remove('navbar-hidden');
+    }
+    lastY = currentY;
+  });
+})();
