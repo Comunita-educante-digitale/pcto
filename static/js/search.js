@@ -56,3 +56,27 @@ document.addEventListener('DOMContentLoaded', function() {
     lastY = currentY;
   });
 })();
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // bottone search principale (già presente)
+    var btn = document.getElementById('mainSearchButton');
+    if (btn) btn.addEventListener('click', window.doSearch);
+
+    // ← AGGIUNGI QUESTO per la navbar
+    var navBtn = document.getElementById('navSearchButton');
+    if (navBtn) navBtn.addEventListener('click', function() {
+        var val = document.getElementById('navSearch').value.trim();
+        if (!val) return;
+        // popola il primo campo della search principale e lancia
+        var el = document.getElementById('search0');
+        if (el) el.value = val;
+        window.doSearch();
+    });
+
+    // permette di premere Invio nella navbar search
+    var navInput = document.getElementById('navSearch');
+    if (navInput) navInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') navBtn.click();
+    });
+});
