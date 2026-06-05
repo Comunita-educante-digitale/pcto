@@ -58,22 +58,33 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 
-var navBtn = document.getElementById('navSearchButton');
-if (navBtn) navBtn.addEventListener('click', async function() {
-    var val = document.getElementById('navSearch').value.trim();
-    if (!val) return;
+const searchTrigger = document.getElementById('navSearchButton');
 
-    // chiama direttamente /search senza toccare search0
-    var response = await fetch('/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ queries: [val] })
+if (searchTrigger) {
+    searchTrigger.addEventListener('click', async () => {
+        const queryInput = document.getElementById('navSearch');
+        const searchTerm = queryInput ? queryInput.value.trim() : '';
+        
+        if (!searchTerm) return;
+
+        // chiama direttamente /search senza toccare search0
+        try {
+            const apiResponse = await fetch('/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ queries: [searchTerm] })
+            });
+
+            const payload = await apiResponse.json();
+
+            if (payload.success) {
+                const encodedData = encodeURIComponent(JSON.stringify(payload.risultati));
+                window.location.href = `/risultati?data=${encodedData}`;
+            } else {
+                alert('Nessuna categoria trovata. Prova con parole diverse.');
+            }
+        } catch (error) {
+            console.error('Errore durante la ricerca:', error);
+        }
     });
-    var data = await response.json();
-    if (data.success) {
-        var params = encodeURIComponent(JSON.stringify(data.risultati));
-        window.location.href = '/risultati?data=' + params;
-    } else {
-        alert('Nessuna categoria trovata. Prova con parole diverse.');
-    }
-});
+}
