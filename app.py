@@ -9,6 +9,11 @@ carica_dati()
 
 @app.route('/')
 def index():
+    cache_control = request.headers.get('Cache-Control', '')
+    if 'no-cache' in cache_control or 'max-age=0' in cache_control:
+        from services.search_service import _cache
+        _cache['last_update'] = 0
+        print("Cache svuotata per reload pagina")
     return render_template('index.html')
 
 @app.route('/search', methods=['POST'])
