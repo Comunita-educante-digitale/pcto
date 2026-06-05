@@ -5,7 +5,7 @@ import time
 SHEETS_URL = "https://script.google.com/macros/s/AKfycbyHqHHE8kwp_vLcb4tBr_w1yQm6iVFkE501s0GcnoPBtpLDzDP_Zl5cNbG5ZjLXav9T/exec"
 
 _cache = {"keywords": {}, "categorie": {}, "last_update": 0}
-CACHE_TTL = 300  # secondi (5 minuti)
+CACHE_TTL = 10
 
 def carica_dati():
     now = time.time()
