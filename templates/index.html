@@ -56,26 +56,30 @@
   <section class="search-section" id="cerca">
     <div class="search-section-inner">
 
+      <div class="search-eyebrow">Inizia da qui</div>
       <h2>Qual è la tua preoccupazione?</h2>
-
-      <p>
-        Cerca un problema specifico: ti aiutiamo a capirlo e a trovare soluzioni pratiche per la tua famiglia.
-      </p>
+      <p>Descrivi la situazione con parole tue: ti mostreremo le aree più rilevanti con percorsi pratici.</p>
 
       <div class="multi-search-wrap" id="searchWrap">
         <div class="search-input-row" id="row-0">
           <input class="search-big" type="search" id="search0" placeholder="es. mio figlio passa troppo tempo sullo smartphone..."/>
-          <button class="btn-add" id="addBtn" onclick="aggiungiCampo()">+</button>
+          <button class="btn-add" id="addBtn" onclick="aggiungiCampo()" title="Aggiungi un'altra preoccupazione">+</button>
         </div>
       </div>
-      <button id="mainSearchButton" class="btn-search" style="margin-top:1rem;">Cerca</button>
-      <br><br>
-      <br><br>
-		
-			<h4><span>Non sai quali sono le tue preoccupazioni?</span></h4>
-      
-		<a href="/test" class="btn-test">Fai il test per scoprirlo →</a>
-		
+
+      <div class="search-actions">
+        <button id="mainSearchButton" class="btn-primary-hero">Cerca →</button>
+      </div>
+
+      <div class="search-divider"><span>oppure</span></div>
+
+      <div class="test-banner">
+        <div class="test-banner-text">
+          <strong>Non sai da dove iniziare?</strong>
+          <span>Rispondi a poche domande e scopri le tue aree di attenzione.</span>
+        </div>
+        <a href="/test" class="btn-secondary-hero">Fai il test →</a>
+      </div>
 
     </div>
   </section>
