@@ -192,4 +192,24 @@ if (searchTrigger) {
         }
     });
 
-  
+    function updateActive(items) {
+        items.forEach((it, idx) => {
+            it.classList.toggle('active', idx === activeIndex);
+        });
+        if (items[activeIndex]) {
+            // ensure visible
+            items[activeIndex].scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    // hide when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!listEl) return;
+        if (e.target === input || listEl.contains(e.target)) return;
+        hideList();
+    });
+
+    window.addEventListener('resize', positionList);
+    window.addEventListener('scroll', positionList, true);
+
+})();
