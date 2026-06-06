@@ -94,18 +94,18 @@ if (searchTrigger) {
 }
 
 // Autocomplete / suggerimenti dinamici per le ricerche
-const autocompleteSuggestions = [
-    'Dipendenza dagli schermi',
-    'Contenuti inappropriati',
-    'Privacy e sicurezza online',
-    'Isolamento sociale',
-    'Social media e cyberbullismo',
-    'Videogiochi e gaming',
-    'Disinformazione',
-    'Impatto cognitivo',
-    'Salute fisica',
-    'Salute mentale'
-];
+let autocompleteSuggestions = [];
+
+async function caricaKeywords() {
+    try {
+        var res = await fetch('/api/keywords');
+        var data = await res.json();
+        autocompleteSuggestions = data;
+    } catch(e) {
+        autocompleteSuggestions = [];
+    }
+}
+caricaKeywords();
 
 let autocompleteList = null;
 let activeInput = null;

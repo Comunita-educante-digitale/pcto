@@ -26,6 +26,17 @@ def search():
 def risultati():
     return render_template('risultati.html')
 
+@app.route('/api/keywords')
+def api_keywords():
+    import json
+    from services.search_service import carica_dati
+    keywords, _, _, _, _ = carica_dati()
+    tutte = []
+    for parole in keywords.values():
+        tutte.extend(parole)
+    tutte = sorted(list(set(tutte)))
+    return json.dumps(tutte), 200, {'Content-Type': 'application/json'}
+
 @app.route('/api/categorie')
 def api_categorie():
     from services.search_service import carica_dati
