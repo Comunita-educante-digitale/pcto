@@ -607,6 +607,7 @@ footer {
   transform: translateY(-100%);
 }
 
+<<<<<<< HEAD
 /* SEARCH SECTION AGGIORNATA */
 .search-eyebrow {
   display: inline-block;
@@ -697,4 +698,27 @@ footer {
   .test-banner-text {
     text-align: center;
   }
+=======
+/* Autocomplete dropdown for navbar search */
+.autocomplete-list {
+  position: absolute;
+  background: white;
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  width: 380px; /* match .search-bar */
+  z-index: 120;
+}
+.autocomplete-item {
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+.autocomplete-item:hover,
+.autocomplete-item.active {
+  background: #F4F8F6;
+>>>>>>> famlonga
 }

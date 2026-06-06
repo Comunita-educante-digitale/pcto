@@ -88,3 +88,108 @@ if (searchTrigger) {
         }
     });
 }
+
+// Autocomplete / suggerimenti dinamici per `#navSearch`
+(function() {
+    const suggestions = [
+        'Dipendenza dagli schermi',
+        'Contenuti inappropriati',
+        'Privacy e sicurezza online',
+        'Isolamento sociale',
+        'Social media e cyberbullismo',
+        'Videogiochi e gaming',
+        'Disinformazione',
+        'Impatto cognitivo',
+        'Salute fisica',
+        'Salute mentale'
+    ];
+
+    const input = document.getElementById('navSearch');
+    if (!input) return;
+
+    let listEl = null;
+    let activeIndex = -1;
+
+    function createList() {
+        listEl = document.createElement('div');
+        listEl.className = 'autocomplete-list';
+        document.body.appendChild(listEl);
+    }
+
+    function positionList() {
+        if (!listEl) return;
+        const rect = input.getBoundingClientRect();
+        listEl.style.width = rect.width + 'px';
+        listEl.style.left = (window.scrollX + rect.left) + 'px';
+        listEl.style.top = (window.scrollY + rect.bottom + 6) + 'px';
+    }
+
+    function hideList() {
+        if (listEl) listEl.style.display = 'none';
+        activeIndex = -1;
+    }
+
+    function showList() {
+        if (listEl) listEl.style.display = 'block';
+    }
+
+    function renderMatches(query) {
+        if (!listEl) createList();
+        listEl.innerHTML = '';
+        if (!query) {
+            hideList();
+            return;
+        }
+        const q = query.trim().toLowerCase();
+        const matches = suggestions.filter(s => s.toLowerCase().startsWith(q));
+        if (matches.length === 0) {
+            hideList();
+            return;
+        }
+        matches.forEach((m, i) => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            item.textContent = m;
+            item.addEventListener('mousedown', function(e) {
+                // mousedown so input doesn't lose focus before click
+                e.preventDefault();
+                selectSuggestion(m);
+            });
+            listEl.appendChild(item);
+        });
+        positionList();
+        showList();
+    }
+
+    function selectSuggestion(text) {
+        input.value = text;
+        hideList();
+        input.focus();
+    }
+
+    input.addEventListener('input', function() {
+        renderMatches(input.value);
+    });
+
+    input.addEventListener('keydown', function(e) {
+        if (!listEl || listEl.style.display === 'none') return;
+        const items = Array.from(listEl.querySelectorAll('.autocomplete-item'));
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, items.length - 1);
+            updateActive(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            updateActive(items);
+        } else if (e.key === 'Enter') {
+            if (activeIndex >= 0 && items[activeIndex]) {
+                e.preventDefault();
+                selectSuggestion(items[activeIndex].textContent);
+            }
+        } else if (e.key === 'Escape') {
+            hideList();
+        }
+    });
+
+  
