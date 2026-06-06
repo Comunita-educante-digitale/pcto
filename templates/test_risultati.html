@@ -90,9 +90,22 @@
       if (btn) btn.disabled = false;
     }
 
+    function apriTutteLeSchede() {
+      var descrizioni = document.querySelectorAll('.risultato-desc');
+      descrizioni.forEach(function(desc) {
+        desc.style.display = 'block';
+        var header = desc.previousElementSibling;
+        if (header) {
+          var arrow = header.querySelector('.risultato-arrow');
+          if (arrow) arrow.innerHTML = '&#9650;';
+        }
+      });
+    }
+
     function downloadPDF() {
       var elemento = document.getElementById('pdf-content');
       if (!elemento) return;
+      apriTutteLeSchede();
       var opt = {
         margin: 0.5,
         filename: 'patto_familiare.pdf',
@@ -100,7 +113,9 @@
         html2canvas: { scale: 2, useCORS: true, logging: false },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
-      html2pdf().set(opt).from(elemento).save();
+      setTimeout(function() {
+        html2pdf().set(opt).from(elemento).save();
+      }, 100);
     }
 
     document.getElementById('download-pdf').addEventListener('click', downloadPDF);
