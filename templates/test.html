@@ -3,11 +3,125 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Test – Scopri le tue preoccupazioni</title>
+  <title>Patto Familiare - Educazione Digitale Familiare</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  
-</body> 
+  <nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <a class="navbar-brand-text text-decoration-none" href="/">
+      🌿 Educazione Digitale Familiare
+    </a>
+    <a href="javascript:history.back()" class="btn-search" style="text-decoration:none;font-size:0.9rem;">Indietro</a>
+  </nav>
+
+  <section style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
+    <div class="section-label">Patto Familiare</div>
+    <h2 class="section-title" id="titolo-test">Crea il tuo patto familiare</h2>
+    <p class="section-sub">Rispondi alle domande. Alla fine riceverai le regole consigliate per la tua famiglia.</p>
+
+    <div id="progress-bar-wrap" style="background:#e0ddd5;border-radius:40px;height:6px;margin-bottom:2rem;">
+      <div id="progress-bar" style="background:var(--teal-mid);height:6px;border-radius:40px;width:0%;transition:width 0.3s;"></div>
+    </div>
+
+    <div id="test-container"><p style="color:var(--text-muted)">Caricamento domande...</p></div>
+  </section>
+
+  <script>
+    var domande = [];
+    var risposte_regole = [];
+    var current = 0;
+
+    async function caricaTest() {
+      try {
+        var urlParams = new URLSearchParams(window.location.search);
+        var categoria = urlParams.get('categoria') || '';
+        var res = await fetch('/api/test_iniziale');
+        var data = await res.json();
+        var tutte = data.test || [];
+        if (categoria) {
+          domande = tutte.filter(function(d) {
+            return d.categoria && d.categoria.toLowerCase() === categoria.toLowerCase();
+          });
+          document.getElementById('titolo-test').textContent = 'Patto familiare: ' + categoria;
+        } else {
+          domande = tutte;
+        }
+        if (domande.length === 0) {
+          document.getElementById('test-container').innerHTML = '<p style="color:#D85A30;">Nessuna domanda trovata per questa categoria.</p>';
+          return;
+        }
+        mostraDomanda(0);
+      } catch(e) {
+        document.getElementById('test-container').innerHTML = '<p style="color:#D85A30;">Errore: ' + e.message + '</p>';
+      }
+    }
+
+    function aggiornaProgressBar() {
+      var perc = domande.length > 0 ? (current / domande.length) * 100 : 0;
+      document.getElementById('progress-bar').style.width = perc + '%';
+    }
+
+    function mostraDomanda(idx) {
+      aggiornaProgressBar();
+      if (idx >= domande.length) {
+        mostraRisultati();
+        return;
+      }
+      var d = domande[idx];
+      var container = document.getElementById('test-container');
+
+      var card = document.createElement('div');
+      card.className = 'step-card';
+      card.style.padding = '2rem';
+
+      var counter = document.createElement('div');
+      counter.style.cssText = 'font-size:0.82rem;color:var(--text-muted);margin-bottom:0.8rem;';
+      counter.textContent = 'Domanda ' + (idx+1) + ' di ' + domande.length;
+
+      var titolo = document.createElement('h3');
+      titolo.style.cssText = 'font-family:Lora,serif;font-size:1.2rem;margin-bottom:2rem;';
+      titolo.textContent = d.domanda;
+
+      var btnWrap = document.createElement('div');
+      btnWrap.style.cssText = 'display:flex;gap:1rem;justify-content:center;';
+
+      var btnSi = document.createElement('button');
+      btnSi.className = 'btn-primary-hero';
+      btnSi.style.minWidth = '120px';
+      btnSi.textContent = 'SI';
+      btnSi.addEventListener('click', function() { rispondi(d.se_si || ''); });
+
+      var btnNo = document.createElement('button');
+      btnNo.className = 'btn-secondary-hero';
+      btnNo.style.minWidth = '120px';
+      btnNo.textContent = 'NO';
+      btnNo.addEventListener('click', function() { rispondi(d.se_no || ''); });
+
+      btnWrap.appendChild(btnSi);
+      btnWrap.appendChild(btnNo);
+      card.appendChild(counter);
+      card.appendChild(titolo);
+      card.appendChild(btnWrap);
+
+      container.innerHTML = '';
+      container.appendChild(card);
+    }
+
+    function rispondi(regola) {
+      if (regola) risposte_regole.push(regola);
+      current++;
+      mostraDomanda(current);
+    }
+
+    function mostraRisultati() {
+      document.getElementById('progress-bar').style.width = '100%';
+      var params = encodeURIComponent(JSON.stringify(risposte_regole));
+      window.location.href = '/test-risultati?regole=' + params;
+    }
+
+    caricaTest();
+  </script>
+</body>
+</html>

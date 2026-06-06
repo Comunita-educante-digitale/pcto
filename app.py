@@ -30,12 +30,23 @@ def risultati():
 def api_categorie():
     from services.search_service import carica_dati
     import json
-    _, categorie = carica_dati()
+    _, categorie, _, _, _ = carica_dati()
     return json.dumps(categorie), 200, {'Content-Type': 'application/json'}
 
 @app.route('/test')
 def test():
     return render_template('test.html')
+
+@app.route('/api/test_iniziale')
+def api_test_iniziale():
+    import json
+    from services.search_service import carica_dati
+    _, _, test_iniziale, regole, _ = carica_dati()
+    return json.dumps({'test': test_iniziale, 'regole': regole}), 200, {'Content-Type': 'application/json'}
+
+@app.route('/test-risultati')
+def test_risultati():
+    return render_template('test_risultati.html')
 
 @app.route('/categoria/<categoria>')
 def categoria(categoria):

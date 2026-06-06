@@ -68,7 +68,10 @@
             '</div>' +
             '<div class="risultato-desc">' +
               '<p>' + descrizione + '</p>' +
-              (link ? '<a href="' + link + '" target="_blank" class="btn-search" style="display:inline-block;margin-top:0.8rem;text-decoration:none;">Vai al percorso &rarr;</a>' : '') +
+              '<div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:1rem;">' +
+                (link ? '<a href="' + link + '" target="_blank" class="btn-search" style="text-decoration:none;">Vai al percorso &rarr;</a>' : '') +
+                '<a href="/test?categoria=' + r.id + '" class="btn-secondary-hero" style="font-size:0.85rem;padding:0.5rem 1.2rem;">Crea il tuo patto familiare</a>' +
+              '</div>' +
             '</div>';
           container.appendChild(card);
         });
