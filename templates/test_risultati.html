@@ -16,7 +16,7 @@
     <a href="/" class="btn-search" style="text-decoration:none;font-size:0.9rem;">Torna alla home</a>
   </nav>
 
-  <section style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
+  <section id="pdf-content" style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
     <div class="section-label">Risultati del test</div>
     <h2 class="section-title">Le regole consigliate per te</h2>
     <p class="section-sub">Ecco le regole selezionate in base alle tue risposte. Clicca su ognuna per leggere i dettagli.</p>
@@ -24,6 +24,7 @@
     <div id="regole-container"><p style="color:var(--text-muted)">Caricamento...</p></div>
 
     <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <button id="download-pdf" class="btn-primary-hero" disabled>Salva il patto in PDF</button>
       <a href="/test" class="btn-secondary-hero">Rifai il test</a>
       <a href="/" class="btn-primary-hero">Torna alla home</a>
     </div>
@@ -66,6 +67,7 @@
             '</div>';
           container.appendChild(card);
         });
+        abilitaPDF();
       } catch(e) {
         container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento delle regole.</p>';
       }
@@ -83,7 +85,27 @@
       }
     }
 
+    function abilitaPDF() {
+      var btn = document.getElementById('download-pdf');
+      if (btn) btn.disabled = false;
+    }
+
+    function downloadPDF() {
+      var elemento = document.getElementById('pdf-content');
+      if (!elemento) return;
+      var opt = {
+        margin: 0.5,
+        filename: 'patto_familiare.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(elemento).save();
+    }
+
+    document.getElementById('download-pdf').addEventListener('click', downloadPDF);
     caricaRegole();
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </body>
 </html>
