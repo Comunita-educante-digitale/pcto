@@ -90,7 +90,7 @@ if (searchTrigger) {
 }
 
 // Autocomplete / suggerimenti dinamici per `#navSearch`
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
     const suggestions = [
         'Dipendenza dagli schermi',
         'Contenuti inappropriati',
@@ -212,4 +212,4 @@ if (searchTrigger) {
     window.addEventListener('resize', positionList);
     window.addEventListener('scroll', positionList, true);
 
-})();
+});
