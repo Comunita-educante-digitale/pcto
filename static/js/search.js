@@ -10,10 +10,14 @@ window.aggiungiCampo = function() {
     row.id = 'row-' + idx;
     row.innerHTML = '<input class="search-big" type="search" id="search' + idx + '" placeholder="Aggiungi unaltra preoccupazione..."/>';
     wrap.appendChild(row);
+    const newInput = document.getElementById('search' + idx);
+    if (window.attachAutocompleteToInput) {
+        window.attachAutocompleteToInput(newInput);
+    }
     if (window.campiCount >= 3) {
         document.getElementById('addBtn').style.display = 'none';
     }
-    document.getElementById('search' + idx).focus();
+    newInput.focus();
 };
 
 window.doSearch = async function() {
@@ -89,127 +93,148 @@ if (searchTrigger) {
     });
 }
 
-// Autocomplete / suggerimenti dinamici per `#navSearch`
-document.addEventListener('DOMContentLoaded', function() {
-    const suggestions = [
-        'Dipendenza dagli schermi',
-        'Contenuti inappropriati',
-        'Privacy e sicurezza online',
-        'Isolamento sociale',
-        'Social media e cyberbullismo',
-        'Videogiochi e gaming',
-        'Disinformazione',
-        'Impatto cognitivo',
-        'Salute fisica',
-        'Salute mentale'
-    ];
+// Autocomplete / suggerimenti dinamici per le ricerche
+const autocompleteSuggestions = [
+    'Dipendenza dagli schermi',
+    'Contenuti inappropriati',
+    'Privacy e sicurezza online',
+    'Isolamento sociale',
+    'Social media e cyberbullismo',
+    'Videogiochi e gaming',
+    'Disinformazione',
+    'Impatto cognitivo',
+    'Salute fisica',
+    'Salute mentale'
+];
 
-    const input = document.getElementById('navSearch');
-    if (!input) return;
+let autocompleteList = null;
+let activeInput = null;
+let activeIndex = -1;
 
-    let listEl = null;
-    let activeIndex = -1;
+function createAutocompleteList() {
+    if (autocompleteList) return;
+    autocompleteList = document.createElement('div');
+    autocompleteList.className = 'autocomplete-list';
+    document.body.appendChild(autocompleteList);
+}
 
-    function createList() {
-        listEl = document.createElement('div');
-        listEl.className = 'autocomplete-list';
-        document.body.appendChild(listEl);
+function positionAutocompleteList(input) {
+    if (!autocompleteList || !input) return;
+    const rect = input.getBoundingClientRect();
+    autocompleteList.style.width = rect.width + 'px';
+    autocompleteList.style.left = (window.scrollX + rect.left) + 'px';
+    autocompleteList.style.top = (window.scrollY + rect.bottom + 6) + 'px';
+}
+
+function hideAutocompleteList() {
+    if (autocompleteList) autocompleteList.style.display = 'none';
+    activeIndex = -1;
+}
+
+function showAutocompleteList() {
+    if (autocompleteList) autocompleteList.style.display = 'block';
+}
+
+function renderAutocompleteMatches(query) {
+    if (!autocompleteList) createAutocompleteList();
+    autocompleteList.innerHTML = '';
+    if (!query || !activeInput) {
+        hideAutocompleteList();
+        return;
     }
-
-    function positionList() {
-        if (!listEl) return;
-        const rect = input.getBoundingClientRect();
-        listEl.style.width = rect.width + 'px';
-        listEl.style.left = (window.scrollX + rect.left) + 'px';
-        listEl.style.top = (window.scrollY + rect.bottom + 6) + 'px';
+    const q = query.trim().toLowerCase();
+    const matches = autocompleteSuggestions.filter(s => s.toLowerCase().startsWith(q));
+    if (matches.length === 0) {
+        hideAutocompleteList();
+        return;
     }
-
-    function hideList() {
-        if (listEl) listEl.style.display = 'none';
-        activeIndex = -1;
-    }
-
-    function showList() {
-        if (listEl) listEl.style.display = 'block';
-    }
-
-    function renderMatches(query) {
-        if (!listEl) createList();
-        listEl.innerHTML = '';
-        if (!query) {
-            hideList();
-            return;
-        }
-        const q = query.trim().toLowerCase();
-        const matches = suggestions.filter(s => s.toLowerCase().startsWith(q));
-        if (matches.length === 0) {
-            hideList();
-            return;
-        }
-        matches.forEach((m, i) => {
-            const item = document.createElement('div');
-            item.className = 'autocomplete-item';
-            item.textContent = m;
-            item.addEventListener('mousedown', function(e) {
-                // mousedown so input doesn't lose focus before click
-                e.preventDefault();
-                selectSuggestion(m);
-            });
-            listEl.appendChild(item);
+    matches.forEach((m, i) => {
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.textContent = m;
+        item.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            selectAutocompleteSuggestion(m);
         });
-        positionList();
-        showList();
-    }
+        autocompleteList.appendChild(item);
+    });
+    positionAutocompleteList(activeInput);
+    showAutocompleteList();
+}
 
-    function selectSuggestion(text) {
-        input.value = text;
-        hideList();
-        input.focus();
+function selectAutocompleteSuggestion(text) {
+    if (!activeInput) return;
+    activeInput.value = text;
+    hideAutocompleteList();
+    activeInput.focus();
+}
+
+function updateAutocompleteActive(items) {
+    items.forEach((it, idx) => {
+        it.classList.toggle('active', idx === activeIndex);
+    });
+    if (items[activeIndex]) {
+        items[activeIndex].scrollIntoView({ block: 'nearest' });
     }
+}
+
+function attachAutocompleteToInput(input) {
+    if (!input) return;
+    input.setAttribute('autocomplete', 'off');
+
+    input.addEventListener('focus', function() {
+        activeInput = input;
+        const value = input.value || '';
+        renderAutocompleteMatches(value);
+    });
 
     input.addEventListener('input', function() {
-        renderMatches(input.value);
+        activeInput = input;
+        renderAutocompleteMatches(input.value);
     });
 
     input.addEventListener('keydown', function(e) {
-        if (!listEl || listEl.style.display === 'none') return;
-        const items = Array.from(listEl.querySelectorAll('.autocomplete-item'));
+        if (!autocompleteList || autocompleteList.style.display === 'none') return;
+        const items = Array.from(autocompleteList.querySelectorAll('.autocomplete-item'));
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             activeIndex = Math.min(activeIndex + 1, items.length - 1);
-            updateActive(items);
+            updateAutocompleteActive(items);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             activeIndex = Math.max(activeIndex - 1, 0);
-            updateActive(items);
+            updateAutocompleteActive(items);
         } else if (e.key === 'Enter') {
             if (activeIndex >= 0 && items[activeIndex]) {
                 e.preventDefault();
-                selectSuggestion(items[activeIndex].textContent);
+                selectAutocompleteSuggestion(items[activeIndex].textContent);
             }
         } else if (e.key === 'Escape') {
-            hideList();
+            hideAutocompleteList();
         }
     });
+}
 
-    function updateActive(items) {
-        items.forEach((it, idx) => {
-            it.classList.toggle('active', idx === activeIndex);
-        });
-        if (items[activeIndex]) {
-            // ensure visible
-            items[activeIndex].scrollIntoView({ block: 'nearest' });
-        }
-    }
+window.attachAutocompleteToInput = attachAutocompleteToInput;
 
-    // hide when clicking outside
+function setupAutocomplete() {
+    createAutocompleteList();
+    const navbarInput = document.getElementById('navSearch');
+    if (navbarInput) attachAutocompleteToInput(navbarInput);
+    document.querySelectorAll('#search0, .search-big').forEach(input => {
+        attachAutocompleteToInput(input);
+    });
     document.addEventListener('click', function(e) {
-        if (!listEl) return;
-        if (e.target === input || listEl.contains(e.target)) return;
-        hideList();
+        if (!autocompleteList) return;
+        if (e.target === activeInput || autocompleteList.contains(e.target)) return;
+        hideAutocompleteList();
     });
+    window.addEventListener('resize', function() {
+        if (activeInput) positionAutocompleteList(activeInput);
+    });
+    window.addEventListener('scroll', function() {
+        if (activeInput) positionAutocompleteList(activeInput);
+    }, true);
+}
 
-    window.addEventListener('resize', positionList);
-    window.addEventListener('scroll', positionList, true);
-
-});
+document.addEventListener('DOMContentLoaded', setupAutocomplete);
