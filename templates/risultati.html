@@ -15,20 +15,19 @@
     </a>
     <a href="/" class="btn-search" style="text-decoration:none;font-size:0.9rem;">Nuova ricerca</a>
   </nav>
-
   <section style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
     <div class="section-label">Risultati della tua ricerca</div>
     <h2 class="section-title">Le aree piu rilevanti per te</h2>
     <p class="section-sub">Clicca su una categoria per leggere la spiegazione e accedere al percorso guidato.</p>
-
     <div id="risultati-container"><p style="color:var(--text-muted)">Caricamento...</p></div>
-
-    <div style="margin-top:2rem;text-align:center;">
+    <div style="margin-top:2rem;text-align:center;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
       <a href="/" class="btn-secondary-hero">Torna alla ricerca</a>
+      <a id="btn-patto" href="#" class="btn-primary-hero">Crea il tuo patto familiare</a>
     </div>
   </section>
-
   <script>
+    var categorieIds = [];
+
     function toggleDesc(header) {
       var desc = header.nextElementSibling;
       var arrow = header.querySelector('.risultato-arrow');
@@ -47,18 +46,16 @@
         var params = new URLSearchParams(window.location.search);
         var raw = params.get('data');
         var risultati = JSON.parse(decodeURIComponent(raw));
-
-        // Carica dati aggiornati dal database
         var res = await fetch('/api/categorie');
         var categorie = await res.json();
-
         container.innerHTML = '';
+
         risultati.forEach(function(r) {
+          categorieIds.push(r.id);
           var info = categorie[r.id] || {};
           var nome = info.nome || r.nome;
           var descrizione = info.descrizione || r.descrizione;
           var link = info.link || '';
-
           var card = document.createElement('div');
           card.className = 'risultato-card';
           card.innerHTML =
@@ -68,13 +65,13 @@
             '</div>' +
             '<div class="risultato-desc">' +
               '<p>' + descrizione + '</p>' +
-              '<div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:1rem;">' +
-                (link ? '<a href="' + link + '" target="_blank" class="btn-search" style="text-decoration:none;">Vai al percorso &rarr;</a>' : '') +
-                '<a href="/test?categoria=' + r.id + '" class="btn-secondary-hero" style="font-size:0.85rem;padding:0.5rem 1.2rem;">Crea il tuo patto familiare</a>' +
-              '</div>' +
+              (link ? '<div style="margin-top:1rem;"><a href="' + link + '" target="_blank" class="btn-search" style="text-decoration:none;">Vai al percorso &rarr;</a></div>' : '') +
             '</div>';
           container.appendChild(card);
         });
+
+        var btnPatto = document.getElementById('btn-patto');
+        btnPatto.href = '/test?categorie=' + encodeURIComponent(JSON.stringify(categorieIds));
       } catch(e) {
         container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento dei risultati.</p>';
       }

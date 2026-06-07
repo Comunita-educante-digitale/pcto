@@ -18,7 +18,7 @@
 
   <section style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
     <div class="section-label">Patto Familiare</div>
-    <h2 class="section-title" id="titolo-test">Crea il tuo patto familiare</h2>
+    <h2 class="section-title">Crea il tuo patto familiare</h2>
     <p class="section-sub">Rispondi alle domande. Alla fine riceverai le regole consigliate per la tua famiglia.</p>
 
     <div id="progress-bar-wrap" style="background:#e0ddd5;border-radius:40px;height:6px;margin-bottom:2rem;">
@@ -36,20 +36,30 @@
     async function caricaTest() {
       try {
         var urlParams = new URLSearchParams(window.location.search);
-        var categoria = urlParams.get('categoria') || '';
+        var categorieParam = urlParams.get('categorie');
+        var categoriaParam = urlParams.get('categoria');
+
         var res = await fetch('/api/test_iniziale');
         var data = await res.json();
         var tutte = data.test || [];
-        if (categoria) {
+
+        if (categorieParam) {
+          var categorie = JSON.parse(decodeURIComponent(categorieParam));
           domande = tutte.filter(function(d) {
-            return d.categoria && d.categoria.toLowerCase() === categoria.toLowerCase();
+            return d.categoria && categorie.some(function(c) {
+              return c.toLowerCase() === d.categoria.toLowerCase();
+            });
           });
-          document.getElementById('titolo-test').textContent = 'Patto familiare: ' + categoria;
+        } else if (categoriaParam) {
+          domande = tutte.filter(function(d) {
+            return d.categoria && d.categoria.toLowerCase() === categoriaParam.toLowerCase();
+          });
         } else {
           domande = tutte;
         }
+
         if (domande.length === 0) {
-          document.getElementById('test-container').innerHTML = '<p style="color:#D85A30;">Nessuna domanda trovata per questa categoria.</p>';
+          document.getElementById('test-container').innerHTML = '<p style="color:#D85A30;">Nessuna domanda trovata per queste categorie.</p>';
           return;
         }
         mostraDomanda(0);
