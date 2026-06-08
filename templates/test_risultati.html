@@ -141,7 +141,7 @@
   if (btnRifai) {
     var params = new URLSearchParams(window.location.search);
     var cat = params.get("categorie");
-    if (cat) btnRifai.href = "/test?categorie=" + encodeURIComponent(cat);
+    if (cat) btnRifai.href = "/test?categorie=" + cat;
   }
 </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>

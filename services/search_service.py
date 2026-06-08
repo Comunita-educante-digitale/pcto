@@ -3,7 +3,7 @@ import urllib.request
 import time
 import threading
 
-SHEETS_URL = "https://script.google.com/macros/s/AKfycbyQlimUfoMV2SqQfvJtD1-msT5Q7RZyUDH1wZK-S9yqzGrxUZArkAh60IDOupf1eFmd/exec"
+SHEETS_URL = "https://script.google.com/macros/s/AKfycbxGh86CAWcbzit_Xgqrp9Lap0XfWJ0Y5h8DeC882yHVqtVjLLti1tifUFuEV8WIiffv/exec"
 CACHE_TTL = 300
 
 _cache = {"keywords": {}, "categorie": {}, "test_iniziale": [], "regole": {}, "attivita": {}, "last_update": 0}
@@ -44,8 +44,22 @@ def trova_top3_categorie(queries):
         q = query.lower()
         for categoria, parole in KEYWORDS.items():
             for parola in parole:
-                if parola.lower() in q or q in parola.lower():
+                p = parola.lower()
+                # Cerca la parola della query dentro la keyword O la keyword dentro la query
+                words_in_query = q.split()
+                words_in_keyword = p.split()
+                match = False
+                # Controlla se almeno una parola della query appare nella keyword
+                for word in words_in_query:
+                    if len(word) > 2 and word in p:
+                        match = True
+                        break
+                # Oppure se la keyword intera e contenuta nella query
+                if not match and p in q:
+                    match = True
+                if match:
                     scores[categoria] = scores.get(categoria, 0) + 1
+
     top3 = sorted(scores, key=lambda c: scores[c], reverse=True)[:3]
     risultati = []
     for cat in top3:
