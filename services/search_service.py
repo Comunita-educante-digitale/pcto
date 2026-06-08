@@ -44,7 +44,7 @@ def trova_top3_categorie(queries):
         q = query.lower()
         for categoria, parole in KEYWORDS.items():
             for parola in parole:
-                if parola.lower() in q:
+                if parola.lower() in q or q in parola.lower():
                     scores[categoria] = scores.get(categoria, 0) + 1
     top3 = sorted(scores, key=lambda c: scores[c], reverse=True)[:3]
     risultati = []

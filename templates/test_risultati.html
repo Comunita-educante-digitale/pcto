@@ -25,7 +25,7 @@
 
     <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
       <button id="download-pdf" class="btn-primary-hero" disabled>Salva il patto in PDF</button>
-      <a href="/test" class="btn-secondary-hero">Rifai il test</a>
+      <a id="btn-rifai" href="/test" class="btn-secondary-hero">Rifai il test</a>
       <a href="/" class="btn-primary-hero">Torna alla home</a>
     </div>
   </section>
@@ -137,6 +137,12 @@
 
   document.getElementById('download-pdf').addEventListener('click', downloadPDF);
   caricaRegole();
+  var btnRifai = document.getElementById("btn-rifai");
+  if (btnRifai) {
+    var params = new URLSearchParams(window.location.search);
+    var cat = params.get("categorie");
+    if (cat) btnRifai.href = "/test?categorie=" + encodeURIComponent(cat);
+  }
 </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </body>

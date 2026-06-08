@@ -128,7 +128,9 @@
     function mostraRisultati() {
       document.getElementById('progress-bar').style.width = '100%';
       var params = encodeURIComponent(JSON.stringify(risposte_regole));
-      window.location.href = '/test-risultati?regole=' + params;
+      var categorieParam = new URLSearchParams(window.location.search).get('categorie');
+      var extra = categorieParam ? '&categorie=' + encodeURIComponent(categorieParam) : '';
+      window.location.href = '/test-risultati?regole=' + params + extra;
     }
 
     caricaTest();
