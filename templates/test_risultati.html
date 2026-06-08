@@ -30,97 +30,114 @@
     </div>
   </section>
 
-  <script>
-    async function caricaRegole() {
-      var container = document.getElementById('regole-container');
-      try {
-        var params = new URLSearchParams(window.location.search);
-        var raw = params.get('regole');
-        var nomiRegole = JSON.parse(decodeURIComponent(raw));
+<script>
+  var regoleAttive = [];
 
-        var res = await fetch('/api/test_iniziale');
-        var data = await res.json();
-        var regole_db = data.regole;
+  async function caricaRegole() {
+    var container = document.getElementById('regole-container');
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var raw = params.get('regole');
+      var nomiRegole = JSON.parse(decodeURIComponent(raw));
 
-        // Rimuovi duplicati
-        var unici = [...new Set(nomiRegole)];
+      var res = await fetch('/api/test_iniziale');
+      var data = await res.json();
+      var regole_db = data.regole;
 
-        if (unici.length === 0) {
-          container.innerHTML = '<p style="color:var(--text-muted)">Nessuna regola trovata.</p>';
-          return;
-        }
-
-        container.innerHTML = '';
-        unici.forEach(function(nome) {
-          var r = regole_db[nome] || {};
-          var icona = r.icona || '📌';
-          var desc = r.descrizione || '';
-          var card = document.createElement('div');
-          card.className = 'risultato-card';
-          card.innerHTML =
-            '<div class="risultato-header" onclick="toggleDesc(this)">' +
-              '<span class="risultato-nome">' + icona + ' ' + nome + '</span>' +
-              '<span class="risultato-arrow">&#9660;</span>' +
-            '</div>' +
-            '<div class="risultato-desc">' +
-              '<p>' + desc + '</p>' +
-            '</div>';
-          container.appendChild(card);
-        });
-        abilitaPDF();
-      } catch(e) {
-        container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento delle regole.</p>';
-      }
-    }
-
-    function toggleDesc(header) {
-      var desc = header.nextElementSibling;
-      var arrow = header.querySelector('.risultato-arrow');
-      if (desc.style.display === 'block') {
-        desc.style.display = 'none';
-        arrow.innerHTML = '&#9660;';
-      } else {
-        desc.style.display = 'block';
-        arrow.innerHTML = '&#9650;';
-      }
-    }
-
-    function abilitaPDF() {
-      var btn = document.getElementById('download-pdf');
-      if (btn) btn.disabled = false;
-    }
-
-    function apriTutteLeSchede() {
-      var descrizioni = document.querySelectorAll('.risultato-desc');
-      descrizioni.forEach(function(desc) {
-        desc.style.display = 'block';
-        var header = desc.previousElementSibling;
-        if (header) {
-          var arrow = header.querySelector('.risultato-arrow');
-          if (arrow) arrow.innerHTML = '&#9650;';
-        }
+      var unici = [...new Set(nomiRegole)];
+      regoleAttive = unici.map(function(nome) {
+        return { nome: nome, dati: regole_db[nome] || {} };
       });
+
+      renderRegole();
+    } catch(e) {
+      container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento delle regole.</p>';
+    }
+  }
+
+  function renderRegole() {
+    var container = document.getElementById('regole-container');
+    if (regoleAttive.length === 0) {
+      container.innerHTML = '<p style="color:var(--text-muted)">Nessuna regola selezionata.</p>';
+      var btn = document.getElementById('download-pdf');
+      if (btn) btn.disabled = true;
+      return;
     }
 
-    function downloadPDF() {
-      var elemento = document.getElementById('pdf-content');
-      if (!elemento) return;
-      apriTutteLeSchede();
-      var opt = {
-        margin: 0.5,
-        filename: 'patto_familiare.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-      };
-      setTimeout(function() {
-        html2pdf().set(opt).from(elemento).save();
-      }, 100);
-    }
+    container.innerHTML = '';
+    regoleAttive.forEach(function(item, index) {
+      var icona = item.dati.icona || '📌';
+      var desc = item.dati.descrizione || '';
+      var card = document.createElement('div');
+      card.className = 'risultato-card';
+      card.setAttribute('data-index', index);
+      card.innerHTML =
+        '<div class="risultato-header">' +
+          '<div class="risultato-header-left" onclick="toggleDesc(this)">' +
+            '<span class="risultato-nome">' + icona + ' ' + item.nome + '</span>' +
+            '<span class="risultato-arrow">&#9660;</span>' +
+          '</div>' +
+          '<button class="btn-elimina-regola" onclick="eliminaRegola(' + index + ')" title="Rimuovi questa regola" aria-label="Elimina regola ' + item.nome + '">🗑️</button>' +
+        '</div>' +
+        '<div class="risultato-desc">' +
+          '<p>' + desc + '</p>' +
+        '</div>';
+      container.appendChild(card);
+    });
+    abilitaPDF();
+  }
 
-    document.getElementById('download-pdf').addEventListener('click', downloadPDF);
-    caricaRegole();
-  </script>
+  function eliminaRegola(index) {
+    regoleAttive.splice(index, 1);
+    renderRegole();
+  }
+
+  function toggleDesc(headerLeft) {
+    var header = headerLeft.parentElement;
+    var desc = header.nextElementSibling;
+    var arrow = headerLeft.querySelector('.risultato-arrow');
+    if (desc.style.display === 'block') {
+      desc.style.display = 'none';
+      arrow.innerHTML = '&#9660;';
+    } else {
+      desc.style.display = 'block';
+      arrow.innerHTML = '&#9650;';
+    }
+  }
+
+  function abilitaPDF() {
+    var btn = document.getElementById('download-pdf');
+    if (btn) btn.disabled = false;
+  }
+
+  function apriTutteLeSchede() {
+    document.querySelectorAll('.risultato-desc').forEach(function(desc) {
+      desc.style.display = 'block';
+      var headerLeft = desc.previousElementSibling.querySelector('.risultato-header-left');
+      if (headerLeft) {
+        var arrow = headerLeft.querySelector('.risultato-arrow');
+        if (arrow) arrow.innerHTML = '&#9650;';
+      }
+    });
+  }
+
+  function downloadPDF() {
+    var elemento = document.getElementById('pdf-content');
+    if (!elemento) return;
+    apriTutteLeSchede();
+    var opt = {
+      margin: 0.5,
+      filename: 'patto_familiare.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    setTimeout(function() { html2pdf().set(opt).from(elemento).save(); }, 100);
+  }
+
+  document.getElementById('download-pdf').addEventListener('click', downloadPDF);
+  caricaRegole();
+</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </body>
 </html>
