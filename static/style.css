@@ -30,6 +30,22 @@
 * {
   box-sizing: border-box;
 }
+  .risultato-header { display: flex; align-items: center; justify-content: space-between; }
+  .risultato-header-left { display: flex; align-items: center; flex: 1; cursor: pointer; }
+  .btn-elimina-regola {
+    background: none;
+    border: 0.5px solid #ccc;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: #888;
+    font-size: 15px;
+    margin-left: 8px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .btn-elimina-regola:hover { background: #fdecea; border-color: #e57373; color: #c0392b; }
+
 
 body {
   font-family: 'DM Sans', sans-serif;
