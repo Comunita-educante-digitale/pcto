@@ -143,7 +143,7 @@ function renderAutocompleteMatches(query) {
         return;
     }
     const q = query.trim().toLowerCase();
-    const matches = autocompleteSuggestions.filter(s => s.toLowerCase().startsWith(q));
+    const matches = autocompleteSuggestions.filter(s => s.toLowerCase().includes(q));
     if (matches.length === 0) {
         hideAutocompleteList();
         return;

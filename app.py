@@ -36,7 +36,7 @@ def api_keywords():
         tutte.extend(parole)
     tutte = sorted(list(set(tutte)))
     return json.dumps(tutte), 200, {'Content-Type': 'application/json'}
-#sjfjdfd
+
 @app.route('/api/categorie')
 def api_categorie():
     from services.search_service import carica_dati
