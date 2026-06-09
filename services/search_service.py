@@ -3,7 +3,7 @@ import urllib.request
 import time
 import threading
 
-SHEETS_URL = "https://script.google.com/macros/s/AKfycbyQlimUfoMV2SqQfvJtD1-msT5Q7RZyUDH1wZK-S9yqzGrxUZArkAh60IDOupf1eFmd/exec"
+SHEETS_URL = "https://script.google.com/macros/s/AKfycbygppLK3eHQ4uxw-jaw7-V5t5fLQPQkRLp-IyGxjj5zqTwREfn7pWrd6PgzY-M1LlcS/exec"
 CACHE_TTL = 300
 
 _cache = {"keywords": {}, "categorie": {}, "test_iniziale": [], "regole": {}, "attivita": {}, "last_update": 0}
@@ -38,14 +38,41 @@ def carica_dati(force=False):
 def trova_top3_categorie(queries):
     KEYWORDS, CATEGORIE, _, _, _ = carica_dati()
     scores = {}
+    STOPWORDS = {'il','lo','la','i','gli','le','un','uno','una','di','a','da','in','con','su','per','tra','fra','e','o','ma','se','non','che','chi','cui','ne','ci','si','mi','ti','vi','al','del','dei','dal','nel','sul','col','con','anche','mai','sempre','ogni','tutto','tutti'}
+
     for query in queries:
         if not query:
             continue
-        q = query.lower()
+        q = query.lower().strip()
+
+        # 1. Corrispondenza esatta — massima priorità
+        exact_found = False
         for categoria, parole in KEYWORDS.items():
             for parola in parole:
-                if parola.lower() in q or q in parola.lower():
-                    scores[categoria] = scores.get(categoria, 0) + 1
+                if parola.lower().strip() == q:
+                    scores[categoria] = scores.get(categoria, 0) + 100
+                    exact_found = True
+
+        if exact_found:
+            continue
+
+        # 2. La keyword è contenuta nella query
+        for categoria, parole in KEYWORDS.items():
+            for parola in parole:
+                p = parola.lower().strip()
+                if p in q:
+                    scores[categoria] = scores.get(categoria, 0) + 10
+
+        # 3. Parole significative in comune (escluse stopwords)
+        words_in_query = [w for w in q.split() if w not in STOPWORDS and len(w) > 3]
+        for categoria, parole in KEYWORDS.items():
+            for parola in parole:
+                p = parola.lower().strip()
+                for word in words_in_query:
+                    if word in p:
+                        scores[categoria] = scores.get(categoria, 0) + 1
+                        break
+
     top3 = sorted(scores, key=lambda c: scores[c], reverse=True)[:3]
     risultati = []
     for cat in top3:
