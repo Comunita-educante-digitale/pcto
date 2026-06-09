@@ -3,7 +3,7 @@ import urllib.request
 import time
 import threading
 
-SHEETS_URL = "https://script.google.com/macros/s/AKfycbxs46id62yyWCgBew4f4lgu3gwwpeK_X-JTpJ_Ilg02ccsZ8pAn3ziU1CjUmoY8d5GJ/exec"
+SHEETS_URL = "https://script.google.com/macros/s/AKfycbx4lZkj8oru8AWbSDqdyxcpfjfeiXyu7ONP9JHZ6B_jD3TeQbEJQ7pQDDPWdK7Ky9V5/exec"
 CACHE_TTL = 300
 
 _cache = {"keywords": {}, "categorie": {}, "test_iniziale": [], "regole": {}, "attivita": {}, "last_update": 0}
