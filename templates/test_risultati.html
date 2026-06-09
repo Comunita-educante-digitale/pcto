@@ -43,10 +43,20 @@
       var res = await fetch('/api/test_iniziale');
       var data = await res.json();
       var regole_db = data.regole;
+      var res2 = await fetch('/api/attivita');
+      var attivita_db = await res2.json();
 
       var unici = [...new Set(nomiRegole)];
+      var attivita_per_regola = {};
+      Object.keys(attivita_db).forEach(function(nomeAtt) {
+        var att = attivita_db[nomeAtt];
+        var regola = att.regola || '';
+        if (!attivita_per_regola[regola]) attivita_per_regola[regola] = [];
+        attivita_per_regola[regola].push({ nome: nomeAtt, dati: att });
+      });
+
       regoleAttive = unici.map(function(nome) {
-        return { nome: nome, dati: regole_db[nome] || {} };
+        return { nome: nome, dati: regole_db[nome] || {}, attivita: attivita_per_regola[nome] || [] };
       });
 
       renderRegole();
@@ -81,6 +91,25 @@
         '</div>' +
         '<div class="risultato-desc">' +
           '<p>' + desc + '</p>' +
+          (function() {
+            if (!item.attivita || item.attivita.length === 0) return '';
+            var html = '<div style="margin-top:1rem;border-top:1px solid #f0ede6;padding-top:1rem;">';
+            html += '<div style="font-size:0.78rem;font-weight:600;color:var(--teal-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.6rem;">Attivita consigliate</div>';
+            item.attivita.forEach(function(att) {
+              html += '<div style="background:var(--teal-light);border-radius:var(--radius-md);padding:0.8rem 1rem;margin-bottom:0.5rem;">';
+              html += '<div style="font-weight:600;font-size:0.9rem;color:var(--teal-dark);margin-bottom:0.3rem;">' + att.nome + '</div>';
+              html += '<div style="font-size:0.83rem;color:var(--text-muted);">' + (att.dati.descrizione || '') + '</div>';
+              if (att.dati.durata || att.dati.frequenza) {
+                html += '<div style="font-size:0.78rem;color:var(--teal-mid);margin-top:0.4rem;">';
+                if (att.dati.durata) html += '⏱ ' + att.dati.durata + '&nbsp;&nbsp;';
+                if (att.dati.frequenza) html += '🔁 ' + att.dati.frequenza;
+                html += '</div>';
+              }
+              html += '</div>';
+            });
+            html += '</div>';
+            return html;
+          })() +
         '</div>';
       container.appendChild(card);
     });

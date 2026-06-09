@@ -59,6 +59,13 @@ def api_test_iniziale():
 def test_risultati():
     return render_template('test_risultati.html')
 
+@app.route('/api/attivita')
+def api_attivita():
+    import json
+    from services.search_service import carica_dati
+    _, _, _, _, attivita = carica_dati()
+    return json.dumps(attivita), 200, {'Content-Type': 'application/json'}
+
 @app.route('/categoria/<categoria>')
 def categoria(categoria):
     return render_template(f'categorie/{categoria}.html')
