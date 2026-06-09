@@ -3,7 +3,7 @@ import urllib.request
 import time
 import threading
 
-SHEETS_URL = "https://script.google.com/macros/s/AKfycbx4lZkj8oru8AWbSDqdyxcpfjfeiXyu7ONP9JHZ6B_jD3TeQbEJQ7pQDDPWdK7Ky9V5/exec"
+SHEETS_URL = "https://script.google.com/macros/s/AKfycbygppLK3eHQ4uxw-jaw7-V5t5fLQPQkRLp-IyGxjj5zqTwREfn7pWrd6PgzY-M1LlcS/exec"
 CACHE_TTL = 300
 
 _cache = {"keywords": {}, "categorie": {}, "test_iniziale": [], "regole": {}, "attivita": {}, "last_update": 0}
@@ -38,27 +38,40 @@ def carica_dati(force=False):
 def trova_top3_categorie(queries):
     KEYWORDS, CATEGORIE, _, _, _ = carica_dati()
     scores = {}
+    STOPWORDS = {'il','lo','la','i','gli','le','un','uno','una','di','a','da','in','con','su','per','tra','fra','e','o','ma','se','non','che','chi','cui','ne','ci','si','mi','ti','vi','al','del','dei','dal','nel','sul','col','con','anche','mai','sempre','ogni','tutto','tutti'}
+
     for query in queries:
         if not query:
             continue
-        q = query.lower()
+        q = query.lower().strip()
+
+        # 1. Corrispondenza esatta — massima priorità
+        exact_found = False
         for categoria, parole in KEYWORDS.items():
             for parola in parole:
-                p = parola.lower()
-                # Cerca la parola della query dentro la keyword O la keyword dentro la query
-                words_in_query = q.split()
-                words_in_keyword = p.split()
-                match = False
-                # Controlla se almeno una parola della query appare nella keyword
+                if parola.lower().strip() == q:
+                    scores[categoria] = scores.get(categoria, 0) + 100
+                    exact_found = True
+
+        if exact_found:
+            continue
+
+        # 2. La keyword è contenuta nella query
+        for categoria, parole in KEYWORDS.items():
+            for parola in parole:
+                p = parola.lower().strip()
+                if p in q:
+                    scores[categoria] = scores.get(categoria, 0) + 10
+
+        # 3. Parole significative in comune (escluse stopwords)
+        words_in_query = [w for w in q.split() if w not in STOPWORDS and len(w) > 3]
+        for categoria, parole in KEYWORDS.items():
+            for parola in parole:
+                p = parola.lower().strip()
                 for word in words_in_query:
-                    if len(word) > 2 and word in p:
-                        match = True
+                    if word in p:
+                        scores[categoria] = scores.get(categoria, 0) + 1
                         break
-                # Oppure se la keyword intera e contenuta nella query
-                if not match and p in q:
-                    match = True
-                if match:
-                    scores[categoria] = scores.get(categoria, 0) + 1
 
     top3 = sorted(scores, key=lambda c: scores[c], reverse=True)[:3]
     risultati = []
