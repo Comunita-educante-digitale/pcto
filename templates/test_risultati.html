@@ -31,7 +31,16 @@
   </section>
 
 <script>
-  var regoleAttive = [];
+  var pattoStruttura = [];
+
+  function normalizzaTesto(value) {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
 
   async function caricaRegole() {
     var container = document.getElementById('regole-container');
@@ -39,99 +48,153 @@
       var params = new URLSearchParams(window.location.search);
       var raw = params.get('regole');
       var nomiRegole = JSON.parse(decodeURIComponent(raw));
+      var rawCategorie = params.get('categorie');
+      var categorieSelezionate = rawCategorie ? JSON.parse(decodeURIComponent(rawCategorie)) : [];
+      console.log('[patto-ui] input regole', nomiRegole);
+      console.log('[patto-ui] input categorie', categorieSelezionate);
 
       var res = await fetch('/api/test_iniziale');
       var data = await res.json();
-      var regole_db = data.regole;
+      var regole_db = data.regole || {};
       var res2 = await fetch('/api/attivita');
       var attivita_db = await res2.json();
+      var attivitaArray = Array.isArray(attivita_db) ? attivita_db : Object.values(attivita_db || {});
+      var res3 = await fetch('/api/categorie');
+      var categorie_db = await res3.json();
 
-      var unici = [...new Set(nomiRegole)];
-      var attivita_per_regola = {};
-      Object.keys(attivita_db).forEach(function(nomeAtt) {
-        var att = attivita_db[nomeAtt];
-        var regola = att.regola || '';
-        if (!attivita_per_regola[regola]) attivita_per_regola[regola] = [];
-        attivita_per_regola[regola].push({ nome: nomeAtt, dati: att });
+      var categoriePerRegola = {};
+      var unici = [...new Set(nomiRegole.filter(Boolean))];
+      unici.forEach(function(nome) {
+        var regola = regole_db[nome] || {};
+        var categorieIds = Array.isArray(regola.categorie) ? regola.categorie : [];
+        categorieIds.forEach(function(id) {
+          if (!categoriePerRegola[id]) categoriePerRegola[id] = [];
+          categoriePerRegola[id].push(nome);
+        });
       });
 
-      regoleAttive = unici.map(function(nome) {
-        return { nome: nome, dati: regole_db[nome] || {}, attivita: attivita_per_regola[nome] || [] };
+      var categorieIdsOrdine = [];
+      categorieSelezionate.forEach(function(id) {
+        if (id && !categorieIdsOrdine.includes(id)) categorieIdsOrdine.push(id);
+      });
+      Object.keys(categoriePerRegola).forEach(function(id) {
+        if (!categorieIdsOrdine.includes(id)) categorieIdsOrdine.push(id);
       });
 
-      renderRegole();
-    } catch(e) {
-      container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento delle regole.</p>';
+      console.log('[patto-ui] categoria-per-regola map', categoriePerRegola);
+
+      pattoStruttura = categorieIdsOrdine.map(function(id) {
+        var info = categorie_db[id] || Object.values(categorie_db).find(function(item) {
+          return normalizzaTesto(item.id) === normalizzaTesto(id) || normalizzaTesto(item.categoria) === normalizzaTesto(id);
+        }) || { id: id, nome: id, descrizione: '' };
+        var regolePerCategoria = [];
+        var regoleNellaCategoria = categoriePerRegola[id] || [];
+        regoleNellaCategoria.forEach(function(nomeRegola) {
+          var regola = regole_db[nomeRegola] || {};
+          var attivitaRegola = attivitaArray.filter(function(att) {
+            return normalizzaTesto(att.regola) === normalizzaTesto(nomeRegola);
+          });
+          regolePerCategoria.push({
+            nome: nomeRegola,
+            dati: regola,
+            attivita: attivitaRegola
+          });
+        });
+        return { id: id, info: info, regole: regolePerCategoria };
+      });
+
+      console.log('[patto-ui] struttura finale', pattoStruttura);
+      renderPatto();
+    } catch (e) {
+      container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento del patto familiare.</p>';
     }
   }
 
-  function renderRegole() {
+  function renderPatto() {
     var container = document.getElementById('regole-container');
-    if (regoleAttive.length === 0) {
+    if (!pattoStruttura || pattoStruttura.length === 0) {
       container.innerHTML = '<p style="color:var(--text-muted)">Nessuna regola selezionata.</p>';
       var btn = document.getElementById('download-pdf');
       if (btn) btn.disabled = true;
       return;
     }
 
+    console.log('[patto-ui] render patto', pattoStruttura);
     container.innerHTML = '';
-    regoleAttive.forEach(function(item, index) {
-      var icona = item.dati.icona || '📌';
-      var desc = item.dati.descrizione || '';
-      var card = document.createElement('div');
-      card.className = 'risultato-card';
-      card.setAttribute('data-index', index);
-      card.innerHTML =
-        '<div class="risultato-header">' +
-          '<div class="risultato-header-left" onclick="toggleDesc(this)">' +
-            '<span class="risultato-nome">' + icona + ' ' + item.nome + '</span>' +
-            '<span class="risultato-arrow">&#9660;</span>' +
+    pattoStruttura.forEach(function(categoria, categoriaIndex) {
+      var categoriaCard = document.createElement('div');
+      categoriaCard.className = 'risultato-card';
+      categoriaCard.style.marginBottom = '1rem';
+      categoriaCard.innerHTML = '<div class="risultato-header"><div class="risultato-header-left"><span class="risultato-nome">📚 ' + (categoria.info.nome || categoria.info.categoria || categoria.id) + '</span></div></div>';
+      var body = document.createElement('div');
+      body.className = 'risultato-desc';
+      body.style.display = 'block';
+      body.innerHTML = '<p>' + (categoria.info.descrizione || '') + '</p>';
+      var elencoRegole = document.createElement('div');
+      elencoRegole.style.marginTop = '1rem';
+      categoria.regole.forEach(function(regola, regolaIndex) {
+        var regolaCard = document.createElement('div');
+        regolaCard.style.border = '1px solid #efe9de';
+        regolaCard.style.borderRadius = '14px';
+        regolaCard.style.padding = '1rem';
+        regolaCard.style.marginBottom = '0.8rem';
+        regolaCard.style.background = '#fcfbf7';
+        var icona = regola.dati.icona || '📌';
+        var descrizione = regola.dati.descrizione || '';
+        var raccomandazione = regola.dati.raccomandazione || '';
+        var linkRaccomandazione = regola.dati.linkRaccomandazione || '';
+        regolaCard.innerHTML =
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">' +
+            '<div style="font-weight:700;color:var(--teal-dark);">' + icona + ' ' + regola.nome + '</div>' +
+            '<button class="btn-elimina-regola" onclick="eliminaRegola(' + categoriaIndex + ',' + regolaIndex + ')" title="Rimuovi questa regola" aria-label="Elimina regola ' + regola.nome + '">🗑️</button>' +
           '</div>' +
-          '<button class="btn-elimina-regola" onclick="eliminaRegola(' + index + ')" title="Rimuovi questa regola" aria-label="Elimina regola ' + item.nome + '">🗑️</button>' +
-        '</div>' +
-        '<div class="risultato-desc">' +
-          '<p>' + desc + '</p>' +
-          (function() {
-            if (!item.attivita || item.attivita.length === 0) return '';
-            var html = '<div style="margin-top:1rem;border-top:1px solid #f0ede6;padding-top:1rem;">';
-            html += '<div style="font-size:0.78rem;font-weight:600;color:var(--teal-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.6rem;">Attivita consigliate</div>';
-            item.attivita.forEach(function(att) {
-              html += '<div style="background:var(--teal-light);border-radius:var(--radius-md);padding:0.8rem 1rem;margin-bottom:0.5rem;">';
-              html += '<div style="font-weight:600;font-size:0.9rem;color:var(--teal-dark);margin-bottom:0.3rem;">' + att.nome + '</div>';
-              html += '<div style="font-size:0.83rem;color:var(--text-muted);">' + (att.dati.descrizione || '') + '</div>';
-              if (att.dati.durata || att.dati.frequenza) {
-                html += '<div style="font-size:0.78rem;color:var(--teal-mid);margin-top:0.4rem;">';
-                if (att.dati.durata) html += '⏱ ' + att.dati.durata + '&nbsp;&nbsp;';
-                if (att.dati.frequenza) html += '🔁 ' + att.dati.frequenza;
-                html += '</div>';
-              }
-              html += '</div>';
-            });
-            html += '</div>';
-            return html;
-          })() +
-        '</div>';
-      container.appendChild(card);
+          '<p style="margin:0.5rem 0 0.5rem;color:var(--text-muted);">' + descrizione + '</p>' +
+          (raccomandazione ? '<div style="font-size:0.83rem;color:var(--teal-mid);margin-bottom:0.5rem;">Raccomandazione: ' + raccomandazione + '</div>' : '') +
+          (linkRaccomandazione ? '<div style="margin-bottom:0.7rem;"><a href="' + linkRaccomandazione + '" target="_blank" class="btn-search" style="text-decoration:none;">Approfondisci</a></div>' : '') +
+          '<div style="font-size:0.8rem;font-weight:600;color:var(--teal-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.45rem;">Attività pratiche</div>';
+        var attivitaList = document.createElement('div');
+        if (!regola.attivita || regola.attivita.length === 0) {
+          attivitaList.innerHTML = '<div style="font-size:0.85rem;color:var(--text-muted);">Nessuna attività associata.</div>';
+        } else {
+          regola.attivita.forEach(function(attivita, attivitaIndex) {
+            var item = document.createElement('div');
+            item.style.background = 'var(--teal-light)';
+            item.style.borderRadius = '10px';
+            item.style.padding = '0.75rem 0.9rem';
+            item.style.marginBottom = '0.5rem';
+            item.innerHTML =
+              '<div style="display:flex;justify-content:space-between;gap:0.5rem;align-items:flex-start;">' +
+                '<div style="font-weight:600;color:var(--teal-dark);">' + (attivita.nome || '') + '</div>' +
+                '<button class="btn-elimina-regola" onclick="eliminaAttivita(' + categoriaIndex + ',' + regolaIndex + ',' + attivitaIndex + ')" title="Rimuovi questa attività" aria-label="Elimina attività ' + (attivita.nome || '') + '">🗑️</button>' +
+              '</div>' +
+              '<div style="font-size:0.84rem;color:var(--text-muted);margin-top:0.2rem;">' + (attivita.descrizione || '') + '</div>' +
+              '<div style="font-size:0.78rem;color:var(--teal-mid);margin-top:0.35rem;">' + (attivita.eta ? '👶 ' + attivita.eta + '&nbsp;&nbsp;' : '') + (attivita.durata ? '⏱ ' + attivita.durata + '&nbsp;&nbsp;' : '') + (attivita.frequenza ? '🔁 ' + attivita.frequenza : '') + '</div>';
+            attivitaList.appendChild(item);
+          });
+        }
+        regolaCard.appendChild(attivitaList);
+        elencoRegole.appendChild(regolaCard);
+      });
+      body.appendChild(elencoRegole);
+      categoriaCard.appendChild(body);
+      container.appendChild(categoriaCard);
     });
     abilitaPDF();
   }
 
-  function eliminaRegola(index) {
-    regoleAttive.splice(index, 1);
-    renderRegole();
+  function eliminaRegola(categoriaIndex, regolaIndex) {
+    if (!pattoStruttura[categoriaIndex]) return;
+    pattoStruttura[categoriaIndex].regole.splice(regolaIndex, 1);
+    if (pattoStruttura[categoriaIndex].regole.length === 0) {
+      pattoStruttura.splice(categoriaIndex, 1);
+    }
+    renderPatto();
   }
 
-  function toggleDesc(headerLeft) {
-    var header = headerLeft.parentElement;
-    var desc = header.nextElementSibling;
-    var arrow = headerLeft.querySelector('.risultato-arrow');
-    if (desc.style.display === 'block') {
-      desc.style.display = 'none';
-      arrow.innerHTML = '&#9660;';
-    } else {
-      desc.style.display = 'block';
-      arrow.innerHTML = '&#9650;';
-    }
+  function eliminaAttivita(categoriaIndex, regolaIndex, attivitaIndex) {
+    if (!pattoStruttura[categoriaIndex] || !pattoStruttura[categoriaIndex].regole[regolaIndex]) return;
+    pattoStruttura[categoriaIndex].regole[regolaIndex].attivita.splice(attivitaIndex, 1);
+    renderPatto();
   }
 
   function abilitaPDF() {
@@ -142,11 +205,6 @@
   function apriTutteLeSchede() {
     document.querySelectorAll('.risultato-desc').forEach(function(desc) {
       desc.style.display = 'block';
-      var headerLeft = desc.previousElementSibling.querySelector('.risultato-header-left');
-      if (headerLeft) {
-        var arrow = headerLeft.querySelector('.risultato-arrow');
-        if (arrow) arrow.innerHTML = '&#9650;';
-      }
     });
   }
 
@@ -166,11 +224,11 @@
 
   document.getElementById('download-pdf').addEventListener('click', downloadPDF);
   caricaRegole();
-  var btnRifai = document.getElementById("btn-rifai");
+  var btnRifai = document.getElementById('btn-rifai');
   if (btnRifai) {
     var params = new URLSearchParams(window.location.search);
-    var cat = params.get("categorie");
-    if (cat) btnRifai.href = "/test?categorie=" + cat;
+    var cat = params.get('categorie');
+    if (cat) btnRifai.href = '/test?categorie=' + cat;
   }
 </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
