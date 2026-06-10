@@ -26,6 +26,7 @@ window.doSearch = async function() {
         var el = document.getElementById('search' + i);
         if (el && el.value.trim()) queries.push(el.value.trim());
     }
+    console.log('[search-ui] input queries', queries);
     if (queries.length === 0) return;
     var response = await fetch('/search', {
         method: 'POST',
@@ -35,6 +36,28 @@ window.doSearch = async function() {
     var data = await response.json();
     if (data.success) {
         var params = encodeURIComponent(JSON.stringify(data.risultati));
+        window.location.href = '/risultati?data=' + params;
+    } else {
+        alert('Nessuna categoria trovata. Prova con parole diverse.');
+    }
+};
+
+window.doNavSearch = async function() {
+    var input = document.getElementById('navSearch');
+    if (!input) return;
+    var query = input.value.trim();
+    if (!query) return;
+    console.log('[search-ui] navbar query', query);
+    var response = await fetch('/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queries: [query] })
+    });
+    var data = await response.json();
+    console.log('[search-ui] navbar search response', data);
+    if (data.success) {
+        var params = encodeURIComponent(JSON.stringify(data.risultati));
+        console.log('[search-ui] navbar final results', data.risultati);
         window.location.href = '/risultati?data=' + params;
     } else {
         alert('Nessuna categoria trovata. Prova con parole diverse.');
@@ -66,27 +89,8 @@ const searchTrigger = document.getElementById('navSearchButton');
 
 if (searchTrigger) {
     searchTrigger.addEventListener('click', async () => {
-        const queryInput = document.getElementById('navSearch');
-        const searchTerm = queryInput ? queryInput.value.trim() : '';
-        
-        if (!searchTerm) return;
-
-        // chiama direttamente /search senza toccare search0
         try {
-            const apiResponse = await fetch('/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ queries: [searchTerm] })
-            });
-
-            const payload = await apiResponse.json();
-
-            if (payload.success) {
-                const encodedData = encodeURIComponent(JSON.stringify(payload.risultati));
-                window.location.href = `/risultati?data=${encodedData}`;
-            } else {
-                alert('Nessuna categoria trovata. Prova con parole diverse.');
-            }
+            await window.doNavSearch();
         } catch (error) {
             console.error('Errore durante la ricerca:', error);
         }
@@ -167,6 +171,11 @@ function selectAutocompleteSuggestion(text) {
     activeInput.value = text;
     hideAutocompleteList();
     activeInput.focus();
+    if (activeInput.id === 'navSearch' && window.doNavSearch) {
+        window.doNavSearch();
+    } else if (activeInput.id && activeInput.id.startsWith('search') && window.doSearch) {
+        window.doSearch();
+    }
 }
 
 function updateAutocompleteActive(items) {

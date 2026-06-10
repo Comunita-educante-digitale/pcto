@@ -1,0 +1,6 @@
+nohup: ignoring input
+
+> pcto-angular@1.0.0 start
+> node dist-server/server.js
+
+Server listening on port 8080
