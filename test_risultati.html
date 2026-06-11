@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Le tue regole - Educazione Digitale Familiare</title>
+  <link rel="stylesheet" href="/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <a class="navbar-brand-text text-decoration-none" href="/">
+      🌿 Educazione Digitale Familiare
+    </a>
+    <a href="/" class="btn-search" style="text-decoration:none;font-size:0.9rem;">Torna alla home</a>
+  </nav>
+
+  <section id="pdf-content" style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
+    <div class="section-label">Risultati del test (Queste regole nascono dalle tue risposte)</div>
+    <h2 class="section-title">Il vostro accordo digitale</h2>
+    <p class="section-sub">Ecco le attività pratiche e le regole selezionate in base alle tue risposte. Clicca su ognuna per leggere i dettagli oppure cestinala se non la ritieni importante.</p>
+
+    <div id="regole-container"><p style="color:var(--text-muted)">Caricamento...</p></div>
+
+    <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <button id="download-pdf" class="btn-primary-hero" disabled>Salva il patto in PDF</button>
+      <a id="btn-rifai" href="/test" class="btn-secondary-hero">Rifai il test</a>
+      <a href="/" class="btn-primary-hero">Torna alla home</a>
+    </div>
+  </section>
+
+<script src="/js/app.js"></script>
+  <script>
+  var pattoStruttura = [];
+
+  function normalizzaTesto(value) {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
+
+  async function caricaRegole() {
+    var container = document.getElementById('regole-container');
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var raw = params.get('regole');
+      var nomiRegole = JSON.parse(decodeURIComponent(raw));
+      var rawCategorie = params.get('categorie');
+      var categorieSelezionate = rawCategorie ? JSON.parse(decodeURIComponent(rawCategorie)) : [];
+      console.log('[patto-ui] input regole', nomiRegole);
+      console.log('[patto-ui] input categorie', categorieSelezionate);
+
+      var data = await window.getTestIniziale();
+      
+      var regole_db = data.regole || {};
+      var attivita_db = await window.getAttivita();
+      
+      var attivitaArray = Array.isArray(attivita_db) ? attivita_db : Object.values(attivita_db || {});
+      var categorie_db = await window.getCategorie();
+      
+
+      var categoriePerRegola = {};
+      var unici = [...new Set(nomiRegole.filter(Boolean))];
+      unici.forEach(function(nome) {
+        var regola = regole_db[nome] || {};
+        var categorieIds = Array.isArray(regola.categorie) ? regola.categorie : [];
+        categorieIds.forEach(function(id) {
+          if (!categoriePerRegola[id]) categoriePerRegola[id] = [];
+          categoriePerRegola[id].push(nome);
+        });
+      });
+
+      var categorieIdsOrdine = [];
+      categorieSelezionate.forEach(function(id) {
+        if (id && !categorieIdsOrdine.includes(id)) categorieIdsOrdine.push(id);
+      });
+      Object.keys(categoriePerRegola).forEach(function(id) {
+        if (!categorieIdsOrdine.includes(id)) categorieIdsOrdine.push(id);
+      });
+
+      console.log('[patto-ui] categoria-per-regola map', categoriePerRegola);
+
+      pattoStruttura = categorieIdsOrdine.map(function(id) {
+        var info = categorie_db[id] || Object.values(categorie_db).find(function(item) {
+          return normalizzaTesto(item.id) === normalizzaTesto(id) || normalizzaTesto(item.categoria) === normalizzaTesto(id);
+        }) || { id: id, nome: id, descrizione: '' };
+        var regolePerCategoria = [];
+        var regoleNellaCategoria = categoriePerRegola[id] || [];
+        regoleNellaCategoria.forEach(function(nomeRegola) {
+          var regola = regole_db[nomeRegola] || {};
+          var attivitaRegola = attivitaArray.filter(function(att) {
+            return normalizzaTesto(att.regola) === normalizzaTesto(nomeRegola);
+          });
+          regolePerCategoria.push({
+            nome: nomeRegola,
+            dati: regola,
+            attivita: attivitaRegola
+          });
+        });
+        return { id: id, info: info, regole: regolePerCategoria };
+      });
+
+      console.log('[patto-ui] struttura finale', pattoStruttura);
+      renderPatto();
+    } catch (e) {
+      container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento del patto familiare.</p>';
+    }
+  }
+
+  function renderPatto() {
+    var container = document.getElementById('regole-container');
+    if (!pattoStruttura || pattoStruttura.length === 0) {
+      container.innerHTML = '<p style="color:var(--text-muted)">Nessuna attività selezionata.</p>';
+      var btn = document.getElementById('download-pdf');
+      if (btn) btn.disabled = true;
+      return;
+    }
+
+    console.log('[patto-ui] render patto (invertito: attività prima)', pattoStruttura);
+    container.innerHTML = '';
+    
+    pattoStruttura.forEach(function(categoria, categoriaIndex) {
+      var categoriaCard = document.createElement('div');
+      categoriaCard.className = 'risultato-card';
+      categoriaCard.style.marginBottom = '1.5rem';
+      categoriaCard.innerHTML = '<div class="risultato-header"><div class="risultato-header-left"><span class="risultato-nome">📚 ' + (categoria.info.nome || categoria.info.categoria || categoria.id) + '</span></div></div>';
+      
+      var body = document.createElement('div');
+      body.className = 'risultato-desc';
+      body.style.display = 'block';
+      body.innerHTML = '<p>' + (categoria.info.descrizione || '') + '</p>';
+      
+      var elencoInvertito = document.createElement('div');
+      elencoInvertito.style.marginTop = '1rem';
+
+      categoria.regole.forEach(function(regola, regolaIndex) {
+        var icona = regola.dati.icona || '📌';
+        var descrizione = regola.dati.descrizione || '';
+        var raccomandazione = regola.dati.raccomandazione || '';
+        var linkRaccomandazione = regola.dati.linkRaccomandazione || '';
+
+        if (regola.attivita && regola.attivita.length > 0) {
+          regola.attivita.forEach(function(attivita, attivitaIndex) {
+            var attivitaCard = document.createElement('div');
+            attivitaCard.style.border = '1px solid #efe9de';
+            attivitaCard.style.borderRadius = '14px';
+            attivitaCard.style.padding = '1.2rem';
+            attivitaCard.style.marginBottom = '1rem';
+            attivitaCard.style.background = '#fcfbf7';
+
+            // HTML DELL'ATTIVITÀ PRATICA (In alto come elemento principale)
+            attivitaCard.innerHTML =
+              '<div style="font-size:0.8rem;font-weight:600;color:var(--teal-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">🛠️ Attività Pratica</div>' +
+              '<div style="display:flex;justify-content:space-between;gap:0.5rem;align-items:flex-start;">' +
+                '<div style="font-size:1.1rem;font-weight:700;color:var(--teal-dark);">' + (attivita.nome || '') + '</div>' +
+                '<button class="btn-elimina-regola" onclick="eliminaAttivita(' + categoriaIndex + ',' + regolaIndex + ',' + attivitaIndex + ')" title="Rimuovi questa attività" aria-label="Elimina attività ' + (attivita.nome || '') + '">🗑️</button>' +
+              '</div>' +
+              '<div style="font-size:0.92rem;color:var(--text-muted);margin-top:0.4rem;margin-bottom:0.5rem;">' + (attivita.descrizione || '') + '</div>' +
+              '<div style="font-size:0.82rem;color:var(--teal-mid);margin-bottom:1rem;">' + (attivita.eta ? '👶 ' + attivita.eta + '&nbsp;&nbsp;' : '') + (attivita.durata ? '⏱ ' + attivita.durata + '&nbsp;&nbsp;' : '') + (attivita.frequenza ? '🔁 ' + attivita.frequenza : '') + '</div>' +
+              
+              // BLOCCO REGOLA ASSOCIATA (Sotto, racchiuso dentro un riquadro coordinato)
+              '<div style="background: var(--teal-light); padding: 0.85rem 1rem; border-radius: 10px; margin-top: 0.5rem;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">' +
+                  '<div style="font-weight:700;color:var(--teal-dark);font-size:0.9rem;">📜 Regola: ' + icona + ' ' + regola.nome + '</div>' +
+                  '<button class="btn-elimina-regola" onclick="eliminaRegola(' + categoriaIndex + ',' + regolaIndex + ')" title="Rimuovi questa regola" aria-label="Elimina regola ' + regola.nome + '" style="font-size:0.8rem;padding:2px 5px;">🗑️</button>' +
+                '</div>' +
+                '<p style="margin:0.4rem 0 0.4rem;color:var(--text-muted);font-size:0.85rem;">' + descrizione + '</p>' +
+                (raccomandazione ? '<div style="font-size:0.8rem;color:var(--teal-mid);margin-bottom:0.4rem;"><b>Raccomandazione:</b> ' + raccomandazione + '</div>' : '') +
+                (linkRaccomandazione ? '<div><a href="' + linkRaccomandazione + '" target="_blank" class="btn-search" style="text-decoration:none;font-size:0.78rem;padding:3px 8px;">Approfondisci regola</a></div>' : '') +
+              '</div>';
+
+            elencoInvertito.appendChild(attivitaCard);
+          });
+        } else {
+          // Caso di fallback: Se non ci sono attività collegate alla regola, la stampiamo comunque da sola
+          var regolaSolaCard = document.createElement('div');
+          regolaSolaCard.style.border = '1px solid #efe9de';
+          regolaSolaCard.style.borderRadius = '14px';
+          regolaSolaCard.style.padding = '1.2rem';
+          regolaSolaCard.style.marginBottom = '1rem';
+          regolaSolaCard.style.background = '#fcfbf7';
+          regolaSolaCard.innerHTML =
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">' +
+              '<div style="font-weight:700;color:var(--teal-dark);">' + icona + ' ' + regola.nome + '</div>' +
+              '<button class="btn-elimina-regola" onclick="eliminaRegola(' + categoriaIndex + ',' + regolaIndex + ')" title="Rimuovi questa regola" aria-label="Elimina regola ' + regola.nome + '">🗑️</button>' +
+            '</div>' +
+            '<p style="margin:0.5rem 0 0.5rem;color:var(--text-muted);">' + descrizione + '</p>' +
+            (raccomandazione ? '<div style="font-size:0.83rem;color:var(--teal-mid);margin-bottom:0.5rem;">Raccomandazione: ' + raccomandazione + '</div>' : '') +
+            (linkRaccomandazione ? '<div><a href="' + linkRaccomandazione + '" target="_blank" class="btn-search" style="text-decoration:none;">Approfondisci</a></div>' : '') +
+            '<div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;font-style:italic;">Nessuna attività pratica specifica per questa regola.</div>';
+          
+          elencoInvertito.appendChild(regolaSolaCard);
+        }
+      });
+
+      body.appendChild(elencoInvertito);
+      categoriaCard.appendChild(body);
+      container.appendChild(categoriaCard);
+    });
+    abilitaPDF();
+  }
+
+  functionGrid = {};
+
+  function eliminaRegola(categoriaIndex, regolaIndex) {
+    if (!pattoStruttura[categoriaIndex]) return;
+    pattoStruttura[categoriaIndex].regole.splice(regolaIndex, 1);
+    if (pattoStruttura[categoriaIndex].regole.length === 0) {
+      pattoStruttura.splice(categoriaIndex, 1);
+    }
+    renderPatto();
+  }
+
+  function eliminaAttivita(categoriaIndex, regolaIndex, attivitaIndex) {
+    if (!pattoStruttura[categoriaIndex] || !pattoStruttura[categoriaIndex].regole[regolaIndex]) return;
+    pattoStruttura[categoriaIndex].regole[regolaIndex].attivita.splice(attivitaIndex, 1);
+    renderPatto();
+  }
+
+  function abilitaPDF() {
+    var btn = document.getElementById('download-pdf');
+    if (btn) btn.disabled = false;
+  }
+
+  function apriTutteLeSchede() {
+    document.querySelectorAll('.risultato-desc').forEach(function(desc) {
+      desc.style.display = 'block';
+    });
+  }
+
+  function downloadPDF() {
+    var elemento = document.getElementById('pdf-content');
+    if (!elemento) return;
+    apriTutteLeSchede();
+    var opt = {
+      margin: 0.5,
+      filename: 'patto_familiare.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    setTimeout(function() { html2pdf().set(opt).from(elemento).save(); }, 100);
+  }
+
+  document.getElementById('download-pdf').addEventListener('click', downloadPDF);
+  caricaRegole();
+  var btnRifai = document.getElementById('btn-rifai');
+  if (btnRifai) {
+    var params = new URLSearchParams(window.location.search);
+    var cat = params.get('categorie');
+    if (cat) btnRifai.href = '/test?categorie=' + cat;
+  }
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+</body>
+</html>
