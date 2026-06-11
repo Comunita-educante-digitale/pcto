@@ -1,7 +1,28 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { mapRemoteData } = require('../dist-server/data-source.js');
+const { findMatchingCategoriesForQuery, mapRemoteData } = require('../dist-server/data-source.js');
+
+test('findMatchingCategoriesForQuery returns only categories tied to the best keyword match', () => {
+  const data = {
+    categories: {
+      dipendenza: { id: 'dipendenza', nome: 'dipendenza', categoria: 'dipendenza', slug: 'dipendenza' },
+      cyberbullismo: { id: 'cyberbullismo', nome: 'cyberbullismo', categoria: 'cyberbullismo', slug: 'cyberbullismo' }
+    },
+    keywords: [
+      { preoccupazione: 'mio figlio è sempre sul telefono', categorie: ['dipendenza'] },
+      { preoccupazione: 'cyberbullismo tra compagni', categorie: ['cyberbullismo'] }
+    ],
+    testQuestions: [],
+    rules: {},
+    activities: {},
+    recommendations: {}
+  };
+
+  const result = findMatchingCategoriesForQuery('telefono', data);
+
+  assert.deepEqual(result, ['dipendenza']);
+});
 
 test('mapRemoteData converts the live Google payload into app data', () => {
   const payload = {

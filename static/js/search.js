@@ -171,11 +171,6 @@ function selectAutocompleteSuggestion(text) {
     activeInput.value = text;
     hideAutocompleteList();
     activeInput.focus();
-    if (activeInput.id === 'navSearch' && window.doNavSearch) {
-        window.doNavSearch();
-    } else if (activeInput.id && activeInput.id.startsWith('search') && window.doSearch) {
-        window.doSearch();
-    }
 }
 
 function updateAutocompleteActive(items) {

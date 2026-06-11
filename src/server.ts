@@ -1,6 +1,7 @@
+import { promises as fs } from 'fs';
 import express from 'express';
 import path from 'path';
-import { fallbackData, mapRemoteData, normalizeText, type AppData } from './data-source';
+import { fallbackData, findMatchingCategoriesForQuery, mapRemoteData, normalizeText, type AppData } from './data-source';
 
 const app = express();
 const initialPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
@@ -10,10 +11,35 @@ const GOOGLE_APPS_SCRIPT_URLS = [
   'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTUfZgfHyuJS46VG6WcEUZgQd_JbcTfP_y3pj_WaCGI7S6mplaIB8qRT_b0yRixTBUmmuWMeNzas8pt-G7YRUJUujPcriJepeguQ-8PdmGbRC5jbsH8GnXMD5HRIZ3SL8uFI7s5EffejU_uugUc-26Hi-8TmnAJgzg2dQPi9pvgl9fbxpJ_0yJf7S23Q0mU8z7wHKxbVz6BYiDDUiY9A3PktrZUNjOAkLyyHvUBmSgNtuApVO59G6jEtOxksTO9izjJinHh4TZC-tCDJcpq8T_ywi9pmw&lib=MlRCYSh2pVGq_cqM2lnE5VKR_QGq8bm1S'
 ].filter(Boolean) as string[];
 const CACHE_TTL_MS = 5 * 60 * 1000;
+const LOCAL_REMOTE_DATA_FILE = path.join(__dirname, '..', 'data', 'remote-data.json');
 
 let cachedAppData: AppData | null = null;
 let lastDataFetchAt = 0;
 let lastDataSource: 'google' | 'fallback' = 'fallback';
+
+async function readPersistedRemoteData(): Promise<Record<string, any> | null> {
+  try {
+    const payloadText = await fs.readFile(LOCAL_REMOTE_DATA_FILE, 'utf8');
+    const payload = JSON.parse(payloadText);
+    if (payload && typeof payload === 'object') {
+      return payload as Record<string, any>;
+    }
+  } catch (error) {
+    console.warn('[data-source] impossibile leggere il payload remoto salvato localmente', error);
+  }
+
+  return null;
+}
+
+async function persistRemoteData(payload: Record<string, any>): Promise<void> {
+  try {
+    await fs.mkdir(path.dirname(LOCAL_REMOTE_DATA_FILE), { recursive: true });
+    await fs.writeFile(LOCAL_REMOTE_DATA_FILE, JSON.stringify(payload, null, 2), 'utf8');
+    console.log('[data-source] payload remoto salvato in', LOCAL_REMOTE_DATA_FILE);
+  } catch (error) {
+    console.error('[data-source] impossibile salvare il payload remoto locale', error);
+  }
+}
 
 async function loadRemoteData(): Promise<AppData> {
   for (const url of GOOGLE_APPS_SCRIPT_URLS) {
@@ -39,10 +65,17 @@ async function loadRemoteData(): Promise<AppData> {
         throw new Error('Risposta vuota dal feed dati');
       }
 
+      await persistRemoteData(payload as Record<string, any>);
       return mapRemoteData(payload as Record<string, any>);
     } catch (error) {
       console.error('[data-source] impossibile recuperare i dati da Google Apps Script', url, error);
     }
+  }
+
+  const persistedPayload = await readPersistedRemoteData();
+  if (persistedPayload) {
+    console.log('[data-source] uso il payload remoto salvato localmente');
+    return mapRemoteData(persistedPayload);
   }
 
   console.error('[data-source] impossibile recuperare i dati da Google Apps Script, uso il fallback statico');
@@ -123,29 +156,20 @@ app.post('/search', async (req, res) => {
   const foundIds = new Set<string>();
 
   searchTerms.forEach((term) => {
-    data.keywords.forEach((item) => {
-      const phrase = normalizeText(item.preoccupazione);
-      const isMatch = term.includes(phrase) || phrase.includes(term) || phrase.split(/\s+/).some((token) => term.includes(token));
-      if (!isMatch) {
+    const matchedCategoryIds = findMatchingCategoriesForQuery(term, data);
+    matchedCategoryIds.forEach((categoryId) => {
+      if (!categoryId || foundIds.has(categoryId)) {
         return;
       }
-
-      item.categorie.forEach((categoryName) => {
-        const categoryId = Object.values(data.categories).find((category: any) => normalizeText(category.categoria) === normalizeText(categoryName) || normalizeText(category.nome) === normalizeText(categoryName) || normalizeText(category.slug) === normalizeText(categoryName))?.id;
-        if (!categoryId || foundIds.has(categoryId)) {
-          return;
-        }
-        foundIds.add(categoryId);
-        const category = data.categories[categoryId];
-        risultati.push({ id: categoryId, nome: category?.nome || categoryName, descrizione: category?.descrizione || '' });
-      });
+      foundIds.add(categoryId);
+      const category = data.categories[categoryId];
+      risultati.push({ id: categoryId, nome: category?.nome || categoryId, descrizione: category?.descrizione || '' });
     });
   });
 
   if (risultati.length === 0) {
-    Object.entries(data.categories).slice(0, 3).forEach(([id, category]: [string, any]) => {
-      risultati.push({ id, nome: category.nome, descrizione: category.descrizione });
-    });
+    console.log('[search] no matching keyword categories found');
+    return res.json({ success: false, risultati: [] });
   }
 
   console.log('[search] source', source, 'matched categories', risultati.map((item) => item.id));

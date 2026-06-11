@@ -7,133 +7,6 @@ export interface AppData {
   recommendations: Record<string, any>;
 }
 
-export const fallbackData: AppData = {
-  categories: {
-    'zone-off-limits': {
-      id: 'zone-off-limits',
-      nome: 'Zone Off-Limits',
-      descrizione: 'Aree della casa o situazioni in cui i dispositivi non devono essere utilizzati, come la tavola, la camera da letto o durante i compiti.',
-      link: 'https://example.com/zone-off-limits'
-    },
-    'limiti-orari': {
-      id: 'limiti-orari',
-      nome: 'Limiti Orari Concordati',
-      descrizione: 'Stabilire fasce orarie specifiche durante le quali i dispositivi possono essere utilizzati, per garantire equilibrio tra attività online e offline.',
-      link: 'https://example.com/limiti-orari'
-    },
-    'sicurezza-password': {
-      id: 'sicurezza-password',
-      nome: 'Sicurezza Password e Account',
-      descrizione: 'Regole sulla creazione di password sicure e sulla protezione degli account personali.',
-      link: 'https://example.com/sicurezza-password'
-    },
-    privacy: {
-      id: 'privacy',
-      nome: 'Privacy Online',
-      descrizione: 'Protezione dei dati personali e informazioni sensibili condivise online.',
-      link: 'https://example.com/privacy'
-    },
-    cyberbullismo: {
-      id: 'cyberbullismo',
-      nome: 'Prevenzione Cyberbullismo',
-      descrizione: 'Come riconoscere e affrontare il cyberbullismo, con supporto della famiglia.',
-      link: 'https://example.com/cyberbullismo'
-    },
-    'social-media': {
-      id: 'social-media',
-      nome: 'Social Media Consapevole',
-      descrizione: 'Utilizzo responsabile dei social media e consapevolezza del tempo trascorso.',
-      link: 'https://example.com/social-media'
-    },
-    dipendenza: {
-      id: 'dipendenza',
-      nome: 'Dipendenza da Internet',
-      descrizione: 'Riconoscere i segni di dipendenza e mantenere un uso equilibrato della tecnologia.',
-      link: 'https://example.com/dipendenza'
-    },
-    'salute-fisica': {
-      id: 'salute-fisica',
-      nome: 'Salute Fisica',
-      descrizione: 'L\'importanza delle pause dallo schermo per proteggere gli occhi e la postura.',
-      link: 'https://example.com/salute-fisica'
-    }
-  },
-  keywords: [
-    { preoccupazione: 'mio figlio è sempre sul cellulare', categorie: ['dipendenza'] },
-    { preoccupazione: 'uso eccessivo degli schermi', categorie: ['dipendenza', 'salute-fisica'] },
-    { preoccupazione: 'cyberbullismo tra compagni', categorie: ['cyberbullismo'] },
-    { preoccupazione: 'privacy e condivisione online', categorie: ['privacy'] },
-    { preoccupazione: 'password deboli', categorie: ['sicurezza-password'] },
-    { preoccupazione: 'dispositivi a tavola', categorie: ['zone-off-limits'] }
-  ],
-  testQuestions: [
-    { domanda: 'Usate spesso dispositivi a tavola durante i pasti?', categoria: 'zone-off-limits', se_si: 'ZONE OFF-LIMITS', se_no: '' },
-    { domanda: 'I dispositivi sono presenti in camera da letto durante la notte?', categoria: 'zone-off-limits', se_si: 'ZONE OFF-LIMITS', se_no: '' },
-    { domanda: 'Vi preoccupa il tempo totale trascorso sui dispositivi?', categoria: 'limiti-orari', se_si: 'LIMITI ORARI CONCORDATI', se_no: '' },
-    { domanda: 'Vi preoccupano le password deboli degli account dei vostri figli?', categoria: 'sicurezza-password', se_si: 'SICUREZZA PASSWORD', se_no: '' },
-    { domanda: 'Si condividono facilmente informazioni personali online?', categoria: 'privacy', se_si: 'PRIVACY ONLINE', se_no: '' }
-  ],
-  rules: {
-    'ZONE OFF-LIMITS': {
-      nome: 'ZONE OFF-LIMITS',
-      descrizione: 'Niente dispositivi a tavola, in camera da letto e durante i compiti.',
-      icona: '📵',
-      categorie: ['zone-off-limits'],
-      raccomandazione: 'Alleanza educativa (Patto)',
-      linkRaccomandazione: ''
-    },
-    'LIMITI ORARI CONCORDATI': {
-      nome: 'LIMITI ORARI CONCORDATI',
-      descrizione: 'Stabilire fasce orarie specifiche durante le quali i dispositivi possono essere utilizzati.',
-      icona: '⏰',
-      categorie: ['limiti-orari'],
-      raccomandazione: 'Alleanza educativa (Patto)',
-      linkRaccomandazione: ''
-    },
-    'SICUREZZA PASSWORD': {
-      nome: 'SICUREZZA PASSWORD',
-      descrizione: 'Usare password forti e uniche per ogni account.',
-      icona: '🔐',
-      categorie: ['sicurezza-password'],
-      raccomandazione: 'Alleanza educativa (Patto)',
-      linkRaccomandazione: ''
-    },
-    'PRIVACY ONLINE': {
-      nome: 'PRIVACY ONLINE',
-      descrizione: 'Proteggere i dati personali e condividere informazioni in modo responsabile.',
-      icona: '🔒',
-      categorie: ['privacy'],
-      raccomandazione: 'Alleanza educativa (Patto)',
-      linkRaccomandazione: ''
-    }
-  },
-  activities: {
-    'ZONE OFF-LIMITS-1': {
-      nome: 'Un giorno senza dispositivi',
-      descrizione: 'Scegliere una giornata o alcune ore della settimana in cui alcune stanze della casa restano completamente senza schermi.',
-      eta: '7+',
-      durata: '2 mesi',
-      frequenza: 'settimanale',
-      regola: 'ZONE OFF-LIMITS'
-    },
-    'LIMITI ORARI CONCORDATI-1': {
-      nome: 'Orario di spegnimento',
-      descrizione: 'Stabilire un orario fisso ogni giorno dopo il quale tutti i dispositivi vengono spenti.',
-      eta: '7+',
-      durata: 'Continuo',
-      frequenza: 'giornaliero',
-      regola: 'LIMITI ORARI CONCORDATI'
-    }
-  },
-  recommendations: {
-    'Alleanza educativa (Patto)': {
-      nome: 'Alleanza educativa (Patto)',
-      descrizione: 'Raccomandazione istituzionale del Comune di Milano.',
-      link: ''
-    }
-  }
-};
-
 export function normalizeText(value: unknown): string {
   return String(value ?? '')
     .normalize('NFD')
@@ -145,6 +18,79 @@ export function normalizeText(value: unknown): string {
 
 export function slugify(value: unknown): string {
   return normalizeText(value).replace(/\s+/g, '-');
+}
+
+function findCategoryId(categoryName: string, categories: Record<string, any>): string {
+  if (!categoryName) {
+    return '';
+  }
+
+  const directMatch = categories[categoryName];
+  if (directMatch?.id) {
+    return directMatch.id;
+  }
+
+  const normalizedInput = normalizeText(categoryName);
+  return Object.values(categories).find((category: any) => {
+    const candidate = category as Record<string, any>;
+    return normalizeText(candidate.categoria) === normalizedInput
+      || normalizeText(candidate.nome) === normalizedInput
+      || normalizeText(candidate.slug) === normalizedInput;
+  })?.id || '';
+}
+
+export function findMatchingCategoriesForQuery(query: unknown, data: AppData): string[] {
+  const normalizedQuery = normalizeText(query);
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  let bestKeyword: { preoccupazione: string; categorie: string[] } | undefined;
+  let bestScore = -1;
+
+  for (const item of data.keywords) {
+    const normalizedPhrase = normalizeText(item.preoccupazione);
+    if (!normalizedPhrase) {
+      continue;
+    }
+
+    let score = 0;
+    if (normalizedPhrase === normalizedQuery) {
+      score = 100;
+    } else if (normalizedPhrase.includes(normalizedQuery) || normalizedQuery.includes(normalizedPhrase)) {
+      score = 90;
+    } else {
+      const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
+      const phraseTokens = normalizedPhrase.split(/\s+/).filter(Boolean);
+      const commonTokens = queryTokens.filter((token) => phraseTokens.includes(token));
+      if (commonTokens.length > 0) {
+        score = 50 + commonTokens.length * 10;
+      }
+    }
+
+    if (score === 0) {
+      continue;
+    }
+
+    if (!bestKeyword || score > bestScore || (score === bestScore && normalizedPhrase.length < normalizeText(bestKeyword.preoccupazione).length)) {
+      bestKeyword = item;
+      bestScore = score;
+    }
+  }
+
+  if (!bestKeyword) {
+    return [];
+  }
+
+  const matchedCategories = new Set<string>();
+  for (const categoryName of bestKeyword.categorie ?? []) {
+    const categoryId = findCategoryId(categoryName, data.categories);
+    if (categoryId) {
+      matchedCategories.add(categoryId);
+    }
+  }
+
+  return Array.from(matchedCategories);
 }
 
 function getArrayRows(value: unknown): Array<Record<string, any>> {
