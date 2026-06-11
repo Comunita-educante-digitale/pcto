@@ -39,14 +39,16 @@ function findCategoryId(categoryName: string, categories: Record<string, any>): 
   })?.id || '';
 }
 
+// MODIFICATA: Logica di ricerca stringente per evitare falsi positivi ed evitare di mostrare tutte le categorie
 export function findMatchingCategoriesForQuery(query: unknown, data: AppData): string[] {
   const normalizedQuery = normalizeText(query);
   if (!normalizedQuery) {
     return [];
   }
 
-  let bestKeyword: { preoccupazione: string; categorie: string[] } | undefined;
-  let bestScore = -1;
+  const matchedCategories = new Set<string>();
+  // Tokenizziamo la ricerca dell'utente escludendo le particelle cortissime (es. "il", "è", "sul")
+  const queryTokens = normalizedQuery.split(/\s+/).filter(token => token.length > 2);
 
   for (const item of data.keywords) {
     const normalizedPhrase = normalizeText(item.preoccupazione);
@@ -54,39 +56,32 @@ export function findMatchingCategoriesForQuery(query: unknown, data: AppData): s
       continue;
     }
 
-    let score = 0;
-    if (normalizedPhrase === normalizedQuery) {
-      score = 100;
-    } else if (normalizedPhrase.includes(normalizedQuery) || normalizedQuery.includes(normalizedPhrase)) {
-      score = 90;
-    } else {
-      const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
-      const phraseTokens = normalizedPhrase.split(/\s+/).filter(Boolean);
-      const commonTokens = queryTokens.filter((token) => phraseTokens.includes(token));
-      if (commonTokens.length > 0) {
-        score = 50 + commonTokens.length * 10;
+    let isMatch = false;
+
+    // 1. Controllo base: una frase contiene interamente l'altra?
+    if (normalizedPhrase === normalizedQuery || normalizedPhrase.includes(normalizedQuery) || normalizedQuery.includes(normalizedPhrase)) {
+      isMatch = true;
+    } else if (queryTokens.length > 0) {
+      // 2. Controllo tokenizzato intelligente: verifichiamo se le parole chiave della preoccupazione nel foglio sono contenute nella ricerca
+      const phraseTokens = normalizedPhrase.split(/\s+/).filter(token => token.length > 2);
+      if (phraseTokens.length > 0) {
+        const allPhraseTokensMatched = phraseTokens.every(token => queryTokens.includes(token));
+        const allQueryTokensMatched = queryTokens.every(token => phraseTokens.includes(token));
+        
+        if (allPhraseTokensMatched || allQueryTokensMatched) {
+          isMatch = true;
+        }
       }
     }
 
-    if (score === 0) {
-      continue;
-    }
-
-    if (!bestKeyword || score > bestScore || (score === bestScore && normalizedPhrase.length < normalizeText(bestKeyword.preoccupazione).length)) {
-      bestKeyword = item;
-      bestScore = score;
-    }
-  }
-
-  if (!bestKeyword) {
-    return [];
-  }
-
-  const matchedCategories = new Set<string>();
-  for (const categoryName of bestKeyword.categorie ?? []) {
-    const categoryId = findCategoryId(categoryName, data.categories);
-    if (categoryId) {
-      matchedCategories.add(categoryId);
+    // Se la riga corrisponde, estraiamo le categorie associate
+    if (isMatch) {
+      for (const categoryName of item.categorie ?? []) {
+        const categoryId = findCategoryId(categoryName, data.categories);
+        if (categoryId) {
+          matchedCategories.add(categoryId);
+        }
+      }
     }
   }
 
@@ -140,12 +135,15 @@ export function mapRemoteData(payload: Record<string, any>): AppData {
   if (Array.isArray(keywordRaw)) {
     keywordRaw.forEach((row: Record<string, any>) => {
       const preoccupazione = String(row.preoccupazione || row['preoccupazione'] || '');
-      const categorie = String(row.categorie || row['categorie'] || '')
-        .split(',')
-        .map((entry: string) => entry.trim())
-        .filter(Boolean);
+      
+      // MODIFICATA: Gestisce la separazione dei chip/tag di Google sia per virgole, spazi multipli o a capo
+      const rawCategories = String(row.categorie || row['categorie'] || '');
+      const categorie = rawCategories.includes(',')
+        ? rawCategories.split(',').map((entry: string) => entry.trim()).filter(Boolean)
+        : rawCategories.split(/\s{2,}/).map((entry: string) => entry.trim()).filter(Boolean); // Se non ci sono virgole spezza sugli spazi ampi
+
       if (preoccupazione) {
-        keywords.push({ preoccupazione, categorie });
+        keywords.push({ preoccupazione, categorie: categorie.length > 0 ? categorie : [rawCategories.trim()] });
       }
     });
   } else {

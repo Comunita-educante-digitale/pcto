@@ -8,7 +8,7 @@ window.aggiungiCampo = function() {
     var row = document.createElement('div');
     row.className = 'search-input-row';
     row.id = 'row-' + idx;
-    row.innerHTML = '<input class="search-big" type="search" id="search' + idx + '" placeholder="Aggiungi unaltra preoccupazione..."/>';
+    row.innerHTML = '<input class="search-big" type="search" id="search' + idx + '" placeholder="Aggiungi un\'altra preoccupazione..."/>';
     wrap.appendChild(row);
     const newInput = document.getElementById('search' + idx);
     if (window.attachAutocompleteToInput) {
@@ -20,6 +20,7 @@ window.aggiungiCampo = function() {
     newInput.focus();
 };
 
+// MODIFICATA: Questa adesso invia le query multiple e riceve l'array completo di categorie dal server
 window.doSearch = async function() {
     var queries = [];
     for (var i = 0; i < window.campiCount; i++) {
@@ -28,13 +29,14 @@ window.doSearch = async function() {
     }
     console.log('[search-ui] input queries', queries);
     if (queries.length === 0) return;
+    
     var response = await fetch('/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ queries: queries })
     });
     var data = await response.json();
-    if (data.success) {
+    if (data.success && data.risultati.length > 0) {
         var params = encodeURIComponent(JSON.stringify(data.risultati));
         window.location.href = '/risultati?data=' + params;
     } else {
@@ -42,12 +44,14 @@ window.doSearch = async function() {
     }
 };
 
+// MODIFICATA: Questa gestisce la navbar e invia la ricerca singola mostrando tutte le categorie correlate
 window.doNavSearch = async function() {
     var input = document.getElementById('navSearch');
     if (!input) return;
     var query = input.value.trim();
     if (!query) return;
     console.log('[search-ui] navbar query', query);
+    
     var response = await fetch('/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,7 +59,7 @@ window.doNavSearch = async function() {
     });
     var data = await response.json();
     console.log('[search-ui] navbar search response', data);
-    if (data.success) {
+    if (data.success && data.risultati.length > 0) {
         var params = encodeURIComponent(JSON.stringify(data.risultati));
         console.log('[search-ui] navbar final results', data.risultati);
         window.location.href = '/risultati?data=' + params;
@@ -83,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
     lastY = currentY;
   });
 })();
-
 
 const searchTrigger = document.getElementById('navSearchButton');
 

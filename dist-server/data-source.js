@@ -4,7 +4,6 @@ exports.normalizeText = normalizeText;
 exports.slugify = slugify;
 exports.findMatchingCategoriesForQuery = findMatchingCategoriesForQuery;
 exports.mapRemoteData = mapRemoteData;
-
 function normalizeText(value) {
     return String(value ?? '')
         .normalize('NFD')
@@ -13,11 +12,9 @@ function normalizeText(value) {
         .replace(/[^a-z0-9]+/g, ' ')
         .trim();
 }
-
 function slugify(value) {
     return normalizeText(value).replace(/\s+/g, '-');
 }
-
 function findCategoryId(categoryName, categories) {
     if (!categoryName) {
         return '';
@@ -34,69 +31,60 @@ function findCategoryId(categoryName, categories) {
             || normalizeText(candidate.slug) === normalizedInput;
     })?.id || '';
 }
-
+// MODIFICATA: Logica di ricerca stringente per evitare falsi positivi ed evitare di mostrare tutte le categorie
 function findMatchingCategoriesForQuery(query, data) {
     const normalizedQuery = normalizeText(query);
     if (!normalizedQuery) {
         return [];
     }
-    let bestKeyword;
-    let bestScore = -1;
+    const matchedCategories = new Set();
+    // Tokenizziamo la ricerca dell'utente escludendo le particelle cortissime (es. "il", "è", "sul")
+    const queryTokens = normalizedQuery.split(/\s+/).filter(token => token.length > 2);
     for (const item of data.keywords) {
         const normalizedPhrase = normalizeText(item.preoccupazione);
         if (!normalizedPhrase) {
             continue;
         }
-        let score = 0;
-        if (normalizedPhrase === normalizedQuery) {
-            score = 100;
+        let isMatch = false;
+        // 1. Controllo base: una frase contiene interamente l'altra?
+        if (normalizedPhrase === normalizedQuery || normalizedPhrase.includes(normalizedQuery) || normalizedQuery.includes(normalizedPhrase)) {
+            isMatch = true;
         }
-        else if (normalizedPhrase.includes(normalizedQuery) || normalizedQuery.includes(normalizedPhrase)) {
-            score = 90;
-        }
-        else {
-            const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
-            const phraseTokens = normalizedPhrase.split(/\s+/).filter(Boolean);
-            const commonTokens = queryTokens.filter((token) => phraseTokens.includes(token));
-            if (commonTokens.length > 0) {
-                score = 50 + commonTokens.length * 10;
+        else if (queryTokens.length > 0) {
+            // 2. Controllo tokenizzato intelligente: verifichiamo se le parole chiave della preoccupazione nel foglio sono contenute nella ricerca
+            const phraseTokens = normalizedPhrase.split(/\s+/).filter(token => token.length > 2);
+            if (phraseTokens.length > 0) {
+                const allPhraseTokensMatched = phraseTokens.every(token => queryTokens.includes(token));
+                const allQueryTokensMatched = queryTokens.every(token => phraseTokens.includes(token));
+                if (allPhraseTokensMatched || allQueryTokensMatched) {
+                    isMatch = true;
+                }
             }
         }
-        if (score === 0) {
-            continue;
-        }
-        if (!bestKeyword || score > bestScore || (score === bestScore && normalizedPhrase.length < normalizeText(bestKeyword.preoccupazione).length)) {
-            bestKeyword = item;
-            bestScore = score;
-        }
-    }
-    if (!bestKeyword) {
-        return [];
-    }
-    const matchedCategories = new Set();
-    for (const categoryName of bestKeyword.categorie ?? []) {
-        const categoryId = findCategoryId(categoryName, data.categories);
-        if (categoryId) {
-            matchedCategories.add(categoryId);
+        // Se la riga corrisponde, estraiamo le categorie associate
+        if (isMatch) {
+            for (const categoryName of item.categorie ?? []) {
+                const categoryId = findCategoryId(categoryName, data.categories);
+                if (categoryId) {
+                    matchedCategories.add(categoryId);
+                }
+            }
         }
     }
     return Array.from(matchedCategories);
 }
-
 function getArrayRows(value) {
     if (Array.isArray(value)) {
         return value.filter((item) => typeof item === 'object' && item !== null);
     }
     return [];
 }
-
 function getObjectEntries(value) {
     if (value && typeof value === 'object' && !Array.isArray(value)) {
         return Object.entries(value);
     }
     return [];
 }
-
 function mapRemoteData(payload) {
     const categoriesRaw = payload.categorie || payload['CATEGORIE di rischio'] || {};
     const keywordRaw = payload.keywords || payload.KEYWORDS || {};
@@ -106,7 +94,6 @@ function mapRemoteData(payload) {
     const recommendationsRaw = payload.raccomandazioni || payload.RACCOMANDAZIONI || {};
     const categories = {};
     const categoryLookup = new Map();
-    
     getObjectEntries(categoriesRaw).forEach(([key, value]) => {
         const row = typeof value === 'object' && value !== null ? value : {};
         const categoryName = row.categoria || row.titolo || key;
@@ -124,17 +111,17 @@ function mapRemoteData(payload) {
         categoryLookup.set(normalizeText(categoryEntry.nome), categoryId);
         categoryLookup.set(normalizeText(categoryEntry.slug), categoryId);
     });
-    
     const keywords = [];
     if (Array.isArray(keywordRaw)) {
         keywordRaw.forEach((row) => {
             const preoccupazione = String(row.preoccupazione || row['preoccupazione'] || '');
-            const categorie = String(row.categorie || row['categorie'] || '')
-                .split(',')
-                .map((entry) => entry.trim())
-                .filter(Boolean);
+            // MODIFICATA: Gestisce la separazione dei chip/tag di Google sia per virgole, spazi multipli o a capo
+            const rawCategories = String(row.categorie || row['categorie'] || '');
+            const categorie = rawCategories.includes(',')
+                ? rawCategories.split(',').map((entry) => entry.trim()).filter(Boolean)
+                : rawCategories.split(/\s{2,}/).map((entry) => entry.trim()).filter(Boolean); // Se non ci sono virgole spezza sugli spazi ampi
             if (preoccupazione) {
-                keywords.push({ preoccupazione, categorie });
+                keywords.push({ preoccupazione, categorie: categorie.length > 0 ? categorie : [rawCategories.trim()] });
             }
         });
     }
@@ -152,11 +139,9 @@ function mapRemoteData(payload) {
             }
         });
     }
-    
     const rules = {};
     const recommendations = {};
     const recommendationRowsByName = new Map();
-    
     getObjectEntries(recommendationsRaw).forEach(([key, value]) => {
         const row = typeof value === 'object' && value !== null ? value : {};
         const recommendationName = row.Raccomandazioni || row.nome || row['Raccomandazioni'] || key;
@@ -169,7 +154,6 @@ function mapRemoteData(payload) {
             };
         }
     });
-    
     getObjectEntries(rulesRaw).forEach(([ruleName, value]) => {
         const row = typeof value === 'object' && value !== null ? value : {};
         const matchedCategories = [row.categoria1, row.categoria2, row.categoria3, ...(Array.isArray(row.categorie) ? row.categorie : []), ...(Array.isArray(row.categorie_di_rischio) ? row.categorie_di_rischio : [])]
@@ -197,7 +181,6 @@ function mapRemoteData(payload) {
             attivita: Array.isArray(row.attivita) ? row.attivita : []
         };
     });
-    
     const activities = {};
     getObjectEntries(activitiesRaw).forEach(([activityName, value]) => {
         const row = typeof value === 'object' && value !== null ? value : {};
@@ -212,7 +195,6 @@ function mapRemoteData(payload) {
             regola: ruleName
         };
     });
-    
     const testQuestions = getArrayRows(testRaw).map((row) => {
         const categoryName = row.categotia || row.categoria || row['categoria di rischio'] || '';
         const categoryId = Object.values(categories).find((category) => normalizeText(category.categoria) === normalizeText(categoryName) || normalizeText(category.nome) === normalizeText(categoryName) || normalizeText(category.slug) === normalizeText(categoryName))?.id || slugify(categoryName);
@@ -223,6 +205,5 @@ function mapRemoteData(payload) {
             se_no: row['se NO'] || row['se NO '] || row['se_no'] || row.se_no || ''
         };
     });
-    
     return { categories, keywords, testQuestions, rules, activities, recommendations };
 }

@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs';
 import express from 'express';
 import path from 'path';
-import { fallbackData, findMatchingCategoriesForQuery, mapRemoteData, normalizeText, type AppData } from './data-source';
+// Modificato: Rimosso 'fallbackData' dall'import per evitare l'errore TS2305
+import { findMatchingCategoriesForQuery, mapRemoteData, normalizeText, type AppData } from './data-source';
 
 const app = express();
 const initialPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
@@ -78,8 +79,16 @@ async function loadRemoteData(): Promise<AppData> {
     return mapRemoteData(persistedPayload);
   }
 
-  console.error('[data-source] impossibile recuperare i dati da Google Apps Script, uso il fallback statico');
-  return fallbackData;
+  // Modificato: Se tutto fallisce, restituiamo una struttura AppData vuota ma valida anziché la variabile rimossa
+  console.error('[data-source] impossibile recuperare i dati da Google Apps Script o backup, inizializzo struttura vuota');
+  return {
+    categories: {},
+    keywords: [],
+    testQuestions: [],
+    rules: {},
+    activities: {},
+    recommendations: {}
+  };
 }
 
 async function getAppData(forceRefresh = false): Promise<{ data: AppData; source: 'google' | 'fallback' }> {

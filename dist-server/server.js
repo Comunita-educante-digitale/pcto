@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
+// Modificato: Rimosso 'fallbackData' dall'import per evitare l'errore TS2305
 const data_source_1 = require("./data-source");
 const app = (0, express_1.default)();
 const initialPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
@@ -74,8 +75,16 @@ async function loadRemoteData() {
         console.log('[data-source] uso il payload remoto salvato localmente');
         return (0, data_source_1.mapRemoteData)(persistedPayload);
     }
-    console.error('[data-source] impossibile recuperare i dati da Google Apps Script, uso il fallback statico');
-    return data_source_1.fallbackData;
+    // Modificato: Se tutto fallisce, restituiamo una struttura AppData vuota ma valida anziché la variabile rimossa
+    console.error('[data-source] impossibile recuperare i dati da Google Apps Script o backup, inizializzo struttura vuota');
+    return {
+        categories: {},
+        keywords: [],
+        testQuestions: [],
+        rules: {},
+        activities: {},
+        recommendations: {}
+    };
 }
 async function getAppData(forceRefresh = false) {
     if (!forceRefresh && cachedAppData && Date.now() - lastDataFetchAt < CACHE_TTL_MS) {
