@@ -1,34 +1,28 @@
-# pcto
+# Educazione Digitale Familiare
 
-Questo progetto è stato migrato da un backend Python Flask a una soluzione frontend Angular con un server di distribuzione in TypeScript.
+Sito statico per l'educazione digitale familiare. Nessun backend richiesto.
 
-## Avvio
+## Architettura
 
-1. Installa le dipendenze:
-   ```bash
-   npm install
-   ```
+Il browser fa fetch diretto a Google Apps Script all'avvio della pagina, con cache in localStorage (TTL 5 minuti).
 
-2. Compila il server TypeScript:
-   ```bash
-   npm run build
-   ```
+## File principali
 
-3. Avvia l'applicazione:
-   ```bash
-   npm start
-   ```
+- `index.html`, `test.html`, `risultati.html`, `test_risultati.html` - pagine del sito
+- `js/app.js` - logica di fetch dati, cache, ricerca
+- `js/search.js` - gestione UI di ricerca e autocomplete
+- `style.css` - stili
 
-   In alternativa puoi usare lo script equivalente:
-   ```bash
-   npm run serve
-   ```
+## Deploy
 
-   Se la porta `8080` è già occupata, il server proverà automaticamente `8081`.
+### GitHub Pages
 
-   Per forzare una porta diversa, usa:
-   ```bash
-   PORT=8081 npm start
-   ```
+Il workflow in `.github/workflows/deploy.yml` builda automaticamente il sito su push al branch e lo pubblica sul branch `gh-pages`.
 
-L'app frontend statico è servita dalla cartella `dist/angular-app-temp`.
+Vai su Settings → Pages → Branch: `gh-pages` → / (root)
+
+### Netlify
+
+1. Collega il repository
+2. Build command: (nessuno)
+3. Publish directory: `.`
