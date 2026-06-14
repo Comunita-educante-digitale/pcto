@@ -252,6 +252,128 @@
     if (cat) btnRifai.href = 'test.html?categorie=' + cat;
   }
 </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </body>
-</html>
+</html><script>
+// Sovrascrive la funzione downloadPDF con versione jsPDF
+document.getElementById('download-pdf').removeEventListener('click', downloadPDF);
+
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const tealDark = [8, 80, 65];
+  const tealMid = [29, 158, 117];
+  const amberMid = [239, 159, 39];
+  const grayLight = [241, 239, 232];
+  const white = [255, 255, 255];
+
+  // Intestazione
+  doc.setFillColor(...tealDark);
+  doc.rect(0, 0, 210, 28, 'F');
+  doc.setTextColor(...white);
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('🌿 Il Nostro Patto Digitale', 14, 13);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Le regole che abbiamo scelto insieme per usare bene la tecnologia', 14, 22);
+
+  let y = 36;
+
+  pattoStruttura.forEach(function(categoria) {
+    if (categoria.regole.length === 0) return;
+
+    // Titolo categoria
+    doc.setFillColor(...tealMid);
+    doc.roundedRect(10, y, 190, 9, 2, 2, 'F');
+    doc.setTextColor(...white);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📚 ' + (categoria.info.nome || categoria.id), 14, y + 6.5);
+    y += 13;
+
+    // Tabella per ogni categoria
+    const rows = [];
+    categoria.regole.forEach(function(regola) {
+      if (regola.attivita && regola.attivita.length > 0) {
+        regola.attivita.forEach(function(att, i) {
+          rows.push([
+            i === 0 ? (regola.dati.icona || '📌') + ' ' + regola.nome : '',
+            i === 0 ? (regola.dati.descrizione || '') : '',
+            '🛠️ ' + (att.nome || ''),
+            (att.descrizione || ''),
+            [(att.eta ? '👶 ' + att.eta : ''), (att.durata ? '⏱ ' + att.durata : ''), (att.frequenza ? '🔁 ' + att.frequenza : '')].filter(Boolean).join('\n')
+          ]);
+        });
+      } else {
+        rows.push([
+          (regola.dati.icona || '📌') + ' ' + regola.nome,
+          regola.dati.descrizione || '',
+          '—', '—', '—'
+        ]);
+      }
+    });
+
+    doc.autoTable({
+      startY: y,
+      head: [['Regola', 'Descrizione regola', 'Attività', 'Descrizione attività', 'Info']],
+      body: rows,
+      theme: 'grid',
+      headStyles: {
+        fillColor: tealDark,
+        textColor: white,
+        fontStyle: 'bold',
+        fontSize: 9,
+        halign: 'center'
+      },
+      bodyStyles: {
+        fontSize: 9,
+        textColor: [44, 44, 42],
+        valign: 'top',
+        lineColor: [220, 215, 200]
+      },
+      columnStyles: {
+        0: { cellWidth: 35, fontStyle: 'bold', fillColor: grayLight },
+        1: { cellWidth: 45 },
+        2: { cellWidth: 35, fontStyle: 'bold', fillColor: [225, 245, 238] },
+        3: { cellWidth: 50 },
+        4: { cellWidth: 25, fontSize: 8, textColor: tealMid }
+      },
+      alternateRowStyles: { fillColor: [252, 251, 247] },
+      margin: { left: 10, right: 10 },
+      didDrawPage: function(data) {
+        // Footer su ogni pagina
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text('Educazione Digitale Familiare — il tuo patto di famiglia', 14, 290);
+        doc.text('Pag. ' + doc.internal.getCurrentPageInfo().pageNumber, 196, 290, { align: 'right' });
+      }
+    });
+
+    y = doc.lastAutoTable.finalY + 8;
+
+    // Nuova pagina se necessario
+    if (y > 260) { doc.addPage(); y = 20; }
+  });
+
+  // Ultima pagina — messaggio motivazionale
+  doc.addPage();
+  doc.setFillColor(...amberMid);
+  doc.rect(0, 0, 210, 297, 'F');
+  doc.setTextColor(...white);
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Bravi!', 105, 120, { align: 'center' });
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Avete scelto le vostre regole insieme.', 105, 140, { align: 'center' });
+  doc.text('Rispettarle renderà la vostra famiglia più felice 🌿', 105, 155, { align: 'center' });
+
+  doc.save('patto_familiare.pdf');
+}
+
+document.getElementById('download-pdf').addEventListener('click', downloadPDF);
+</script>
