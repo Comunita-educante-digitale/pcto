@@ -119,22 +119,21 @@
       return;
     }
 
-    console.log('[patto-ui] render patto (invertito: attività prima)', pattoStruttura);
     container.innerHTML = '';
-    
+
     pattoStruttura.forEach(function(categoria, categoriaIndex) {
       var categoriaCard = document.createElement('div');
       categoriaCard.className = 'risultato-card';
       categoriaCard.style.marginBottom = '1.5rem';
       categoriaCard.innerHTML = '<div class="risultato-header"><div class="risultato-header-left"><span class="risultato-nome">📚 ' + (categoria.info.nome || categoria.info.categoria || categoria.id) + '</span></div></div>';
-      
+
       var body = document.createElement('div');
       body.className = 'risultato-desc';
       body.style.display = 'block';
       body.innerHTML = '<p>' + (categoria.info.descrizione || '') + '</p>';
-      
-      var elencoInvertito = document.createElement('div');
-      elencoInvertito.style.marginTop = '1rem';
+
+      var elenco = document.createElement('div');
+      elenco.style.marginTop = '1rem';
 
       categoria.regole.forEach(function(regola, regolaIndex) {
         var icona = regola.dati.icona || '📌';
@@ -142,61 +141,51 @@
         var raccomandazione = regola.dati.raccomandazione || '';
         var linkRaccomandazione = regola.dati.linkRaccomandazione || '';
 
+        // Card regola (mostrata una sola volta)
+        var regolaCard = document.createElement('div');
+        regolaCard.style.cssText = 'background:var(--teal-light);border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.75rem;';
+        regolaCard.innerHTML =
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">' +
+            '<div style="font-weight:700;color:var(--teal-dark);font-size:1rem;">' + icona + ' ' + regola.nome + '</div>' +
+            '<button class="btn-elimina-regola" onclick="eliminaRegola(' + categoriaIndex + ',' + regolaIndex + ')" title="Rimuovi questa regola">🗑️</button>' +
+          '</div>' +
+          '<p style="margin:0.4rem 0 0;color:var(--text-muted);font-size:0.87rem;">' + descrizione + '</p>' +
+          (raccomandazione ? '<div style="font-size:0.8rem;color:var(--teal-mid);margin-top:0.4rem;"><b>Raccomandazione:</b> ' + raccomandazione + '</div>' : '') +
+          (linkRaccomandazione ? '<div style="margin-top:0.4rem;"><a href="' + linkRaccomandazione + '" target="_blank" class="btn-search" style="text-decoration:none;font-size:0.78rem;padding:3px 8px;">Approfondisci regola</a></div>' : '');
+        elenco.appendChild(regolaCard);
+
+        // Attività collegate alla regola
         if (regola.attivita && regola.attivita.length > 0) {
+          var attivitaWrap = document.createElement('div');
+          attivitaWrap.style.cssText = 'margin-left:1.5rem;margin-bottom:1rem;';
+
           regola.attivita.forEach(function(attivita, attivitaIndex) {
             var attivitaCard = document.createElement('div');
-            attivitaCard.style.border = '1px solid #efe9de';
-            attivitaCard.style.borderRadius = '14px';
-            attivitaCard.style.padding = '1.2rem';
-            attivitaCard.style.marginBottom = '1rem';
-            attivitaCard.style.background = '#fcfbf7';
-
-            // HTML DELL'ATTIVITÀ PRATICA (In alto come elemento principale)
+            attivitaCard.style.cssText = 'border:1px solid #efe9de;border-radius:10px;padding:0.9rem 1rem;margin-bottom:0.5rem;background:#fcfbf7;';
             attivitaCard.innerHTML =
-              '<div style="font-size:0.8rem;font-weight:600;color:var(--teal-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">🛠️ Attività Pratica</div>' +
               '<div style="display:flex;justify-content:space-between;gap:0.5rem;align-items:flex-start;">' +
-                '<div style="font-size:1.1rem;font-weight:700;color:var(--teal-dark);">' + (attivita.nome || '') + '</div>' +
-                '<button class="btn-elimina-regola" onclick="eliminaAttivita(' + categoriaIndex + ',' + regolaIndex + ',' + attivitaIndex + ')" title="Rimuovi questa attività" aria-label="Elimina attività ' + (attivita.nome || '') + '">🗑️</button>' +
+                '<div style="font-size:0.95rem;font-weight:700;color:var(--teal-dark);">🛠️ ' + (attivita.nome || '') + '</div>' +
+                '<button class="btn-elimina-regola" onclick="eliminaAttivita(' + categoriaIndex + ',' + regolaIndex + ',' + attivitaIndex + ')" title="Rimuovi questa attività">🗑️</button>' +
               '</div>' +
-              '<div style="font-size:0.92rem;color:var(--text-muted);margin-top:0.4rem;margin-bottom:0.5rem;">' + (attivita.descrizione || '') + '</div>' +
-              '<div style="font-size:0.82rem;color:var(--teal-mid);margin-bottom:1rem;">' + (attivita.eta ? '👶 ' + attivita.eta + '&nbsp;&nbsp;' : '') + (attivita.durata ? '⏱ ' + attivita.durata + '&nbsp;&nbsp;' : '') + (attivita.frequenza ? '🔁 ' + attivita.frequenza : '') + '</div>' +
-              
-              // BLOCCO REGOLA ASSOCIATA (Sotto, racchiuso dentro un riquadro coordinato)
-              '<div style="background: var(--teal-light); padding: 0.85rem 1rem; border-radius: 10px; margin-top: 0.5rem;">' +
-                '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">' +
-                  '<div style="font-weight:700;color:var(--teal-dark);font-size:0.9rem;">📜 Regola: ' + icona + ' ' + regola.nome + '</div>' +
-                  '<button class="btn-elimina-regola" onclick="eliminaRegola(' + categoriaIndex + ',' + regolaIndex + ')" title="Rimuovi questa regola" aria-label="Elimina regola ' + regola.nome + '" style="font-size:0.8rem;padding:2px 5px;">🗑️</button>' +
-                '</div>' +
-                '<p style="margin:0.4rem 0 0.4rem;color:var(--text-muted);font-size:0.85rem;">' + descrizione + '</p>' +
-                (raccomandazione ? '<div style="font-size:0.8rem;color:var(--teal-mid);margin-bottom:0.4rem;"><b>Raccomandazione:</b> ' + raccomandazione + '</div>' : '') +
-                (linkRaccomandazione ? '<div><a href="' + linkRaccomandazione + '" target="_blank" class="btn-search" style="text-decoration:none;font-size:0.78rem;padding:3px 8px;">Approfondisci regola</a></div>' : '') +
+              '<div style="font-size:0.88rem;color:var(--text-muted);margin-top:0.3rem;">' + (attivita.descrizione || '') + '</div>' +
+              '<div style="font-size:0.8rem;color:var(--teal-mid);margin-top:0.3rem;">' +
+                (attivita.eta ? '👶 ' + attivita.eta + '&nbsp;&nbsp;' : '') +
+                (attivita.durata ? '⏱ ' + attivita.durata + '&nbsp;&nbsp;' : '') +
+                (attivita.frequenza ? '🔁 ' + attivita.frequenza : '') +
               '</div>';
-
-            elencoInvertito.appendChild(attivitaCard);
+            attivitaWrap.appendChild(attivitaCard);
           });
+
+          elenco.appendChild(attivitaWrap);
         } else {
-          // Caso di fallback: Se non ci sono attività collegate alla regola, la stampiamo comunque da sola
-          var regolaSolaCard = document.createElement('div');
-          regolaSolaCard.style.border = '1px solid #efe9de';
-          regolaSolaCard.style.borderRadius = '14px';
-          regolaSolaCard.style.padding = '1.2rem';
-          regolaSolaCard.style.marginBottom = '1rem';
-          regolaSolaCard.style.background = '#fcfbf7';
-          regolaSolaCard.innerHTML =
-            '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">' +
-              '<div style="font-weight:700;color:var(--teal-dark);">' + icona + ' ' + regola.nome + '</div>' +
-              '<button class="btn-elimina-regola" onclick="eliminaRegola(' + categoriaIndex + ',' + regolaIndex + ')" title="Rimuovi questa regola" aria-label="Elimina regola ' + regola.nome + '">🗑️</button>' +
-            '</div>' +
-            '<p style="margin:0.5rem 0 0.5rem;color:var(--text-muted);">' + descrizione + '</p>' +
-            (raccomandazione ? '<div style="font-size:0.83rem;color:var(--teal-mid);margin-bottom:0.5rem;">Raccomandazione: ' + raccomandazione + '</div>' : '') +
-            (linkRaccomandazione ? '<div><a href="' + linkRaccomandazione + '" target="_blank" class="btn-search" style="text-decoration:none;">Approfondisci</a></div>' : '') +
-            '<div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;font-style:italic;">Nessuna attività pratica specifica per questa regola.</div>';
-          
-          elencoInvertito.appendChild(regolaSolaCard);
+          var noAtt = document.createElement('div');
+          noAtt.style.cssText = 'margin-left:1.5rem;margin-bottom:1rem;font-size:0.85rem;color:var(--text-muted);font-style:italic;';
+          noAtt.textContent = 'Nessuna attività pratica specifica per questa regola.';
+          elenco.appendChild(noAtt);
         }
       });
 
-      body.appendChild(elencoInvertito);
+      body.appendChild(elenco);
       categoriaCard.appendChild(body);
       container.appendChild(categoriaCard);
     });
