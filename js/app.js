@@ -137,7 +137,7 @@ async function caricaGoogleAppScriptData() {
   }
   return null;
 }
-
+// cacca
 async function getAppData(forceRefresh = false) {
   if (!forceRefresh) {
     try {
