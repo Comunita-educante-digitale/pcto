@@ -233,65 +233,165 @@
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Il Nostro Patto Digitale', 105, 16, { align: 'center' });
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Le regole e le attivita scelte per usare bene la tecnologia in famiglia', 105, 23, { align: 'center' });
-    doc.setDrawColor(0);
-    doc.line(10, 26, 200, 26);
+    const TEAL = [8, 80, 65];
+    const TEAL_MID = [29, 158, 117];
+    const AMBER = [239, 159, 39];
+    const AMBER_LIGHT = [250, 238, 218];
+    const WHITE = [255, 255, 255];
+    const BLACK = [0, 0, 0];
+    const GRAY_LIGHT = [241, 239, 232];
 
-    const allRows = [];
+    // ======== PAGINA 1 - LE REGOLE ========
+    // Sfondo intestazione
+    doc.setFillColor(...TEAL);
+    doc.rect(0, 0, 210, 35, 'F');
+
+    doc.setTextColor(...WHITE);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Le Nostre Regole Digitali', 105, 15, { align: 'center' });
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Il patto che abbiamo scelto insieme per usare bene la tecnologia', 105, 25, { align: 'center' });
+    doc.setFontSize(9);
+    doc.text(new Date().toLocaleDateString('it-IT'), 105, 31, { align: 'center' });
+
+    let y = 42;
+    const colW = 88;
+    const colGap = 6;
+    const col1X = 11;
+    const col2X = col1X + colW + colGap;
+    let col = 0;
+    let colY = [42, 42];
 
     pattoStruttura.forEach(function(categoria) {
       if (categoria.regole.length === 0) return;
-      const catName = (categoria.info.nome || categoria.id).toUpperCase();
-      allRows.push([{ content: catName, colSpan: 5, styles: { fontStyle: 'bold', fontSize: 11, fillColor: [220, 220, 220], textColor: [0,0,0], halign: 'left' } }]);
+      const catName = categoria.info.nome || categoria.id;
 
       categoria.regole.forEach(function(regola) {
+        const x = col === 0 ? col1X : col2X;
+        y = colY[col];
+
+        const icona = (regola.dati.icona || '').replace(/[^\x00-\x7F]/g, '').trim();
         const nomeRegola = regola.nome || '';
-        const descRegola = regola.dati.descrizione || '';
-        if (regola.attivita && regola.attivita.length > 0) {
-          regola.attivita.forEach(function(att, i) {
-            const info = [att.eta || '', att.durata || '', att.frequenza || ''].filter(Boolean).join(', ');
-            allRows.push([
-              i === 0 ? nomeRegola : '',
-              i === 0 ? descRegola : '',
-              att.nome || '',
-              att.descrizione || '',
-              info
-            ]);
-          });
-        } else {
-          allRows.push([nomeRegola, descRegola, '', '', '']);
-        }
+        const descBreve = regola.dati.descrizione || '';
+        const descLines = doc.splitTextToSize(descBreve, colW - 8);
+        const cardH = 10 + (descLines.length * 4.5);
+
+        // Card regola
+        doc.setFillColor(...AMBER_LIGHT);
+        doc.roundedRect(x, y, colW, cardH, 3, 3, 'F');
+        doc.setFillColor(...AMBER);
+        doc.roundedRect(x, y, colW, 7, 3, 3, 'F');
+        doc.rect(x, y + 4, colW, 3, 'F');
+
+        // Categoria piccola
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(...WHITE);
+        doc.text(catName.toUpperCase(), x + 4, y + 5.5);
+
+        // Nome regola
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...TEAL);
+        doc.text(nomeRegola, x + 4, y + 13);
+
+        // Descrizione
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(60, 60, 60);
+        doc.text(descLines, x + 4, y + 18);
+
+        colY[col] = y + cardH + 4;
+        col = col === 0 ? 1 : 0;
       });
     });
 
-    doc.autoTable({
-      startY: 30,
-      head: [['Regola', 'Descrizione regola', 'Attivita', 'Descrizione attivita', 'Eta / Durata']],
-      body: allRows,
-      theme: 'grid',
-      headStyles: { fillColor: [255,255,255], textColor: [0,0,0], fontStyle: 'bold', fontSize: 11, lineColor: [0,0,0], lineWidth: 0.4, halign: 'center' },
-      bodyStyles: { fontSize: 11, textColor: [0,0,0], valign: 'top', lineColor: [150,150,150], lineWidth: 0.2, fillColor: [255,255,255] },
-      columnStyles: {
-        0: { cellWidth: 32, fontStyle: 'bold' },
-        1: { cellWidth: 48 },
-        2: { cellWidth: 32, fontStyle: 'bold' },
-        3: { cellWidth: 55 },
-        4: { cellWidth: 23 }
-      },
-      margin: { left: 10, right: 10, bottom: 15 },
-      didDrawPage: function(data) {
-        const pageNum = doc.internal.getCurrentPageInfo().pageNumber;
-        doc.setFontSize(8);
-        doc.setTextColor(120);
-        doc.text('Educazione Digitale Familiare', 14, 290);
-        doc.text('Pag. ' + pageNum, 196, 290, { align: 'right' });
-      }
+    // Footer pagina 1
+    doc.setFillColor(...TEAL);
+    doc.rect(0, 282, 210, 15, 'F');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...WHITE);
+    doc.text('Educazione Digitale Familiare', 105, 291, { align: 'center' });
+
+    // ======== PAGINA 2+ - LE ATTIVITA ========
+    doc.addPage();
+
+    doc.setFillColor(...TEAL_MID);
+    doc.rect(0, 0, 210, 30, 'F');
+    doc.setTextColor(...WHITE);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Le Nostre Attivita', 105, 14, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Esercizi pratici da fare insieme in famiglia', 105, 23, { align: 'center' });
+
+    let ay = 38;
+
+    pattoStruttura.forEach(function(categoria) {
+      if (categoria.regole.length === 0) return;
+      const catName = categoria.info.nome || categoria.id;
+
+      categoria.regole.forEach(function(regola) {
+        if (!regola.attivita || regola.attivita.length === 0) return;
+
+        regola.attivita.forEach(function(att) {
+          if (ay > 265) { doc.addPage(); ay = 20; }
+
+          const nomeAtt = att.nome || '';
+          const descAtt = att.descrizione || '';
+          const descLines = doc.splitTextToSize(descAtt, 170);
+          const cardH = 14 + (descLines.length * 4.5);
+
+          // Card attivita
+          doc.setFillColor(...AMBER_LIGHT);
+          doc.roundedRect(10, ay, 190, cardH, 3, 3, 'F');
+          doc.setFillColor(...TEAL_MID);
+          doc.roundedRect(10, ay, 190, 7, 3, 3, 'F');
+          doc.rect(10, ay + 4, 190, 3, 'F');
+
+          // Categoria + regola
+          doc.setFontSize(7);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...WHITE);
+          doc.text((catName + ' — ' + regola.nome).toUpperCase(), 14, ay + 5.5);
+
+          // Nome attivita
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(...TEAL);
+          doc.text(nomeAtt, 14, ay + 13);
+
+          // Info eta/durata
+          const info = [att.eta ? 'Eta: ' + att.eta : '', att.durata ? 'Durata: ' + att.durata : '', att.frequenza ? 'Frequenza: ' + att.frequenza : ''].filter(Boolean).join('   ');
+          if (info) {
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(...TEAL_MID);
+            doc.text(info, 190, ay + 13, { align: 'right' });
+          }
+
+          // Descrizione
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(60, 60, 60);
+          doc.text(descLines, 14, ay + 19);
+
+          ay += cardH + 5;
+        });
+      });
     });
+
+    // Footer ultime pagine
+    doc.setFillColor(...TEAL_MID);
+    doc.rect(0, 282, 210, 15, 'F');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...WHITE);
+    doc.text('Educazione Digitale Familiare', 105, 291, { align: 'center' });
 
     doc.save('patto_familiare.pdf');
   }
@@ -305,8 +405,6 @@
     if (cat) btnRifai.href = 'test.html?categorie=' + cat;
   }
 </script>
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </body>
