@@ -137,7 +137,7 @@ async function caricaGoogleAppScriptData() {
   }
   return null;
 }
-// cacca
+
 async function getAppData(forceRefresh = false) {
   if (!forceRefresh) {
     try {
@@ -190,6 +190,42 @@ async function filterRulesByCategories(selectedCategories) {
   return { success: true, regole: regoleSelezionate };
 }
 
+/**
+ * Funzione centralizzata per invertire il calcolo (attiva regole solo sui NO).
+ */
+async function calcolaRegoleDalTest(risposteUtente) {
+  const { data } = await getAppData();
+  const domande_db = data.testQuestions || [];
+  
+  let regoleDaInviare = [];
+  let categorieCoinvolte = [];
+
+  risposteUtente.forEach((risposta, index) => {
+    const dbDomanda = domande_db[index];
+    if (!dbDomanda) return;
+
+    if (String(risposta).toLowerCase() === 'no') {
+      if (dbDomanda.se_no) regoleDaInviare.push(dbDomanda.se_no);
+      if (dbDomanda.categoria && !categorieCoinvolte.includes(dbDomanda.categoria)) {
+        categorieCoinvolte.push(dbDomanda.categoria);
+      }
+    }
+  });
+
+  regoleDaInviare = [...new Set(regoleDaInviare)].filter(Boolean);
+  categorieCoinvolte = [...new Set(categorieCoinvolte)].filter(Boolean);
+
+  if (regoleDaInviare.length === 0) {
+    regoleDaInviare.push("COMPLIMENTI! La tua famiglia applica già tutte le regole standard.");
+  }
+
+  return {
+    regole: regoleDaInviare,
+    categorie: categorieCoinvolte,
+    urlParams: `regole=${encodeURIComponent(JSON.stringify(regoleDaInviare))}&categorie=${encodeURIComponent(JSON.stringify(categorieCoinvolte))}`
+  };
+}
+
 window.getAppData = getAppData;
 window.getCategorie = getCategorie;
 window.getTestIniziale = getTestIniziale;
@@ -198,3 +234,4 @@ window.getKeywords = getKeywords;
 window.searchCategories = searchCategories;
 window.filterRulesByCategories = filterRulesByCategories;
 window.normalizeText = normalizeText;
+window.calcolaRegoleDalTest = calcolaRegoleDalTest;

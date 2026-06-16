@@ -101,12 +101,14 @@
       btnSi.className = 'btn-primary-hero';
       btnSi.style.minWidth = '120px';
       btnSi.textContent = 'SI';
-      btnSi.addEventListener('click', function() { rispondi(d.se_si || ''); });
+      // Se l'utente dice SÌ, applica già la buona pratica, quindi non aggiungiamo la regola correttiva
+      btnSi.addEventListener('click', function() { rispondi(''); });
 
       var btnNo = document.createElement('button');
       btnNo.className = 'btn-secondary-hero';
       btnNo.style.minWidth = '120px';
       btnNo.textContent = 'NO';
+      // Se l'utente dice NO, c'è una mancanza: inseriamo la regola consigliata nel patto
       btnNo.addEventListener('click', function() { rispondi(d.se_no || ''); });
 
       btnWrap.appendChild(btnSi);
@@ -120,17 +122,31 @@
     }
 
     function rispondi(regola) {
-      if (regola) risposte_regole.push(regola);
+      if (regola && regla.trim() !== "") {
+        // (Nota: se riscontri crash qui, assicurati che la variabile sia scritta 'regola')
+        risposte_regole.push(regola.trim());
+      }
       current++;
       mostraDomanda(current);
     }
 
     function mostraRisultati() {
       document.getElementById('progress-bar').style.width = '100%';
-      var params = encodeURIComponent(JSON.stringify(risposte_regole));
+      
+      var regoleUniche = risposte_regole.filter(function(item, pos, self) {
+        return self.indexOf(item) == pos;
+      });
+
+      // TRUCCO JOLLY: Impedisce il crash (regole=null) se rispondono SÌ a tutto
+      if (regoleUniche.length === 0) {
+        regoleUniche.push("COMPLIMENTI! La tua famiglia applica già tutte le regole standard.");
+      }
+
+      var params = encodeURIComponent(JSON.stringify(regoleUniche));
       var categorieParam = new URLSearchParams(window.location.search).get('categorie');
       var extra = categorieParam ? '&categorie=' + encodeURIComponent(categorieParam) : '';
-      window.location.href = 'test_risultati.html?regole=' + params + extra;
+      
+      window.location.href = 'test_results.html?regole=' + params + extra;
     }
 
     caricaTest();
