@@ -35,6 +35,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <script>
   var pattoStruttura = [];
+  var pattoOriginale = [];
 
   function normalizzaTesto(value) {
     return String(value || '')
@@ -103,7 +104,8 @@
         return { id: id, info: info, regole: regolePerCategoria };
       });
 
-      console.log('[patto-ui] struttura finale', pattoStruttura);
+      console.log("[patto-ui] struttura finale", pattoStruttura);
+      pattoOriginale = JSON.parse(JSON.stringify(pattoStruttura));
       renderPatto();
     } catch (e) {
       container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento del patto familiare.</p>';
@@ -113,7 +115,7 @@
   function renderPatto() {
     var container = document.getElementById('regole-container');
     if (!pattoStruttura || pattoStruttura.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-muted)">Nessuna attività selezionata.</p>';
+      container.innerHTML = '<p style="color:var(--text-muted)">Complimenti non riusciamo a trovare nessuna attività utile nella tua situazione, se riscontri dubbi ti consigliamo di rivolgerti al tuo pediatra.</p>';
       var btn = document.getElementById('download-pdf');
       if (btn) btn.disabled = true;
       return;
@@ -135,27 +137,44 @@
       var elenco = document.createElement('div');
       elenco.style.marginTop = '1rem';
 
-      categoria.regole.forEach(function(regola, regolaIndex) {
-        var icona = regola.dati.icona || '📌';
-        var descrizione = regola.dati.descrizione || '';
-        var raccomandazione = regola.dati.raccomandazione || '';
-        var linkRaccomandazione = regola.dati.linkRaccomandazione || '';
+      // Contiamo quante attività reali ed efficaci sono presenti in questa categoria
+      var conteggioAttivita = 0;
+      if (categoria.regole && categoria.regole.length > 0) {
+        categoria.regole.forEach(function(regola) {
+          if (regola.attivita && regola.attivita.length > 0) {
+            conteggioAttivita += regola.attivita.length;
+          }
+        });
+      }
 
-        // Card regola (mostrata una sola volta)
-        var regolaCard = document.createElement('div');
-        regolaCard.style.cssText = 'background:var(--teal-light);border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.75rem;';
-        regolaCard.innerHTML =
-          '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">' +
-            '<div style="font-weight:700;color:var(--teal-dark);font-size:1rem;">' + icona + ' ' + regola.nome + '</div>' +
-            '<button class="btn-elimina-regola" onclick="eliminaRegola(' + categoriaIndex + ',' + regolaIndex + ')" title="Rimuovi questa regola">🗑️</button>' +
-          '</div>' +
-          '<p style="margin:0.4rem 0 0;color:var(--text-muted);font-size:0.87rem;">' + descrizione + '</p>' +
-          (raccomandazione ? '<div style="font-size:0.8rem;color:var(--teal-mid);margin-top:0.4rem;"><b>Raccomandazione:</b> ' + raccomandazione + '</div>' : '') +
-          (linkRaccomandazione ? '<div style="margin-top:0.4rem;"><a href="' + linkRaccomandazione + '" target="_blank" class="btn-search" style="text-decoration:none;font-size:0.78rem;padding:3px 8px;">Approfondisci regola</a></div>' : '');
-        elenco.appendChild(regolaCard);
+      // SE NON CI SONO ATTIVITÀ: Mostriamo il messaggio dedicato direttamente dentro la scheda
+      if (conteggioAttivita === 0) {
+        var avvisoVuoto = document.createElement('div');
+        avvisoVuoto.style.cssText = 'background:#f4fbf9; border-left:4px solid #14b8a6; padding:1rem; border-radius:8px; margin-top:1rem;';
+        avvisoVuoto.innerHTML = '<p style="color:#115e59; font-weight:500; margin:0; font-size:0.95rem; line-height:1.4;">Complimenti non riusciamo a trovare nessuna attività utile nella tua situazione, se riscontri dubbi ti consigliamo di rivolgerti al tuo pediatra.</p>';
+        elenco.appendChild(avvisoVuoto);
+      } else {
+        // SE CI SONO ATTIVITÀ: Renderizziamo normalmente l'albero delle regole e sotto-attività
+        categoria.regole.forEach(function(regola, regolaIndex) {
+          if (!regola.attivita || regola.attivita.length === 0) return;
 
-        // Attività collegate alla regola
-        if (regola.attivita && regola.attivita.length > 0) {
+          var icona = regola.dati.icona || '📌';
+          var descrizione = regola.dati.descrizione || '';
+          var raccomandazione = regola.dati.raccomandazione || '';
+          var linkRaccomandazione = regola.dati.linkRaccomandazione || '';
+
+          var regolaCard = document.createElement('div');
+          regolaCard.style.cssText = 'background:var(--teal-light);border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.75rem;';
+          regolaCard.innerHTML =
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">' +
+              '<div style="font-weight:700;color:var(--teal-dark);font-size:1rem;">' + icona + ' ' + regola.nome + '</div>' +
+              '<button class="btn-elimina-regola" onclick="eliminaRegola(' + categoriaIndex + ',' + regolaIndex + ')" title="Rimuovi questa regola">🗑️</button>' +
+            '</div>' +
+            '<p style="margin:0.4rem 0 0;color:var(--text-muted);font-size:0.87rem;">' + descrizione + '</p>' +
+            (raccomandazione ? '<div style="font-size:0.8rem;color:var(--teal-mid);margin-top:0.4rem;"><b>Raccomandazione:</b> ' + raccomandazione + '</div>' : '') +
+            (linkRaccomandazione ? '<div style="margin-top:0.4rem;"><a href="' + linkRaccomandazione + '" target="_blank" class="btn-search" style="text-decoration:none;font-size:0.78rem;padding:3px 8px;">Approfondisci regola</a></div>' : '');
+          elenco.appendChild(regolaCard);
+
           var attivitaWrap = document.createElement('div');
           attivitaWrap.style.cssText = 'margin-left:1.5rem;margin-bottom:1rem;';
 
@@ -177,13 +196,8 @@
           });
 
           elenco.appendChild(attivitaWrap);
-        } else {
-          var noAtt = document.createElement('div');
-          noAtt.style.cssText = 'margin-left:1.5rem;margin-bottom:1rem;font-size:0.85rem;color:var(--text-muted);font-style:italic;';
-          noAtt.textContent = 'Nessuna attività pratica specifica per questa regola.';
-          elenco.appendChild(noAtt);
-        }
-      });
+        });
+      }
 
       body.appendChild(elenco);
       categoriaCard.appendChild(body);
@@ -191,6 +205,8 @@
     });
     abilitaPDF();
   }
+
+  functionGrid = {};
 
   functionGrid = {};
 
@@ -214,46 +230,55 @@
     if (btn) btn.disabled = false;
   }
 
-  function apriTutteLeSchede() {
-    document.querySelectorAll('.risultato-desc').forEach(function(desc) {
-      desc.style.display = 'block';
-    });
-  }
-
   function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    const TEAL = [8, 80, 65];
-    const TEAL_MID = [29, 158, 117];
-    const AMBER = [239, 159, 39];
-    const AMBER_LIGHT = [250, 238, 218];
-    const WHITE = [255, 255, 255];
-    const BLACK = [0, 0, 0];
-    const GRAY_LIGHT = [241, 239, 232];
+    // Colori
+    const VERDE = [34, 139, 87];
+    const VERDE_CHIARO = [220, 245, 233];
+    const GIALLO = [255, 200, 0];
+    const GIALLO_CHIARO = [255, 245, 200];
+    const BLU = [41, 98, 162];
+    const BLU_CHIARO = [220, 232, 248];
+    const GRIGIO = [100, 100, 100];
+    const BIANCO = [255, 255, 255];
+    const NERO = [30, 30, 30];
 
-    // ======== PAGINA 1 - LE REGOLE ========
-    // Sfondo intestazione
-    doc.setFillColor(...TEAL);
-    doc.rect(0, 0, 210, 35, 'F');
+    function intestazionePagina(doc, titolo, sottotitolo, colore) {
+      doc.setFillColor(...colore);
+      doc.rect(0, 0, 210, 32, 'F');
+      doc.setTextColor(...BIANCO);
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text(titolo, 105, 14, { align: 'center' });
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(sottotitolo, 105, 24, { align: 'center' });
+    }
 
-    doc.setTextColor(...WHITE);
-    doc.setFontSize(22);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Le Nostre Regole Digitali', 105, 15, { align: 'center' });
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Il patto che abbiamo scelto insieme per usare bene la tecnologia', 105, 25, { align: 'center' });
-    doc.setFontSize(9);
-    doc.text(new Date().toLocaleDateString('it-IT'), 105, 31, { align: 'center' });
+    function footerPagina(doc, colore) {
+      const n = doc.internal.getCurrentPageInfo().pageNumber;
+      doc.setFillColor(...colore);
+      doc.rect(0, 284, 210, 13, 'F');
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...BIANCO);
+      doc.text('Educazione Digitale Familiare', 14, 291);
+      doc.text('Pag. ' + n, 196, 291, { align: 'right' });
+    }
 
-    let y = 42;
-    const colW = 88;
-    const colGap = 6;
-    const col1X = 11;
-    const col2X = col1X + colW + colGap;
+    // =====================
+    // PARTE 1 — LE NOSTRE REGOLE (scelte dai genitori)
+    // =====================
+    intestazionePagina(doc, '📋 Le Nostre Regole', 'Le regole che abbiamo scelto insieme per la nostra famiglia', VERDE);
+
+    let y = 40;
+    const col1X = 12;
+    const col2X = 112;
+    const colW = 93;
     let col = 0;
-    let colY = [42, 42];
+    let colY = [40, 40];
 
     pattoStruttura.forEach(function(categoria) {
       if (categoria.regole.length === 0) return;
@@ -263,62 +288,98 @@
         const x = col === 0 ? col1X : col2X;
         y = colY[col];
 
-        const icona = (regola.dati.icona || '').replace(/[^\x00-\x7F]/g, '').trim();
         const nomeRegola = regola.nome || '';
-        const descBreve = regola.dati.descrizione || '';
-        const descLines = doc.splitTextToSize(descBreve, colW - 8);
-        const cardH = 10 + (descLines.length * 4.5);
+        const descBreve = doc.splitTextToSize(regola.dati.descrizione || '', colW - 6);
+        const cardH = 13 + (descBreve.length * 4);
 
-        // Card regola
-        doc.setFillColor(...AMBER_LIGHT);
+        // Sfondo card
+        doc.setFillColor(...VERDE_CHIARO);
         doc.roundedRect(x, y, colW, cardH, 3, 3, 'F');
-        doc.setFillColor(...AMBER);
-        doc.roundedRect(x, y, colW, 7, 3, 3, 'F');
-        doc.rect(x, y + 4, colW, 3, 'F');
 
-        // Categoria piccola
-        doc.setFontSize(7);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...WHITE);
-        doc.text(catName.toUpperCase(), x + 4, y + 5.5);
+        // Barra superiore colorata
+        doc.setFillColor(...VERDE);
+        doc.roundedRect(x, y, colW, 6, 3, 3, 'F');
+        doc.rect(x, y + 3, colW, 3, 'F');
+
+        // Categoria
+        doc.setFontSize(6.5);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...BIANCO);
+        doc.text(catName.toUpperCase(), x + 3, y + 4.5);
 
         // Nome regola
-        doc.setFontSize(10);
+        doc.setFontSize(9.5);
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...TEAL);
-        doc.text(nomeRegola, x + 4, y + 13);
+        doc.setTextColor(...NERO);
+        doc.text(nomeRegola, x + 3, y + 11);
 
         // Descrizione
-        doc.setFontSize(8);
+        doc.setFontSize(7.5);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(60, 60, 60);
-        doc.text(descLines, x + 4, y + 18);
+        doc.setTextColor(...GRIGIO);
+        doc.text(descBreve, x + 3, y + 16);
 
-        colY[col] = y + cardH + 8;
+        colY[col] = y + cardH + 5;
         col = col === 0 ? 1 : 0;
       });
     });
 
-    // Footer pagina 1
-    doc.setFillColor(...TEAL);
-    doc.rect(0, 282, 210, 15, 'F');
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...WHITE);
-    doc.text('Educazione Digitale Familiare', 105, 291, { align: 'center' });
+    footerPagina(doc, VERDE);
 
-    // ======== PAGINA 2+ - LE ATTIVITA ========
+    // =====================
+    // PARTE 2 — TUTTE LE REGOLE CONSIGLIATE
+    // =====================
     doc.addPage();
+    intestazionePagina(doc, '💡 Regole Consigliate', 'Tutte le regole emerse dal test per la tua famiglia', GIALLO.map ? [200, 160, 0] : [200, 160, 0]);
 
-    doc.setFillColor(...TEAL_MID);
-    doc.rect(0, 0, 210, 30, 'F');
-    doc.setTextColor(...WHITE);
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Le Nostre Attivita', 105, 14, { align: 'center' });
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Esercizi pratici da fare insieme in famiglia', 105, 23, { align: 'center' });
+    const righeConsigliate = [];
+    pattoOriginale.forEach(function(categoria) {
+      const catName = categoria.info.nome || categoria.id;
+      categoria.regole.forEach(function(regola) {
+        righeConsigliate.push([
+          catName,
+          regola.nome || '',
+          regola.dati.descrizione || '',
+          regola.dati.raccomandazione || ''
+        ]);
+      });
+    });
+
+    doc.autoTable({
+      startY: 38,
+      head: [['Categoria', 'Regola', 'Descrizione', 'Raccomandazione']],
+      body: righeConsigliate,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [200, 160, 0],
+        textColor: BIANCO,
+        fontStyle: 'bold',
+        fontSize: 9,
+        halign: 'center'
+      },
+      bodyStyles: {
+        fontSize: 8.5,
+        textColor: NERO,
+        valign: 'top',
+        lineColor: [220, 210, 180],
+        lineWidth: 0.2
+      },
+      alternateRowStyles: { fillColor: GIALLO_CHIARO },
+      columnStyles: {
+        0: { cellWidth: 35, fontStyle: 'bold' },
+        1: { cellWidth: 40, fontStyle: 'bold' },
+        2: { cellWidth: 70 },
+        3: { cellWidth: 45 }
+      },
+      margin: { left: 10, right: 10, bottom: 18 },
+      didDrawPage: function() { footerPagina(doc, [200, 160, 0]); }
+    });
+
+    // =====================
+    // PARTE 3 — ATTIVITÀ
+    // =====================
+    doc.addPage();
+    intestazionePagina(doc, '🛠️ Le Nostre Attività', 'Esercizi pratici da fare insieme in famiglia', BLU);
 
     let ay = 38;
 
@@ -330,60 +391,59 @@
         if (!regola.attivita || regola.attivita.length === 0) return;
 
         regola.attivita.forEach(function(att) {
-          if (ay > 265) { doc.addPage(); ay = 20; }
+          if (ay > 268) {
+            footerPagina(doc, BLU);
+            doc.addPage();
+            ay = 15;
+          }
 
           const nomeAtt = att.nome || '';
-          const descAtt = att.descrizione || '';
-          const descLines = doc.splitTextToSize(descAtt, 170);
-          const cardH = 14 + (descLines.length * 4.5);
+          const descLines = doc.splitTextToSize(att.descrizione || '', 178);
+          const cardH = 14 + (descLines.length * 4.2);
 
-          // Card attivita
-          doc.setFillColor(...AMBER_LIGHT);
+          doc.setFillColor(...BLU_CHIARO);
           doc.roundedRect(10, ay, 190, cardH, 3, 3, 'F');
-          doc.setFillColor(...TEAL_MID);
-          doc.roundedRect(10, ay, 190, 7, 3, 3, 'F');
-          doc.rect(10, ay + 4, 190, 3, 'F');
+          doc.setFillColor(...BLU);
+          doc.roundedRect(10, ay, 190, 6, 3, 3, 'F');
+          doc.rect(10, ay + 3, 190, 3, 'F');
 
           // Categoria + regola
-          doc.setFontSize(7);
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor(...WHITE);
-          doc.text((catName + ' — ' + regola.nome).toUpperCase(), 14, ay + 5.5);
-
-          // Nome attivita
-          doc.setFontSize(11);
+          doc.setFontSize(6.5);
           doc.setFont('helvetica', 'bold');
-          doc.setTextColor(...TEAL);
-          doc.text(nomeAtt, 14, ay + 13);
+          doc.setTextColor(...BIANCO);
+          doc.text((catName + ' — ' + regola.nome).toUpperCase(), 14, ay + 4.5);
 
-          // Info eta/durata
-          const info = [att.eta ? 'Eta: ' + att.eta : '', att.durata ? 'Durata: ' + att.durata : '', att.frequenza ? 'Frequenza: ' + att.frequenza : ''].filter(Boolean).join('   ');
+          // Nome attività
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(...NERO);
+          doc.text(nomeAtt, 14, ay + 12);
+
+          // Info
+          const info = [
+            att.eta ? 'Età: ' + att.eta : '',
+            att.durata ? 'Durata: ' + att.durata : '',
+            att.frequenza ? 'Frequenza: ' + att.frequenza : ''
+          ].filter(Boolean).join('   ');
           if (info) {
-            doc.setFontSize(8);
+            doc.setFontSize(7.5);
             doc.setFont('helvetica', 'normal');
-            doc.setTextColor(...TEAL_MID);
-            doc.text(info, 190, ay + 13, { align: 'right' });
+            doc.setTextColor(...BLU);
+            doc.text(info, 190, ay + 12, { align: 'right' });
           }
 
           // Descrizione
-          doc.setFontSize(9);
+          doc.setFontSize(8.5);
           doc.setFont('helvetica', 'normal');
-          doc.setTextColor(60, 60, 60);
-          doc.text(descLines, 14, ay + 19);
+          doc.setTextColor(...GRIGIO);
+          doc.text(descLines, 14, ay + 17);
 
           ay += cardH + 5;
         });
       });
     });
 
-    // Footer ultime pagine
-    doc.setFillColor(...TEAL_MID);
-    doc.rect(0, 282, 210, 15, 'F');
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...WHITE);
-    doc.text('Educazione Digitale Familiare', 105, 291, { align: 'center' });
-
+    footerPagina(doc, BLU);
     doc.save('patto_familiare.pdf');
   }
 
