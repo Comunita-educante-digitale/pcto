@@ -234,103 +234,115 @@
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    // Colori
-    const VERDE = [34, 139, 87];
-    const VERDE_CHIARO = [220, 245, 233];
-    const GIALLO = [255, 200, 0];
+    const VERDE = [22, 120, 80];
+    const VERDE_CHIARO = [210, 240, 225];
+    const GIALLO = [230, 170, 0];
     const GIALLO_CHIARO = [255, 245, 200];
-    const BLU = [41, 98, 162];
-    const BLU_CHIARO = [220, 232, 248];
-    const GRIGIO = [100, 100, 100];
+    const BLU = [30, 90, 160];
+    const BLU_CHIARO = [215, 230, 250];
     const BIANCO = [255, 255, 255];
-    const NERO = [30, 30, 30];
+    const NERO = [25, 25, 25];
+    const GRIGIO = [90, 90, 90];
 
-    function intestazionePagina(doc, titolo, sottotitolo, colore) {
+    function sfondoRighe(doc, colore, x, y, w, h) {
       doc.setFillColor(...colore);
-      doc.rect(0, 0, 210, 32, 'F');
-      doc.setTextColor(...BIANCO);
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text(titolo, 105, 14, { align: 'center' });
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text(sottotitolo, 105, 24, { align: 'center' });
-    }
-
-    function footerPagina(doc, colore) {
-      const n = doc.internal.getCurrentPageInfo().pageNumber;
-      doc.setFillColor(...colore);
-      doc.rect(0, 284, 210, 13, 'F');
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...BIANCO);
-      doc.text('Educazione Digitale Familiare', 14, 291);
-      doc.text('Pag. ' + n, 196, 291, { align: 'right' });
+      doc.roundedRect(x, y, w, h, 4, 4, 'F');
     }
 
     // =====================
-    // PARTE 1 — LE NOSTRE REGOLE (scelte dai genitori)
+    // PARTE 1 — POSTER REGOLE SCELTE
     // =====================
-    intestazionePagina(doc, '📋 Le Nostre Regole', 'Le regole che abbiamo scelto insieme per la nostra famiglia', VERDE);
 
-    let y = 40;
-    const col1X = 12;
-    const col2X = 112;
-    const colW = 93;
-    let col = 0;
-    let colY = [40, 40];
+    // Sfondo intera pagina
+    doc.setFillColor(...VERDE_CHIARO);
+    doc.rect(0, 0, 210, 297, 'F');
 
+    // Banda superiore
+    doc.setFillColor(...VERDE);
+    doc.rect(0, 0, 210, 40, 'F');
+
+    doc.setTextColor(...BIANCO);
+    doc.setFontSize(26);
+    doc.setFont('helvetica', 'bold');
+    doc.text('LE NOSTRE REGOLE DIGITALI', 105, 18, { align: 'center' });
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Il patto che abbiamo scelto insieme per usare bene la tecnologia', 105, 31, { align: 'center' });
+
+    // Calcola regole totali per distribuirle sulla pagina
+    const tutteLeRegole = [];
     pattoStruttura.forEach(function(categoria) {
-      if (categoria.regole.length === 0) return;
       const catName = categoria.info.nome || categoria.id;
-
       categoria.regole.forEach(function(regola) {
-        const x = col === 0 ? col1X : col2X;
-        y = colY[col];
-
-        const nomeRegola = regola.nome || '';
-        const descBreve = doc.splitTextToSize(regola.dati.descrizione || '', colW - 6);
-        const cardH = 13 + (descBreve.length * 4);
-
-        // Sfondo card
-        doc.setFillColor(...VERDE_CHIARO);
-        doc.roundedRect(x, y, colW, cardH, 3, 3, 'F');
-
-        // Barra superiore colorata
-        doc.setFillColor(...VERDE);
-        doc.roundedRect(x, y, colW, 6, 3, 3, 'F');
-        doc.rect(x, y + 3, colW, 3, 'F');
-
-        // Categoria
-        doc.setFontSize(6.5);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...BIANCO);
-        doc.text(catName.toUpperCase(), x + 3, y + 4.5);
-
-        // Nome regola
-        doc.setFontSize(9.5);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...NERO);
-        doc.text(nomeRegola, x + 3, y + 11);
-
-        // Descrizione
-        doc.setFontSize(7.5);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...GRIGIO);
-        doc.text(descBreve, x + 3, y + 16);
-
-        colY[col] = y + cardH + 5;
-        col = col === 0 ? 1 : 0;
+        tutteLeRegole.push({ cat: catName, nome: regola.nome || '', desc: regola.dati.descrizione || '' });
       });
     });
 
-    footerPagina(doc, VERDE);
+    const totRegole = tutteLeRegole.length || 1;
+    const areaH = 297 - 40 - 18; // pagina meno header e footer
+    const cardH = Math.min(40, Math.floor(areaH / totRegole) - 4);
+    const fontSize = cardH > 28 ? 11 : cardH > 20 ? 9 : 7.5;
+
+    let y = 46;
+    tutteLeRegole.forEach(function(r, i) {
+      const isAlt = i % 2 === 0;
+      sfondoRighe(doc, isAlt ? BIANCO : VERDE_CHIARO, 10, y, 190, cardH);
+
+      // Numero
+      doc.setFillColor(...VERDE);
+      doc.circle(18, y + cardH / 2, 5, 'F');
+      doc.setTextColor(...BIANCO);
+      doc.setFontSize(fontSize + 1);
+      doc.setFont('helvetica', 'bold');
+      doc.text(String(i + 1), 18, y + cardH / 2 + 1.5, { align: 'center' });
+
+      // Categoria
+      doc.setTextColor(...VERDE);
+      doc.setFontSize(fontSize - 2);
+      doc.setFont('helvetica', 'bold');
+      doc.text(r.cat.toUpperCase(), 27, y + 5);
+
+      // Nome regola
+      doc.setTextColor(...NERO);
+      doc.setFontSize(fontSize + 1);
+      doc.setFont('helvetica', 'bold');
+      const nomeLines = doc.splitTextToSize(r.nome, 165);
+      doc.text(nomeLines, 27, y + 10);
+
+      // Descrizione
+      if (cardH > 22) {
+        doc.setTextColor(...GRIGIO);
+        doc.setFontSize(fontSize - 1);
+        doc.setFont('helvetica', 'normal');
+        const descLines = doc.splitTextToSize(r.desc, 165);
+        doc.text(descLines, 27, y + 10 + (nomeLines.length * (fontSize + 1) * 0.4) + 4);
+      }
+
+      y += cardH + 3;
+    });
+
+    // Footer pagina 1
+    doc.setFillColor(...VERDE);
+    doc.rect(0, 284, 210, 13, 'F');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...BIANCO);
+    doc.text('Educazione Digitale Familiare', 105, 292, { align: 'center' });
 
     // =====================
     // PARTE 2 — TUTTE LE REGOLE CONSIGLIATE
     // =====================
     doc.addPage();
-    intestazionePagina(doc, '💡 Regole Consigliate', 'Tutte le regole emerse dal test per la tua famiglia', GIALLO.map ? [200, 160, 0] : [200, 160, 0]);
+
+    doc.setFillColor(...GIALLO);
+    doc.rect(0, 0, 210, 32, 'F');
+    doc.setTextColor(...BIANCO);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TUTTE LE REGOLE CONSIGLIATE', 105, 14, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Queste regole sono emerse dal tuo test - puoi usarle come riferimento', 105, 24, { align: 'center' });
 
     const righeConsigliate = [];
     pattoOriginale.forEach(function(categoria) {
@@ -350,36 +362,41 @@
       head: [['Categoria', 'Regola', 'Descrizione', 'Raccomandazione']],
       body: righeConsigliate,
       theme: 'grid',
-      headStyles: {
-        fillColor: [200, 160, 0],
-        textColor: BIANCO,
-        fontStyle: 'bold',
-        fontSize: 9,
-        halign: 'center'
-      },
-      bodyStyles: {
-        fontSize: 8.5,
-        textColor: NERO,
-        valign: 'top',
-        lineColor: [220, 210, 180],
-        lineWidth: 0.2
-      },
+      headStyles: { fillColor: GIALLO, textColor: BIANCO, fontStyle: 'bold', fontSize: 9, halign: 'center' },
+      bodyStyles: { fontSize: 8.5, textColor: NERO, valign: 'top', lineColor: [210, 195, 150], lineWidth: 0.2 },
       alternateRowStyles: { fillColor: GIALLO_CHIARO },
       columnStyles: {
         0: { cellWidth: 35, fontStyle: 'bold' },
-        1: { cellWidth: 40, fontStyle: 'bold' },
-        2: { cellWidth: 70 },
+        1: { cellWidth: 42, fontStyle: 'bold' },
+        2: { cellWidth: 68 },
         3: { cellWidth: 45 }
       },
       margin: { left: 10, right: 10, bottom: 18 },
-      didDrawPage: function() { footerPagina(doc, [200, 160, 0]); }
+      didDrawPage: function() {
+        const n = doc.internal.getCurrentPageInfo().pageNumber;
+        doc.setFillColor(...GIALLO);
+        doc.rect(0, 284, 210, 13, 'F');
+        doc.setFontSize(8);
+        doc.setTextColor(...BIANCO);
+        doc.text('Educazione Digitale Familiare', 14, 291);
+        doc.text('Pag. ' + n, 196, 291, { align: 'right' });
+      }
     });
 
     // =====================
-    // PARTE 3 — ATTIVITÀ
+    // PARTE 3 — ATTIVITA
     // =====================
     doc.addPage();
-    intestazionePagina(doc, '🛠️ Le Nostre Attività', 'Esercizi pratici da fare insieme in famiglia', BLU);
+
+    doc.setFillColor(...BLU);
+    doc.rect(0, 0, 210, 32, 'F');
+    doc.setTextColor(...BIANCO);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('LE NOSTRE ATTIVITA', 105, 14, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Esercizi pratici da fare insieme in famiglia', 105, 24, { align: 'center' });
 
     let ay = 38;
 
@@ -392,58 +409,65 @@
 
         regola.attivita.forEach(function(att) {
           if (ay > 268) {
-            footerPagina(doc, BLU);
+            const n = doc.internal.getCurrentPageInfo().pageNumber;
+            doc.setFillColor(...BLU);
+            doc.rect(0, 284, 210, 13, 'F');
+            doc.setFontSize(8);
+            doc.setTextColor(...BIANCO);
+            doc.text('Educazione Digitale Familiare', 14, 291);
+            doc.text('Pag. ' + n, 196, 291, { align: 'right' });
             doc.addPage();
             ay = 15;
           }
 
-          const nomeAtt = att.nome || '';
-          const descLines = doc.splitTextToSize(att.descrizione || '', 178);
-          const cardH = 14 + (descLines.length * 4.2);
+          const descLines = doc.splitTextToSize(att.descrizione || '', 150);
+          const cardH = 16 + (descLines.length * 4);
 
           doc.setFillColor(...BLU_CHIARO);
           doc.roundedRect(10, ay, 190, cardH, 3, 3, 'F');
           doc.setFillColor(...BLU);
-          doc.roundedRect(10, ay, 190, 6, 3, 3, 'F');
-          doc.rect(10, ay + 3, 190, 3, 'F');
+          doc.roundedRect(10, ay, 190, 7, 3, 3, 'F');
+          doc.rect(10, ay + 4, 190, 3, 'F');
 
-          // Categoria + regola
           doc.setFontSize(6.5);
           doc.setFont('helvetica', 'bold');
           doc.setTextColor(...BIANCO);
-          doc.text((catName + ' — ' + regola.nome).toUpperCase(), 14, ay + 4.5);
+          doc.text((catName + ' - ' + regola.nome).toUpperCase(), 14, ay + 5);
 
-          // Nome attività
-          doc.setFontSize(10);
+          doc.setFontSize(10.5);
           doc.setFont('helvetica', 'bold');
           doc.setTextColor(...NERO);
-          doc.text(nomeAtt, 14, ay + 12);
+          doc.text(att.nome || '', 14, ay + 13);
 
-          // Info
           const info = [
-            att.eta ? 'Età: ' + att.eta : '',
+            att.eta ? 'Eta: ' + att.eta : '',
             att.durata ? 'Durata: ' + att.durata : '',
             att.frequenza ? 'Frequenza: ' + att.frequenza : ''
           ].filter(Boolean).join('   ');
           if (info) {
             doc.setFontSize(7.5);
-            doc.setFont('helvetica', 'normal');
             doc.setTextColor(...BLU);
-            doc.text(info, 190, ay + 12, { align: 'right' });
+            doc.text(info, 196, ay + 13, { align: 'right' });
           }
 
-          // Descrizione
           doc.setFontSize(8.5);
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(...GRIGIO);
-          doc.text(descLines, 14, ay + 17);
+          doc.text(descLines, 14, ay + 18);
 
           ay += cardH + 5;
         });
       });
     });
 
-    footerPagina(doc, BLU);
+    const nFin = doc.internal.getCurrentPageInfo().pageNumber;
+    doc.setFillColor(...BLU);
+    doc.rect(0, 284, 210, 13, 'F');
+    doc.setFontSize(8);
+    doc.setTextColor(...BIANCO);
+    doc.text('Educazione Digitale Familiare', 14, 291);
+    doc.text('Pag. ' + nFin, 196, 291, { align: 'right' });
+
     doc.save('patto_familiare.pdf');
   }
 
