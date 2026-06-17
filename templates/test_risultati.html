@@ -113,7 +113,7 @@
   function renderPatto() {
     var container = document.getElementById('regole-container');
     if (!pattoStruttura || pattoStruttura.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-muted)">Nessuna attività selezionata.</p>';
+      container.innerHTML = '<p style="color:var(--text-muted)">Complimenti non riusciamo a trovare nessuna attività utile nella tua situazione, se riscontri dubbi ti consigliamo di rivolgerti al tuo pediatra.</p>';
       var btn = document.getElementById('download-pdf');
       if (btn) btn.disabled = true;
       return;
