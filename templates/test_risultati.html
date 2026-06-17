@@ -135,22 +135,24 @@
       var elenco = document.createElement('div');
       elenco.style.marginTop = '1rem';
 
-      // Verifica se ci sono attività pratiche valide all'interno di questa specifica categoria
-      var haAttivitaValide = false;
+      // Contiamo quante attività reali ed efficaci sono presenti in questa categoria
+      var conteggioAttivita = 0;
       if (categoria.regole && categoria.regole.length > 0) {
-        haAttivitaValide = categoria.regole.some(function(regola) {
-          return regola.attivita && regola.attivita.length > 0;
+        categoria.regole.forEach(function(regola) {
+          if (regola.attivita && regola.attivita.length > 0) {
+            conteggioAttivita += regola.attivita.length;
+          }
         });
       }
 
-      // Se non ci sono attività collegate, mostra l'avviso personalizzato con consiglio medico
-      if (!haAttivitaValide) {
+      // SE NON CI SONO ATTIVITÀ: Mostriamo il messaggio dedicato direttamente dentro la scheda
+      if (conteggioAttivita === 0) {
         var avvisoVuoto = document.createElement('div');
-        avvisoVuoto.style.cssText = 'background:#f9fafb; border-left:4px solid var(--teal-mid, #14b8a6); padding:1rem; border-radius:4px; margin-top:1rem;';
-        avvisoVuoto.innerHTML = '<p style="color:var(--teal-dark, #115e59); font-weight:500; margin:0; font-size:0.95rem;">Complimenti non riusciamo a trovare nessuna attività utile nella tua situazione, se riscontri dubbi ti consigliamo di rivolgerti al tuo pediatra.</p>';
+        avvisoVuoto.style.cssText = 'background:#f4fbf9; border-left:4px solid #14b8a6; padding:1rem; border-radius:8px; margin-top:1rem;';
+        avvisoVuoto.innerHTML = '<p style="color:#115e59; font-weight:500; margin:0; font-size:0.95rem; line-height:1.4;">Complimenti non riusciamo a trovare nessuna attività utile nella tua situazione, se riscontri dubbi ti consigliamo di rivolgerti al tuo pediatra.</p>';
         elenco.appendChild(avvisoVuoto);
       } else {
-        // Se presenti, renderizza solo le regole che hanno effettivamente delle attività pratiche
+        // SE CI SONO ATTIVITÀ: Renderizziamo normalmente l'albero delle regole e sotto-attività
         categoria.regole.forEach(function(regola, regolaIndex) {
           if (!regola.attivita || regola.attivita.length === 0) return;
 
@@ -201,6 +203,8 @@
     });
     abilitaPDF();
   }
+
+  functionGrid = {};
 
   functionGrid = {};
 
