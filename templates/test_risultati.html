@@ -271,9 +271,12 @@
 
     // Calcola regole totali per distribuirle sulla pagina
     const tutteLeRegole = [];
+    const regoleGiaViste = new Set();
     pattoStruttura.forEach(function(categoria) {
       const catName = categoria.info.nome || categoria.id;
       categoria.regole.forEach(function(regola) {
+        if (regoleGiaViste.has(regola.nome)) return;
+        regoleGiaViste.add(regola.nome);
         tutteLeRegole.push({ cat: catName, nome: regola.nome || '', desc: regola.dati.descrizione || '' });
       });
     });
@@ -345,9 +348,12 @@
     doc.text('Queste regole sono emerse dal tuo test - puoi usarle come riferimento', 105, 24, { align: 'center' });
 
     const righeConsigliate = [];
+    const consigliateViste = new Set();
     pattoOriginale.forEach(function(categoria) {
       const catName = categoria.info.nome || categoria.id;
       categoria.regole.forEach(function(regola) {
+        if (consigliateViste.has(regola.nome)) return;
+        consigliateViste.add(regola.nome);
         righeConsigliate.push([
           catName,
           regola.nome || '',
