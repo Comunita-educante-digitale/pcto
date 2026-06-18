@@ -1,5 +1,5 @@
 const GOOGLE_APPS_SCRIPT_URLS = [
-  'https://script.google.com/macros/s/AKfycbygppLK3eHQ4uxw-jaw7-V5t5fLQPQkRLp-IyGxjj5zqTwREfn7pWrd6PgzY-M1LlcS/exec',
+  'https://script.google.com/macros/s/AKfycbzm25VHhONFiJejy76iWiK5DjqlURt1JEWP3dPylKcrNmkUzn1mYY_zMsQ4UUIrPzM/exec',
   'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTUfZgfHyuJS46VG6WcEUZgQd_JbcTfP_y3pj_WaCGI7S6mplaIB8qRT_b0yRixTBUmmuWMeNzas8pt-G7YRUJUujPcriJepeguQ-8PdmGbRC5jbsH8GnXMD5HRIZ3SL8uFI7s5EffejU_uugUc-26Hi-8TmnAJgzg2dQPi9pvgl9fbxpJ_0yJf7S23Q0mU8z7wHKxbVz6BYiDDUiY9A3PktrZUNjOAkLyyHvUBmSgNtuApVO59G6jEtOxksTO9izjJinHh4TZC-tCDJcpq8T_ywi9pmw&lib=MlRCYSh2pVGq_cqM2lnE5VKR_QGq8bm1S'
 ];
 const CACHE_KEY = 'appData_cache';
@@ -190,42 +190,6 @@ async function filterRulesByCategories(selectedCategories) {
   return { success: true, regole: regoleSelezionate };
 }
 
-/**
- * Funzione centralizzata per invertire il calcolo (attiva regole solo sui NO).
- */
-async function calcolaRegoleDalTest(risposteUtente) {
-  const { data } = await getAppData();
-  const domande_db = data.testQuestions || [];
-  
-  let regoleDaInviare = [];
-  let categorieCoinvolte = [];
-
-  risposteUtente.forEach((risposta, index) => {
-    const dbDomanda = domande_db[index];
-    if (!dbDomanda) return;
-
-    if (String(risposta).toLowerCase() === 'no') {
-      if (dbDomanda.se_no) regoleDaInviare.push(dbDomanda.se_no);
-      if (dbDomanda.categoria && !categorieCoinvolte.includes(dbDomanda.categoria)) {
-        categorieCoinvolte.push(dbDomanda.categoria);
-      }
-    }
-  });
-
-  regoleDaInviare = [...new Set(regoleDaInviare)].filter(Boolean);
-  categorieCoinvolte = [...new Set(categorieCoinvolte)].filter(Boolean);
-
-  if (regoleDaInviare.length === 0) {
-    regoleDaInviare.push("COMPLIMENTI! La tua famiglia applica già tutte le regole standard.");
-  }
-
-  return {
-    regole: regoleDaInviare,
-    categorie: categorieCoinvolte,
-    urlParams: `regole=${encodeURIComponent(JSON.stringify(regoleDaInviare))}&categorie=${encodeURIComponent(JSON.stringify(categorieCoinvolte))}`
-  };
-}
-
 window.getAppData = getAppData;
 window.getCategorie = getCategorie;
 window.getTestIniziale = getTestIniziale;
@@ -234,4 +198,3 @@ window.getKeywords = getKeywords;
 window.searchCategories = searchCategories;
 window.filterRulesByCategories = filterRulesByCategories;
 window.normalizeText = normalizeText;
-window.calcolaRegoleDalTest = calcolaRegoleDalTest;
