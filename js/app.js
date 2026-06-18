@@ -78,7 +78,7 @@ function mapRemoteData(payload) {
       .filter(Boolean);
     const raccomandazione = row.raccomandazione || row['raccomandazione del comune di Milano'] || row['Raccomandazione del Comune di Milano'] || '';
     const matchingRec = recommendationRowsByName.get(normalizeText(raccomandazione));
-    rules[ruleName] = { nome: ruleName, descrizione: row.descrizione || '', icona: row.immagine || row.icona || '📌', categorie: matchedCategories, raccomandazione, linkRaccomandazione: matchingRec?.['link raccomandazione'] || matchingRec?.link || '', attivita: Array.isArray(row.attivita) ? row.attivita : [] };
+    rules[ruleName] = { nome: ruleName, descrizione: row.descrizione || '', icona: row.immagine || row.icona || '📌', categorie: matchedCategories, raccomandazione, linkRaccomandazione: row.link || matchingRec?.link || matchingRec?.['link raccomandazione'] || '', attivita: Array.isArray(row.attivita) ? row.attivita : [] };
   });
 
   const activities = {};
