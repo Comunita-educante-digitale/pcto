@@ -184,7 +184,10 @@
             attivitaCard.innerHTML =
               '<div style="display:flex;justify-content:space-between;gap:0.5rem;align-items:flex-start;">' +
                 '<div style="font-size:0.95rem;font-weight:700;color:var(--teal-dark);">🛠️ ' + (attivita.nome || '') + '</div>' +
-                '<button class="btn-elimina-regola" onclick="eliminaAttivita(' + categoriaIndex + ',' + regolaIndex + ',' + attivitaIndex + ')" title="Rimuovi questa attività">🗑️</button>' +
+                '<div style="display:flex;gap:0.3rem;">' +
+                  '<button class="btn-elimina-regola" onclick="eliminaAttivita(' + categoriaIndex + ',' + regolaIndex + ',' + attivitaIndex + ')" title="Rimuovi questa attività">🗑️</button>' +
+                  (attivita.approccio ? '<a href="' + attivita.approccio + '" target="_blank" style="text-decoration:none;font-size:0.7rem;padding:4px 7px;background:#1e7a5f;color:white;border-radius:5px;display:inline-block;margin-left:4px;">Teoria</a>' : '') +
+                '</div>' +
               '</div>' +
               '<div style="font-size:0.88rem;color:var(--text-muted);margin-top:0.3rem;">' + (attivita.descrizione || '') + '</div>' +
               '<div style="font-size:0.8rem;color:var(--teal-mid);margin-top:0.3rem;">' +
