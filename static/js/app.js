@@ -85,7 +85,7 @@ function mapRemoteData(payload) {
   getObjectEntries(activitiesRaw).forEach(([activityName, value]) => {
     const row = typeof value === 'object' && value !== null ? value : {};
     const ruleName = row.regola || '';
-    activities[`${ruleName}-${activityName}`] = { nome: activityName, descrizione: row.descrizione || '', eta: row.eta || row['età di riferimento'] || '', durata: row.durata || '', frequenza: row.frequenza || '', regola: ruleName };
+    activities[`${ruleName}-${activityName}`] = { nome: activityName, descrizione: row.descrizione || '', eta: row.eta || row['età di riferimento'] || '', durata: row.durata || '', frequenza: row.frequenza || '', approccio: row.approccio || '', regola: ruleName };
   });
 
   const testQuestions = getArrayRows(testRaw).map(row => {
