@@ -94,8 +94,6 @@ function mapRemoteData(payload) {
     return { domanda: row.domande || row.domanda || '', categoria: categoryId, se_si: row['se SI'] || row['se SI '] || row.se_si || '', se_no: row['se NO'] || row['se NO '] || row.se_no || '' };
   });
 
-  if (Object.values(activities).length > 0) { const first = Object.values(activities)[0]; alert('DEBUG: ' + first.nome + ' - approccio: ' + (first.approccio || 'VUOTO')); }
-  window.DEBUG_ACTIVITIES = activities;
   return { categories, keywords, testQuestions, rules, activities, recommendations };
 }
 
