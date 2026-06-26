@@ -477,6 +477,101 @@
     doc.text('Educazione Digitale Familiare', 14, 291);
     doc.text('Pag. ' + nFin, 196, 291, { align: 'right' });
 
+
+    // =====================
+    // PAGINA 4 — TUTTE LE RACCOMANDAZIONI
+    // =====================
+    doc.addPage();
+    doc.setFillColor(...[220, 80, 40]);
+    doc.rect(0, 0, 210, 32, 'F');
+    doc.setTextColor(...BIANCO);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TUTTE LE RACCOMANDAZIONI', 105, 14, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Principi guida per educare i giovani alla tecnologia', 105, 24, { align: 'center' });
+
+    const allRecs = [];
+    Object.entries(window.appData?.recommendations || {}).forEach(function([recName, recData]) {
+      allRecs.push([recName, recData.descrizione || '', recData.link ? 'Link disponibile' : '']);
+    });
+
+    if (allRecs.length > 0) {
+      doc.autoTable({
+        startY: 38,
+        head: [['Raccomandazione', 'Descrizione', 'Risorsa']],
+        body: allRecs,
+        theme: 'grid',
+        headStyles: { fillColor: [220, 80, 40], textColor: BIANCO, fontStyle: 'bold', fontSize: 10, halign: 'center' },
+        bodyStyles: { fontSize: 9, textColor: NERO, valign: 'top', lineColor: [230, 150, 100], lineWidth: 0.2 },
+        alternateRowStyles: { fillColor: [255, 240, 220] },
+        columnStyles: {
+          0: { cellWidth: 45, fontStyle: 'bold' },
+          1: { cellWidth: 110 },
+          2: { cellWidth: 35 }
+        },
+        margin: { left: 10, right: 10, bottom: 18 },
+        didDrawPage: function() {
+          const n = doc.internal.getCurrentPageInfo().pageNumber;
+          doc.setFillColor(...[220, 80, 40]);
+          doc.rect(0, 284, 210, 13, 'F');
+          doc.setFontSize(8);
+          doc.setTextColor(...BIANCO);
+          doc.text('Educazione Digitale Familiare', 14, 291);
+          doc.text('Pag. ' + n, 196, 291, { align: 'right' });
+        }
+      });
+    }
+
+    // =====================
+    // PAGINA 5 — TUTTE LE REGOLE DISPONIBILI
+    // =====================
+    doc.addPage();
+    doc.setFillColor(...[70, 130, 180]);
+    doc.rect(0, 0, 210, 32, 'F');
+    doc.setTextColor(...BIANCO);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TUTTE LE REGOLE DISPONIBILI', 105, 14, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Le regole che il tuo programma puo proporre', 105, 24, { align: 'center' });
+
+    const allRules = [];
+    Object.entries(window.appData?.rules || {}).forEach(function([ruleName, ruleData]) {
+      const cats = Array.isArray(ruleData.categorie) ? ruleData.categorie.join(', ') : '';
+      allRules.push([ruleName, ruleData.descrizione || '', cats]);
+    });
+
+    if (allRules.length > 0) {
+      doc.autoTable({
+        startY: 38,
+        head: [['Regola', 'Descrizione', 'Categorie']],
+        body: allRules,
+        theme: 'grid',
+        headStyles: { fillColor: [70, 130, 180], textColor: BIANCO, fontStyle: 'bold', fontSize: 10, halign: 'center' },
+        bodyStyles: { fontSize: 9, textColor: NERO, valign: 'top', lineColor: [150, 180, 210], lineWidth: 0.2 },
+        alternateRowStyles: { fillColor: [230, 240, 250] },
+        columnStyles: {
+          0: { cellWidth: 50, fontStyle: 'bold' },
+          1: { cellWidth: 90 },
+          2: { cellWidth: 50 }
+        },
+        margin: { left: 10, right: 10, bottom: 18 },
+        didDrawPage: function() {
+          const n = doc.internal.getCurrentPageInfo().pageNumber;
+          doc.setFillColor(...[70, 130, 180]);
+          doc.rect(0, 284, 210, 13, 'F');
+          doc.setFontSize(8);
+          doc.setTextColor(...BIANCO);
+          doc.text('Educazione Digitale Familiare', 14, 291);
+          doc.text('Pag. ' + n, 196, 291, { align: 'right' });
+        }
+      });
+    }
+
+
     doc.save('patto_familiare.pdf');
   }
 
