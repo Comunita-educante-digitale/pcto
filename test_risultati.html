@@ -106,6 +106,19 @@
 
       console.log("[patto-ui] struttura finale", pattoStruttura);
       pattoOriginale = JSON.parse(JSON.stringify(pattoStruttura));
+      
+      // Salva tutte le raccomandazioni e regole per il PDF
+      window.tutteLeRaccomandazioni = [];
+      window.tutteLeRegole = [];
+      pattoOriginale.forEach(function(categoria) {
+        categoria.regole.forEach(function(regola) {
+          window.tutteLeRegole.push({nome: regola.nome, descrizione: regola.dati.descrizione, categorie: categoria.info.nome});
+          if (regola.dati.raccomandazione && !window.tutteLeRaccomandazioni.find(r => r.nome === regola.dati.raccomandazione)) {
+            window.tutteLeRaccomandazioni.push({nome: regola.dati.raccomandazione, descrizione: regola.dati.raccomandazione, link: regola.dati.linkRaccomandazione});
+          }
+        });
+      });
+      
       renderPatto();
     } catch (e) {
       container.innerHTML = '<p style="color:#D85A30;">Errore nel caricamento del patto familiare.</p>';
