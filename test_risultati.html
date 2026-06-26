@@ -59,6 +59,9 @@
 
       var data = await window.getTestIniziale();
       var regole_db = data.regole || {};
+      window.tutteLeRegoleDB = regole_db;
+      var appDataCompleto = await window.getAppData();
+      window.tutteLeRaccomandazioniDB = appDataCompleto.data.recommendations || {};
       var attivita_db = await window.getAttivita();
       var attivitaArray = Array.isArray(attivita_db) ? attivita_db : Object.values(attivita_db || {});
       var categorie_db = await window.getCategorie();
@@ -493,7 +496,7 @@
     doc.text('Principi guida per educare i giovani alla tecnologia', 105, 24, { align: 'center' });
 
     const tutteRaccomandazioni = [];
-    Object.entries(data.raccomandazioni || {}).forEach(function(entry) {
+    Object.entries(window.tutteLeRaccomandazioniDB || {}).forEach(function(entry) {
       tutteRaccomandazioni.push([entry[0], entry[1].descrizione || '']);
     });
 
@@ -535,7 +538,7 @@
     doc.text('Tutte le regole presenti nel database', 105, 24, { align: 'center' });
 
     const tutteRegole = [];
-    Object.entries(data.regole || {}).forEach(function(entry) {
+    Object.entries(window.tutteLeRegoleDB || {}).forEach(function(entry) {
       tutteRegole.push([entry[0], entry[1].descrizione || '']);
     });
 
