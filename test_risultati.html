@@ -507,7 +507,7 @@
     doc.setFont('helvetica', 'normal');
     doc.text('Principi guida per educare i giovani alla tecnologia', 105, 24, { align: 'center' });
 
-    const allRecs = Object.entries(window.tutteLeRaccomandazioniDB || {}).map(function([nome, data]) { return [nome, data.descrizione || ""]; });
+    const allRecs = Object.entries(window.tutteLeRaccomandazioniDB || {}).map(function(entry) { return [entry[0], entry[1].descrizione || ""]; });
 
     if (allRecs.length > 0) {
       doc.autoTable({
@@ -550,7 +550,7 @@
     doc.setFont('helvetica', 'normal');
     doc.text('Le regole che il tuo programma puo proporre', 105, 24, { align: 'center' });
 
-    const allRules = Object.entries(window.tutteLeRegoleDB || {}).map(function([nome, data]) { return [nome, data.descrizione || ""]; });
+    const allRules = Object.entries(window.tutteLeRegoleDB || {}).map(function(entry) { return [entry[0], entry[1].descrizione || ""]; });
     });
 
     if (allRules.length > 0) {
