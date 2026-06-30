@@ -1,14 +1,18 @@
 <!doctype html>
 <html lang="it">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Educazione Digitale Familiare</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 
 </head>
+
 <body>
 
   <!-- NAVBAR -->
@@ -21,10 +25,11 @@
       <a href="#come-funziona" class="nav-link-custom text-decoration-none me-4">Come funziona</a>
       <a href="#esperti" class="nav-link-custom text-decoration-none me-4">Esperti</a>
       <a href="#temi" class="nav-link-custom text-decoration-none me-4">Temi</a>
-      
+
 
       <div class="d-flex gap-2 ms-2">
-        <input class="search-bar" type="search" placeholder="Cerca la tua preoccupazione…" id="navSearch" autocomplete="off"/>
+        <input class="search-bar" type="search" placeholder="Cerca la tua preoccupazione…" id="navSearch"
+          autocomplete="off" />
         <button id="navSearchButton" class="btn-search"> Cerca</button>
       </div>
     </div>
@@ -40,8 +45,15 @@
     </h1>
 
     <p class="hero-sub">
-      Uno strumento pratico fondato su basi scientifiche: trasforma la teoria pedagogica in regole
-      concrete da applicare ogni giorno a casa, per accompagnare i tuoi figli nell'uso consapevole della tecnologia.
+      Uno strumento pratico basato su evidenze scientifiche, che trasforma la ricerca pedagogica in regole semplici da
+      applicare ogni giorno in famiglia, aiutando i genitori ad accompagnare i propri figli verso un uso consapevole
+      della tecnologia. I contenuti si ispirano ai contributi di Serge Tisseron, Pier Cesare Rivoltella e del progetto
+      Custodi Digitali, integrando anche le
+      <a href="{{ url_for('static', filename='docs/raccomandazioni_milano.pdf') }}" target="_blank"
+        rel="noopener noreferrer">
+        Raccomandazioni di Milano
+      </a>
+      per l'educazione digitale.
     </p>
 
     <div class="hero-cta-group">
@@ -60,8 +72,10 @@
 
       <div class="multi-search-wrap" id="searchWrap">
         <div class="search-input-row" id="row-0">
-          <input class="search-big" type="search" id="search0" placeholder="es. mio figlio passa troppo tempo sullo smartphone..."/>
-          <button class="btn-add" id="addBtn" onclick="aggiungiCampo()" title="Aggiungi un'altra preoccupazione">+</button>
+          <input class="search-big" type="search" id="search0"
+            placeholder="es. mio figlio passa troppo tempo sullo smartphone..." />
+          <button class="btn-add" id="addBtn" onclick="aggiungiCampo()"
+            title="Aggiungi un'altra preoccupazione">+</button>
         </div>
       </div>
 
@@ -125,96 +139,100 @@
   </section>
 
   <section class="science-section" id="esperti">
-      <div class="science-inner">
-        <div class="science-text">
-          <div class="section-label">Fondamenti pedagogici</div>
-          <h2 class="section-title">Non consigli casuali.<br>Scienza applicata.</h2>
-          <p class="section-sub">
-            Ogni indicazione è radicata in ricerche riconosciute. Ci affidiamo a metodologie
-            consolidate per offrire strumenti realmente efficaci.
-          </p>
-        </div>
-        <div class="expert-cards">
-          <div class="expert-card">
-            <div class="expert-name">Serge Tisseron</div>
-            <div class="expert-method">Regola 3-6-9-12 · Autoregolazione</div>
-            <p class="expert-desc">Psichiatra e psicoanalista francese: definisce le tappe di accesso ai media digitali per età, promuovendo lo sviluppo graduale dell'autocontrollo.</p>
-          </div>
-          <div class="expert-card">
-            <div class="expert-name">Pier Cesare Rivoltella</div>
-            <div class="expert-method">Pedagogia dell'Attenzione</div>
-            <p class="expert-desc">Professore all'Università Cattolica di Milano: studia come i media influenzano l'attenzione nei minori e le strategie educative più efficaci.</p>
-          </div>
-          <div class="expert-card">
-            <div class="expert-name">Custodi Digitali</div>
-            <div class="expert-method">Linee guida preventive</div>
-            <p class="expert-desc">Associazione italiana di riferimento per la promozione di un uso sicuro e consapevole delle tecnologie da parte di bambini e ragazzi.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TEMI PRINCIPALI -->
-    <section class="topics-section" id="temi">
-      <div class="section-label">Aree di intervento</div>
-      <h2 class="section-title">Esplora i temi principali</h2>
-      <p class="section-sub">
-        Seleziona l'area che ti preoccupa di più per accedere al percorso guidato dedicato.
-      </p>
-      <div class="topics-grid">
-        <a href="#" class="topic-card">
-          <div class="topic-icon" style="background: #E1F5EE;">📱</div>
-          <h3>Dipendenza dagli schermi</h3>
-          <p>Riconoscere i segnali di uso compulsivo e costruire regole di utilizzo sane e condivise.</p>
-          <span class="topic-link">Inizia il percorso →</span>
-        </a>
-        <a href="#" class="topic-card">
-          <div class="topic-icon" style="background: #FAECE7;">🔞</div>
-          <h3>Contenuti inappropriati</h3>
-          <p>Strategie pratiche per la protezione e il dialogo aperto su ciò che i ragazzi incontrano online.</p>
-          <span class="topic-link">Inizia il percorso →</span>
-        </a>
-        <a href="#" class="topic-card">
-          <div class="topic-icon" style="background: #FAEEDA;">🔒</div>
-          <h3>Privacy e sicurezza online</h3>
-          <p>Educare alla protezione dei dati personali e alle buone pratiche digitali fin da piccoli.</p>
-          <span class="topic-link">Inizia il percorso →</span>
-        </a>
-        <a href="#" class="topic-card">
-          <div class="topic-icon" style="background: #E1F5EE;">😔</div>
-          <h3>Isolamento sociale</h3>
-          <p>Come distinguere relazioni online sane da dinamiche di ritiro dalla vita reale.</p>
-          <span class="topic-link">Inizia il percorso →</span>
-        </a>
-        <a href="#" class="topic-card">
-          <div class="topic-icon" style="background: #FAECE7;">💬</div>
-          <h3>Social media e cyberbullismo</h3>
-          <p>Riconoscere, prevenire e affrontare situazioni di disagio legate all'uso dei social.</p>
-          <span class="topic-link">Inizia il percorso →</span>
-        </a>
-        <a href="#" class="topic-card">
-          <div class="topic-icon" style="background: #FAEEDA;">🎮</div>
-          <h3>Videogiochi e gaming</h3>
-          <p>Regolare il tempo di gioco senza conflitti, valorizzando anche gli aspetti positivi.</p>
-          <span class="topic-link">Inizia il percorso →</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- CTA FINALE -->
-    <section class="cta-section">
-      <div class="cta-inner">
-        <h2>Pronto a iniziare?</h2>
-        <p>
-          Seleziona la tua preoccupazione, completa il test e ricevi un piano personalizzato
-          in PDF con regole chiare per la tua famiglia. Bastano pochi minuti.
+    <div class="science-inner">
+      <div class="science-text">
+        <div class="section-label">Fondamenti pedagogici</div>
+        <h2 class="section-title">Non consigli casuali.<br>Scienza applicata.</h2>
+        <p class="section-sub">
+          Ogni indicazione è radicata in ricerche riconosciute. Ci affidiamo a metodologie
+          consolidate per offrire strumenti realmente efficaci.
         </p>
-        <a href="#cerca" class="btn-primary-hero" style="background: #BA7517;">Trova la tua soluzione</a>
       </div>
-    </section>
-  
+      <div class="expert-cards">
+        <div class="expert-card">
+          <div class="expert-name">Serge Tisseron</div>
+          <div class="expert-method">Regola 3-6-9-12 · Autoregolazione</div>
+          <p class="expert-desc">Psichiatra e psicoanalista francese: definisce le tappe di accesso ai media digitali
+            per età, promuovendo lo sviluppo graduale dell'autocontrollo.</p>
+        </div>
+        <div class="expert-card">
+          <div class="expert-name">Pier Cesare Rivoltella</div>
+          <div class="expert-method">Pedagogia dell'Attenzione</div>
+          <p class="expert-desc">Professore all'Università Cattolica di Milano: studia come i media influenzano
+            l'attenzione nei minori e le strategie educative più efficaci.</p>
+        </div>
+        <div class="expert-card">
+          <div class="expert-name">Custodi Digitali</div>
+          <div class="expert-method">Linee guida preventive</div>
+          <p class="expert-desc">Associazione italiana di riferimento per la promozione di un uso sicuro e consapevole
+            delle tecnologie da parte di bambini e ragazzi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEMI PRINCIPALI -->
+  <section class="topics-section" id="temi">
+    <div class="section-label">Aree di intervento</div>
+    <h2 class="section-title">Esplora i temi principali</h2>
+    <p class="section-sub">
+      Seleziona l'area che ti preoccupa di più per accedere al percorso guidato dedicato.
+    </p>
+    <div class="topics-grid">
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #E1F5EE;">📱</div>
+        <h3>Dipendenza dagli schermi</h3>
+        <p>Riconoscere i segnali di uso compulsivo e costruire regole di utilizzo sane e condivise.</p>
+        <span class="topic-link">Inizia il percorso →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAECE7;">🔞</div>
+        <h3>Contenuti inappropriati</h3>
+        <p>Strategie pratiche per la protezione e il dialogo aperto su ciò che i ragazzi incontrano online.</p>
+        <span class="topic-link">Inizia il percorso →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAEEDA;">🔒</div>
+        <h3>Privacy e sicurezza online</h3>
+        <p>Educare alla protezione dei dati personali e alle buone pratiche digitali fin da piccoli.</p>
+        <span class="topic-link">Inizia il percorso →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #E1F5EE;">😔</div>
+        <h3>Isolamento sociale</h3>
+        <p>Come distinguere relazioni online sane da dinamiche di ritiro dalla vita reale.</p>
+        <span class="topic-link">Inizia il percorso →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAECE7;">💬</div>
+        <h3>Social media e cyberbullismo</h3>
+        <p>Riconoscere, prevenire e affrontare situazioni di disagio legate all'uso dei social.</p>
+        <span class="topic-link">Inizia il percorso →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAEEDA;">🎮</div>
+        <h3>Videogiochi e gaming</h3>
+        <p>Regolare il tempo di gioco senza conflitti, valorizzando anche gli aspetti positivi.</p>
+        <span class="topic-link">Inizia il percorso →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- CTA FINALE -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2>Pronto a iniziare?</h2>
+      <p>
+        Seleziona la tua preoccupazione, completa il test e ricevi un piano personalizzato
+        in PDF con regole chiare per la tua famiglia. Bastano pochi minuti.
+      </p>
+      <a href="#cerca" class="btn-primary-hero" style="background: #BA7517;">Trova la tua soluzione</a>
+    </div>
+  </section>
+
 
   <script src="js/app.js"></script>
   <script src="js/search.js"></script>
 </body>
+
 </html>

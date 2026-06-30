@@ -152,7 +152,8 @@ async function getAppData(forceRefresh = false) {
   if (payload) {
     const data = mapRemoteData(payload);
     try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() })); } catch (e) {}
-    return { data, source: 'google' };
+    window.appDataGlobal = { data, source: 'google' };
+  return { data, source: 'google' };
   }
   return { data: { categories: {}, keywords: [], testQuestions: [], rules: {}, activities: {}, recommendations: {} }, source: 'fallback' };
 }

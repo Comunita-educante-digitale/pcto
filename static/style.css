@@ -631,10 +631,6 @@ footer {
   transform: translateY(-100%);
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-/* SEARCH SECTION AGGIORNATA */
-=======
 /* SEARCH SECTION AGGIORNATA */
 .search-section {
   background: white;
@@ -647,7 +643,6 @@ footer {
   text-align: center;
 }
 
->>>>>>> famlonga
 .search-eyebrow {
   display: inline-block;
   background: var(--teal-light);
@@ -699,7 +694,6 @@ footer {
   background: #e0ddd5;
 }
 
-<<<<<<< HEAD
 .test-banner {
   display: flex;
   align-items: center;
@@ -735,12 +729,12 @@ footer {
     flex-direction: column;
     text-align: center;
   }
+
   .test-banner-text {
     text-align: center;
   }
-=======
-=======
->>>>>>> famlonga
+}
+
 /* Autocomplete dropdown for navbar search */
 .autocomplete-list {
   position: absolute;
@@ -750,17 +744,18 @@ footer {
   border-radius: 8px;
   max-height: 240px;
   overflow-y: auto;
-  width: 380px; /* match .search-bar */
+  width: 380px;
   z-index: 120;
 }
+
 .autocomplete-item {
   padding: 0.5rem 0.9rem;
   cursor: pointer;
   font-size: 0.95rem;
   color: var(--text-main);
 }
+
 .autocomplete-item:hover,
 .autocomplete-item.active {
   background: #F4F8F6;
->>>>>>> famlonga
 }
