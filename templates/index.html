@@ -18,20 +18,16 @@
   <!-- NAVBAR -->
   <nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2">
     <a class="navbar-brand-text text-decoration-none" href="#">
-      🌿 Educazione Digitale Familiare
+      🌿 Comunità educante digitale
     </a>
 
     <div class="d-flex align-items-center gap-2 flex-wrap">
+      <a href="#Che cos'è?" class="nav-link-custom text-decoration-none me-4">Che cos'è?</a>
       <a href="#come-funziona" class="nav-link-custom text-decoration-none me-4">Come funziona</a>
-      <a href="#esperti" class="nav-link-custom text-decoration-none me-4">Esperti</a>
-      <a href="#temi" class="nav-link-custom text-decoration-none me-4">Temi</a>
+      <a href="#esperti" class="nav-link-custom text-decoration-none me-4">Riferimenti teorici</a>
+      <a href="#temi" class="nav-link-custom text-decoration-none me-4">Categorie di rischio</a>
+      <a href="#Chi siamo?" class="nav-link-custom text-decoration-none me-4">Chi siamo?</a>
 
-
-      <div class="d-flex gap-2 ms-2">
-        <input class="search-bar" type="search" placeholder="Cerca la tua preoccupazione…" id="navSearch"
-          autocomplete="off" />
-        <button id="navSearchButton" class="btn-search"> Cerca</button>
-      </div>
     </div>
   </nav>
 
@@ -40,16 +36,16 @@
     <span class="hero-eyebrow">Guida interattiva per genitori</span>
 
     <h1>
-      Naviga il digitale<br>
-      <em>insieme alla tua famiglia</em>
+      Educazione digitale familiare<br>
+      <em></em>
     </h1>
-
+    <h3 class="hero-subtitle">Dalle preoccupazioni a un patto digitale di famiglia</h3>
     <p class="hero-sub">
       Uno strumento pratico basato su evidenze scientifiche, che trasforma la ricerca pedagogica in regole semplici da
       applicare ogni giorno in famiglia, aiutando i genitori ad accompagnare i propri figli verso un uso consapevole
       della tecnologia. I contenuti si ispirano ai contributi di Serge Tisseron, Pier Cesare Rivoltella e del progetto
       Custodi Digitali, integrando anche le
-      <a href="{{ url_for('static', filename='docs/raccomandazioni_milano.pdf') }}" target="_blank"
+      <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank"
         rel="noopener noreferrer">
         Raccomandazioni di Milano
       </a>
@@ -131,7 +127,7 @@
 
       <div class="step-card">
         <div class="step-number gray">4</div>
-        <h3>Piano PDF scaricabile</h3>
+        <h3>Patto PDF scaricabile</h3>
         <p>Un documento con regole chiare e graduali da tenere a casa.</p>
       </div>
 
@@ -183,40 +179,74 @@
         <div class="topic-icon" style="background: #E1F5EE;">📱</div>
         <h3>Dipendenza dagli schermi</h3>
         <p>Riconoscere i segnali di uso compulsivo e costruire regole di utilizzo sane e condivise.</p>
-        <span class="topic-link">Inizia il percorso →</span>
+        <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card">
         <div class="topic-icon" style="background: #FAECE7;">🔞</div>
         <h3>Contenuti inappropriati</h3>
         <p>Strategie pratiche per la protezione e il dialogo aperto su ciò che i ragazzi incontrano online.</p>
-        <span class="topic-link">Inizia il percorso →</span>
+        <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card">
         <div class="topic-icon" style="background: #FAEEDA;">🔒</div>
         <h3>Privacy e sicurezza online</h3>
         <p>Educare alla protezione dei dati personali e alle buone pratiche digitali fin da piccoli.</p>
-        <span class="topic-link">Inizia il percorso →</span>
+        <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card">
         <div class="topic-icon" style="background: #E1F5EE;">😔</div>
         <h3>Isolamento sociale</h3>
         <p>Come distinguere relazioni online sane da dinamiche di ritiro dalla vita reale.</p>
-        <span class="topic-link">Inizia il percorso →</span>
+        <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card">
         <div class="topic-icon" style="background: #FAECE7;">💬</div>
         <h3>Social media e cyberbullismo</h3>
         <p>Riconoscere, prevenire e affrontare situazioni di disagio legate all'uso dei social.</p>
-        <span class="topic-link">Inizia il percorso →</span>
+        <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card">
         <div class="topic-icon" style="background: #FAEEDA;">🎮</div>
         <h3>Videogiochi e gaming</h3>
         <p>Regolare il tempo di gioco senza conflitti, valorizzando anche gli aspetti positivi.</p>
-        <span class="topic-link">Inizia il percorso →</span>
+        <span class="topic-link">Approfondisci →</span>
       </a>
     </div>
   </section>
+
+
+<!-- PRIVACY -->
+<section class="privacy-section">
+  <div class="privacy-inner">
+
+    <div class="section-label">Tutela dei dati</div>
+
+    <h2 class="section-title">La tua privacy è una priorità</h2>
+
+    <p class="section-sub">
+      Questo strumento è progettato nel rispetto della riservatezza degli utenti e dei principi di protezione dei dati personali.
+    </p>
+
+    <div class="privacy-text">
+      <p>
+        I dati inseriti durante l’utilizzo del sito (come le preoccupazioni espresse o le risposte ai test) non vengono salvati, archiviati o condivisi con terze parti.
+      </p>
+
+      <p>
+        Le informazioni vengono elaborate esclusivamente in tempo reale per fornire suggerimenti educativi personalizzati e vengono eliminate al termine della sessione.
+      </p>
+
+      <p>
+        Il progetto aderisce ai principi del <strong>Regolamento Generale sulla Protezione dei Dati (GDPR)</strong>, garantendo trasparenza, minimizzazione dei dati e utilizzo responsabile delle informazioni.
+      </p>
+
+      <p>
+        Nessun dato personale viene utilizzato a fini commerciali o di profilazione.
+      </p>
+    </div>
+
+  </div>
+</section>
 
   <!-- CTA FINALE -->
   <section class="cta-section">
