@@ -759,31 +759,3 @@ footer {
 .autocomplete-item.active {
   background: #F4F8F6;
 }
-
-
-
-
-
-
-
-.privacy-section {
-  padding: 80px 20px;
-  background: #f7f7f5;
-}
-
-.privacy-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.privacy-text {
-  margin-top: 25px;
-  text-align: left;
-  line-height: 1.7;
-  color: var(--text-muted);
-}
-
-.privacy-text p {
-  margin-bottom: 15px;
-}
