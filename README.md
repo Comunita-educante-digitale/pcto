@@ -1,28 +1,19 @@
 # Educazione Digitale Familiare
 
-Sito statico per l'educazione digitale familiare. Nessun backend richiesto.
+App Angular per l'educazione digitale familiare. Nessun backend richiesto:
+il browser fa fetch diretto a Google Apps Script all'avvio, con cache in
+`localStorage` (TTL 5 minuti).
 
-## Architettura
+Il sorgente vive in [`angular-app/`](angular-app/README.md) — vedi il suo
+README per struttura, sviluppo e build.
 
-Il browser fa fetch diretto a Google Apps Script all'avvio della pagina, con cache in localStorage (TTL 5 minuti).
+## Deploy su GitHub Pages
 
-## File principali
+Il workflow `.github/workflows/deploy.yml` compila l'app
+(`npm run build:pages`: base-href `/pcto/` + fallback SPA `404.html`) e
+pubblica `dist/angular-app/browser` sul branch `gh-pages`.
 
-- `index.html`, `test.html`, `risultati.html`, `test_risultati.html` - pagine del sito
-- `js/app.js` - logica di fetch dati, cache, ricerca
-- `js/search.js` - gestione UI di ricerca e autocomplete
-- `style.css` - stili
+Si avvia **manualmente** dalla tab Actions (Run workflow), così un push del
+branch non sovrascrive il sito live per errore.
 
-## Deploy
-
-### GitHub Pages
-
-Il workflow in `.github/workflows/deploy.yml` builda automaticamente il sito su push al branch e lo pubblica sul branch `gh-pages`.
-
-Vai su Settings → Pages → Branch: `gh-pages` → / (root)
-
-### Netlify
-
-1. Collega il repository
-2. Build command: (nessuno)
-3. Publish directory: `.`
+Configurazione Pages: Settings → Pages → Branch: `gh-pages` → / (root)
