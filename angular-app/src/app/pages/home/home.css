@@ -1,0 +1,13 @@
+.search-input-holder {
+  position: relative;
+  flex: 1;
+}
+.search-input-holder .search-big {
+  width: 100%;
+}
+.search-input-holder .autocomplete-list {
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  text-align: left;
+}

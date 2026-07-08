@@ -1,0 +1,35 @@
+<nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <a class="navbar-brand-text text-decoration-none" routerLink="/">
+    🌿 Educazione Digitale Familiare
+  </a>
+  <a href="javascript:void(0)" (click)="indietro()" class="btn-search" style="text-decoration:none;font-size:0.9rem;">Indietro</a>
+</nav>
+
+<section style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
+  <div class="section-label">Patto Familiare</div>
+  <h2 class="section-title">Crea il tuo patto familiare</h2>
+  <p class="section-sub">Rispondi alle domande. Alla fine riceverai le regole consigliate per la tua famiglia.</p>
+
+  <div style="background:#e0ddd5;border-radius:40px;height:6px;margin-bottom:2rem;">
+    <div style="background:var(--teal-mid);height:6px;border-radius:40px;transition:width 0.3s;" [style.width.%]="progress"></div>
+  </div>
+
+  @if (loading()) {
+    <p style="color:var(--text-muted)">Caricamento domande...</p>
+  } @else if (errore()) {
+    <p style="color:#D85A30;">Errore: {{ errore() }}</p>
+  } @else if (nessunaDomanda()) {
+    <p style="color:#D85A30;">Nessuna domanda trovata per queste categorie.</p>
+  } @else if (domandaCorrente; as d) {
+    <div class="step-card" style="padding:2rem;">
+      <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.8rem;">
+        Domanda {{ current() + 1 }} di {{ domande().length }}
+      </div>
+      <h3 style="font-family:Lora,serif;font-size:1.2rem;margin-bottom:2rem;">{{ d.domanda }}</h3>
+      <div style="display:flex;gap:1rem;justify-content:center;">
+        <button class="btn-primary-hero" style="min-width:120px;" (click)="rispondi(d.se_si || '')">SI</button>
+        <button class="btn-secondary-hero" style="min-width:120px;" (click)="rispondi(d.se_no || '')">NO</button>
+      </div>
+    </div>
+  }
+</section>
