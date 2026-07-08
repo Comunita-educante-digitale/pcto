@@ -497,6 +497,117 @@ footer {
   gap: 0.3rem;
 }
 
+/* ABOUT */
+
+.about-section {
+  background: #f7f4ed;
+  padding: 4rem 2rem;
+}
+
+.about-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.about-card {
+  background: white;
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius-lg);
+  padding: 1.4rem;
+}
+
+.about-card p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.about-card a {
+  color: var(--teal-dark);
+  font-weight: 600;
+}
+
+.about-card-wide {
+  grid-column: span 2;
+}
+
+.about-role {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--teal-mid);
+  margin-bottom: 0.45rem;
+}
+
+.about-name {
+  color: var(--gray-dark);
+  font-family: 'Lora', serif;
+  font-size: 1.2rem;
+}
+
+/* PRIVACY */
+
+.privacy-section {
+  padding: 4rem 2rem;
+  background:
+    radial-gradient(circle at top right, rgba(225, 245, 238, 0.9), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #f6faf8 100%);
+}
+
+.privacy-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.privacy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.privacy-card {
+  background: white;
+  border: 1px solid #dbe9e2;
+  border-radius: var(--radius-lg);
+  padding: 1.4rem;
+  box-shadow: 0 10px 24px rgba(8, 80, 65, 0.06);
+}
+
+.privacy-card-highlight {
+  background: var(--teal-dark);
+  border-color: var(--teal-dark);
+}
+
+.privacy-card-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--teal-mid);
+  margin-bottom: 0.6rem;
+}
+
+.privacy-card p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.privacy-card-highlight .privacy-card-title {
+  color: #9fe1cb;
+}
+
+.privacy-card-highlight p {
+  color: #f2fbf7;
+}
+
 /* ─────────────────────────────
    CTA FINALE
 ───────────────────────────── */
@@ -549,6 +660,10 @@ footer {
   .science-inner {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .about-card-wide {
+    grid-column: span 1;
   }
 
 }
