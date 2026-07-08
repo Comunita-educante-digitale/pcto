@@ -77,6 +77,21 @@ export function slugify(value: unknown): string {
   return normalizeText(value).replace(/\s+/g, '-');
 }
 
+// Parole troppo generiche per contare come sovrapposizione significativa tra
+// la preoccupazione dell'utente e le frasi chiave del database
+const STOPWORDS = new Set([
+  'non', 'per', 'che', 'con', 'come', 'del', 'dei', 'dello', 'della', 'delle', 'degli',
+  'nel', 'nella', 'nelle', 'sul', 'sullo', 'sulla', 'sui', 'alla', 'alle', 'allo', 'agli',
+  'mio', 'mia', 'miei', 'mie', 'suo', 'sua', 'suoi', 'sue', 'gli', 'una', 'uno',
+  'ancora', 'anche', 'quando', 'sempre', 'mai', 'cosa', 'fare', 'essere', 'avere',
+  'viene', 'stato', 'solo', 'tutto', 'tutti', 'tutta', 'tutte', 'poco', 'molto',
+  'qualcosa', 'qualcuno'
+]);
+
+function significantTokens(normalized: string): string[] {
+  return normalized.split(/\s+/).filter(t => t.length > 2 && !STOPWORDS.has(t));
+}
+
 function getObjectEntries(value: unknown): [string, unknown][] {
   if (value && typeof value === 'object' && !Array.isArray(value)) return Object.entries(value);
   return [];
@@ -204,7 +219,17 @@ function findMatchingCategoriesForQuery(query: string, data: AppData): string[] 
       isMatch = true;
     } else if (queryTokens.length > 0) {
       const phraseTokens = normalizedPhrase.split(/\s+/).filter(t => t.length > 2);
-      if (phraseTokens.length > 0 && (phraseTokens.every(t => queryTokens.includes(t)) || queryTokens.every(t => phraseTokens.includes(t)))) isMatch = true;
+      if (phraseTokens.length > 0 && (phraseTokens.every(t => queryTokens.includes(t)) || queryTokens.every(t => phraseTokens.includes(t)))) {
+        isMatch = true;
+      } else {
+        // Match parziale: almeno 2 parole significative in comune che coprano
+        // metà della frase chiave (tollera frasi libere tipo
+        // "mio figlio passa troppo tempo sullo smartphone")
+        const querySignificant = significantTokens(normalizedQuery);
+        const phraseSignificant = significantTokens(normalizedPhrase);
+        const comuni = phraseSignificant.filter(t => querySignificant.includes(t));
+        if (comuni.length >= 2 && comuni.length >= Math.ceil(phraseSignificant.length / 2)) isMatch = true;
+      }
     }
     if (isMatch) {
       for (const categoryName of item.categorie ?? []) {

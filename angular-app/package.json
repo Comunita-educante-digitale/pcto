@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:pages": "ng build --base-href /pcto/ && cp dist/angular-app/browser/index.html dist/angular-app/browser/404.html",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

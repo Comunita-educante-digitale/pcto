@@ -29,10 +29,22 @@ npm start        # ng serve su http://localhost:4200
 ## Build di produzione
 
 ```bash
-npm run build    # output in dist/angular-app/browser
+npm run build          # output in dist/angular-app/browser
+npm run build:pages    # build per GitHub Pages: base-href /pcto/ + 404.html (fallback SPA)
 ```
 
-Nota: essendo una SPA con routing sui path (`/risultati`, `/test`,
-`/test-risultati`), per il deploy su GitHub Pages serve il fallback SPA
-(copiare `index.html` in `404.html` nella cartella pubblicata) e l'opzione
-`--base-href` adeguata al percorso del sito.
+## Deploy su GitHub Pages
+
+Il workflow `.github/workflows/deploy.yml` di questo branch compila l'app con
+`build:pages` e pubblica `dist/angular-app/browser` sul branch `gh-pages`.
+Si avvia **manualmente** dalla tab Actions (Run workflow), così un push del
+branch di lavoro non sovrascrive il sito live per errore.
+
+## Ricerca
+
+Oltre al matching originale (frase esatta, contenimento, sottoinsieme di
+parole), la ricerca accetta frasi libere: una frase chiave del database fa
+match se condivide con la query almeno 2 parole significative (escluse le
+stopword italiane) che coprono metà della frase chiave. Ad esempio
+"mio figlio passa troppo tempo sullo smartphone" trova le categorie legate a
+dipendenza, isolamento e salute, mentre una frase fuori tema non trova nulla.
