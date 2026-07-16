@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DataService } from '../../services/data.service';
+import { DataService, Categoria } from '../../services/data.service';
 
 const MAX_CAMPI = 3;
 
@@ -14,6 +14,7 @@ const MAX_CAMPI = 3;
 export class Home implements OnInit {
   private data = inject(DataService);
   private router = inject(Router);
+  categories = signal<Categoria[]>([]);
 
   campi = signal<string[]>(['']);
   navbarHidden = signal(false);
@@ -27,6 +28,9 @@ export class Home implements OnInit {
 
   ngOnInit(): void {
     this.data.getKeywords().then(k => (this.suggestions = k)).catch(() => (this.suggestions = []));
+    this.data.getCategorie()
+      .then(c => this.categories.set(Object.values(c)))
+      .catch(() => this.categories.set([]));
   }
 
   @HostListener('window:scroll')

@@ -23,16 +23,17 @@
   </h1>
   <h3 class="hero-subtitle">Dalle preoccupazioni a un patto digitale di famiglia</h3>
   <p class="hero-sub">
-    Uno strumento pratico basato su evidenze scientifiche, che trasforma la ricerca pedagogica in regole semplici da
-    applicare ogni giorno in famiglia, aiutando i genitori ad accompagnare i propri figli verso un uso consapevole
-    della tecnologia. I contenuti si ispirano ai contributi di Serge Tisseron, Pier Cesare Rivoltella e del progetto
-    Custodi Digitali, integrando anche le
-    <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank"
-      rel="noopener noreferrer">
-      Raccomandazioni di Milano
-    </a>
-    per l'educazione digitale.
-  </p>
+  Uno strumento pratico basato su evidenze scientifiche, che trasforma la ricerca pedagogica in regole semplici da
+  applicare ogni giorno in famiglia, aiutando i genitori ad accompagnare i propri figli verso un uso consapevole
+  della tecnologia. <br>Non si tratta di un'app individuale, ma di uno strumento della comunità educante nato da un lavoro collettivo.
+  I contenuti si ispirano ai contributi di Serge Tisseron, Pier Cesare Rivoltella e del progetto
+  Custodi Digitali, integrando anche le
+  <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank"
+    rel="noopener noreferrer">
+    Raccomandazioni di Milano
+  </a>
+   per l'educazione digitale.
+</p>
 
   <div class="hero-cta-group">
     <a href="#cerca" class="btn-primary-hero">Inizia dalla tua preoccupazione</a>
@@ -175,42 +176,53 @@
     Seleziona l'area che ti preoccupa di più per accedere al percorso guidato dedicato.
   </p>
   <div class="topics-grid">
-    <a href="#" class="topic-card">
-      <div class="topic-icon" style="background: #E1F5EE;">📱</div>
-      <h3>Dipendenza dagli schermi</h3>
-      <p>Riconoscere i segnali di uso compulsivo e costruire regole di utilizzo sane e condivise.</p>
-      <span class="topic-link">Approfondisci →</span>
-    </a>
-    <a href="#" class="topic-card">
-      <div class="topic-icon" style="background: #FAECE7;">🔞</div>
-      <h3>Contenuti inappropriati</h3>
-      <p>Strategie pratiche per la protezione e il dialogo aperto su ciò che i ragazzi incontrano online.</p>
-      <span class="topic-link">Approfondisci →</span>
-    </a>
-    <a href="#" class="topic-card">
-      <div class="topic-icon" style="background: #FAEEDA;">🔒</div>
-      <h3>Privacy e sicurezza online</h3>
-      <p>Educare alla protezione dei dati personali e alle buone pratiche digitali fin da piccoli.</p>
-      <span class="topic-link">Approfondisci →</span>
-    </a>
-    <a href="#" class="topic-card">
-      <div class="topic-icon" style="background: #E1F5EE;">😔</div>
-      <h3>Isolamento sociale</h3>
-      <p>Come distinguere relazioni online sane da dinamiche di ritiro dalla vita reale.</p>
-      <span class="topic-link">Approfondisci →</span>
-    </a>
-    <a href="#" class="topic-card">
-      <div class="topic-icon" style="background: #FAECE7;">💬</div>
-      <h3>Social media e cyberbullismo</h3>
-      <p>Riconoscere, prevenire e affrontare situazioni di disagio legate all'uso dei social.</p>
-      <span class="topic-link">Approfondisci →</span>
-    </a>
-    <a href="#" class="topic-card">
-      <div class="topic-icon" style="background: #FAEEDA;">🎮</div>
-      <h3>Videogiochi e gaming</h3>
-      <p>Regolare il tempo di gioco senza conflitti, valorizzando anche gli aspetti positivi.</p>
-      <span class="topic-link">Approfondisci →</span>
-    </a>
+    @if (categories().length === 0) {
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #E1F5EE;">📱</div>
+        <h3>Dipendenza dagli schermi</h3>
+        <p>Riconoscere i segnali di uso compulsivo e costruire regole di utilizzo sane e condivise.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAECE7;">🔞</div>
+        <h3>Contenuti inappropriati</h3>
+        <p>Strategie pratiche per la protezione e il dialogo aperto su ciò che i ragazzi incontrano online.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAEEDA;">🔒</div>
+        <h3>Privacy e sicurezza online</h3>
+        <p>Educare alla protezione dei dati personali e alle buone pratiche digitali fin da piccoli.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #E1F5EE;">😔</div>
+        <h3>Isolamento sociale</h3>
+        <p>Come distinguere relazioni online sane da dinamiche di ritiro dalla vita reale.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAECE7;">💬</div>
+        <h3>Social media e cyberbullismo</h3>
+        <p>Riconoscere, prevenire e affrontare situazioni di disagio legate all'uso dei social.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAEEDA;">🎮</div>
+        <h3>Videogiochi e gaming</h3>
+        <p>Regolare il tempo di gioco senza conflitti, valorizzando anche gli aspetti positivi.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+    } @else {
+      @for (cat of categories(); track cat.id) {
+        <a [href]="cat.link || '#'" class="topic-card" target="_blank" rel="noopener noreferrer">
+          <div class="topic-icon" style="background: #E1F5EE;">📚</div>
+          <h3>{{ cat.nome }}</h3>
+          <p>{{ cat.descrizione }}</p>
+          <span class="topic-link">Approfondisci →</span>
+        </a>
+      }
+    }
   </div>
 </section>
 
