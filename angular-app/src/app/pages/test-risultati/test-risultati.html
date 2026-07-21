@@ -1,0 +1,89 @@
+<nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <a class="navbar-brand-text text-decoration-none" routerLink="/">
+    🌿 Educazione Digitale Familiare
+  </a>
+  <a routerLink="/" class="btn-search" style="text-decoration:none;font-size:0.9rem;">Torna alla home</a>
+</nav>
+
+<section style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
+  <div class="section-label">Risultati del test (Queste regole nascono dalle tue risposte)</div>
+  <h2 class="section-title">Il vostro accordo digitale</h2>
+  <p class="section-sub">Ecco le attività pratiche e le regole selezionate in base alle tue risposte. Clicca su ognuna per leggere i dettagli oppure cestinala se non la ritieni importante.</p>
+
+  @if (loading()) {
+    <p style="color:var(--text-muted)">Caricamento...</p>
+  } @else if (errore()) {
+    <p style="color:#D85A30;">Errore nel caricamento del patto familiare.</p>
+  } @else if (patto().length === 0) {
+    <p style="color:var(--text-muted)">Complimenti non riusciamo a trovare nessuna attività utile nella tua situazione, se riscontri dubbi ti consigliamo di rivolgerti al tuo pediatra.</p>
+  } @else {
+    @for (categoria of patto(); track categoria.id; let categoriaIndex = $index) {
+      <div class="risultato-card" style="margin-bottom:1.5rem;">
+        <div class="risultato-header">
+          <div class="risultato-header-left">
+            <span class="risultato-nome">📚 {{ categoria.info.nome || categoria.id }}</span>
+          </div>
+        </div>
+        <div class="risultato-desc" style="display:block;">
+          <p>{{ categoria.info.descrizione || '' }}</p>
+          <div style="margin-top:1rem;">
+            @if (conteggioAttivita(categoria) === 0) {
+              <div style="background:#f4fbf9; border-left:4px solid #14b8a6; padding:1rem; border-radius:8px; margin-top:1rem;">
+                <p style="color:#115e59; font-weight:500; margin:0; font-size:0.95rem; line-height:1.4;">Complimenti non riusciamo a trovare nessuna attività utile nella tua situazione, se riscontri dubbi ti consigliamo di rivolgerti al tuo pediatra.</p>
+              </div>
+            } @else {
+              @for (regola of categoria.regole; track regola.nome; let regolaIndex = $index) {
+                @if (regola.attivita && regola.attivita.length > 0) {
+                  <div style="background:var(--teal-light);border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.75rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.75rem;">
+                      <div style="font-weight:700;color:var(--teal-dark);font-size:1rem;">{{ regola.dati.icona || '📌' }} {{ regola.nome }}</div>
+                      <button class="btn-elimina-regola" (click)="eliminaRegola(categoriaIndex, regolaIndex)" title="Rimuovi questa regola">🗑️</button>
+                    </div>
+                    <p style="margin:0.4rem 0 0;color:var(--text-muted);font-size:0.87rem;">{{ regola.dati.descrizione || '' }}</p>
+                    @if (regola.dati.raccomandazione) {
+                      <div style="font-size:0.8rem;color:var(--teal-mid);margin-top:0.4rem;">
+                        <b>Raccomandazione:</b>
+                        @if (regola.dati.linkRaccomandazione) {
+                          <a [href]="regola.dati.linkRaccomandazione" target="_blank" style="color:var(--teal-mid);font-weight:700;">{{ regola.dati.raccomandazione }}</a>
+                        } @else {
+                          {{ regola.dati.raccomandazione }}
+                        }
+                      </div>
+                    }
+                  </div>
+                  <div style="margin-left:1.5rem;margin-bottom:1rem;">
+                    @for (attivita of regola.attivita; track attivita.nome; let attivitaIndex = $index) {
+                      <div style="border:1px solid #efe9de;border-radius:10px;padding:0.9rem 1rem;margin-bottom:0.5rem;background:#fcfbf7;">
+                        <div style="display:flex;justify-content:space-between;gap:0.5rem;align-items:flex-start;">
+                          <div style="font-size:0.95rem;font-weight:700;color:var(--teal-dark);">🛠️ {{ attivita.nome || '' }}</div>
+                          <button class="btn-elimina-regola" (click)="eliminaAttivita(categoriaIndex, regolaIndex, attivitaIndex)" title="Rimuovi questa attività">🗑️</button>
+                        </div>
+                        <div style="font-size:0.88rem;color:var(--text-muted);margin-top:0.3rem;">{{ attivita.descrizione || '' }}</div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--teal-mid);margin-top:0.3rem;">
+                          <div>
+                            @if (attivita.eta) { <span>👶 {{ attivita.eta }}&nbsp;&nbsp;</span> }
+                            @if (attivita.durata) { <span>⏱ {{ attivita.durata }}&nbsp;&nbsp;</span> }
+                            @if (attivita.frequenza) { <span>🔁 {{ attivita.frequenza }}</span> }
+                          </div>
+                          @if (attivita.approccio) {
+                            <a [href]="attivita.approccio" target="_blank" style="text-decoration:none;font-size:0.7rem;padding:4px 7px;background:#1e7a5f;color:white;border-radius:5px;display:inline-block;">Teoria</a>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+    <button class="btn-primary-hero" [disabled]="!pdfAbilitato()" (click)="downloadPDF()">Salva il patto in PDF</button>
+    <a routerLink="/test" [queryParams]="rifaiQueryParams" class="btn-secondary-hero">Rifai il test</a>
+    <a routerLink="/" class="btn-primary-hero">Torna alla home</a>
+  </div>
+</section>

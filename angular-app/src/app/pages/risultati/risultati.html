@@ -1,0 +1,40 @@
+<nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <a class="navbar-brand-text text-decoration-none" routerLink="/">
+    Educazione Digitale Familiare
+  </a>
+  <a routerLink="/" class="btn-search" style="text-decoration:none;font-size:0.9rem;">Nuova ricerca</a>
+</nav>
+
+<section style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
+  <div class="section-label">Risultati della tua ricerca</div>
+  <h2 class="section-title">Le aree piu rilevanti per te</h2>
+  <p class="section-sub">Clicca su una categoria per leggere la spiegazione ed eventiali approfondimenti teorici.</p>
+
+  @if (loading()) {
+    <p style="color:var(--text-muted)">Caricamento...</p>
+  } @else if (errore()) {
+    <p style="color:#D85A30;">Errore nel caricamento dei risultati.</p>
+  } @else {
+    @for (r of risultati(); track r.id) {
+      <div class="risultato-card">
+        <div class="risultato-header" (click)="toggle(r)">
+          <span class="risultato-nome">{{ r.nome }}</span>
+          <span class="risultato-arrow">{{ r.expanded ? '▲' : '▼' }}</span>
+        </div>
+        <div class="risultato-desc" [style.display]="r.expanded ? 'block' : 'none'">
+          <p>{{ r.descrizione }}</p>
+          @if (r.link) {
+            <div style="margin-top:1rem;">
+              <a [href]="r.link" target="_blank" class="btn-search" style="text-decoration:none;">Approfondisci →</a>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+
+  <div style="margin-top:2rem;text-align:center;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+    <a routerLink="/" class="btn-secondary-hero">Torna alla ricerca</a>
+    <a routerLink="/test" [queryParams]="pattoQueryParams" class="btn-primary-hero">Crea il tuo patto familiare</a>
+  </div>
+</section>

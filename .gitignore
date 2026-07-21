@@ -1,5 +1,3 @@
-__pycache__/
-*.pyc
-.venv/
 node_modules/
-.angular/
+*.log
+.claude/settings.local.json

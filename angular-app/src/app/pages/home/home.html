@@ -1,0 +1,324 @@
+<!-- NAVBAR -->
+<nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2" [class.navbar-hidden]="navbarHidden()">
+  <a class="navbar-brand-text text-decoration-none" href="#">
+    🌿 Comunità educante digitale
+  </a>
+
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <a href="#che-cose" class="nav-link-custom text-decoration-none me-4">Che cos'è?</a>
+    <a href="#come-funziona" class="nav-link-custom text-decoration-none me-4">Come funziona</a>
+    <a href="#esperti" class="nav-link-custom text-decoration-none me-4">Riferimenti teorici</a>
+    <a href="#temi" class="nav-link-custom text-decoration-none me-4">Categorie di rischio</a>
+    <a href="#chi-siamo" class="nav-link-custom text-decoration-none me-4">Chi siamo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="che-cose">
+  <span class="hero-eyebrow">Guida interattiva per genitori</span>
+
+  <h1>
+    Educazione digitale familiare<br>
+    <em></em>
+  </h1>
+  <h3 class="hero-subtitle">Dalle preoccupazioni a un patto digitale di famiglia</h3>
+  <p class="hero-sub">
+  Uno strumento pratico basato su evidenze scientifiche, che trasforma la ricerca pedagogica in regole semplici da
+  applicare ogni giorno in famiglia, aiutando i genitori ad accompagnare i propri figli verso un uso consapevole
+  della tecnologia. <br>Non si tratta di un'app individuale, ma di uno strumento della comunità educante nato da un lavoro collettivo.
+  I contenuti si ispirano ai contributi di Serge Tisseron, Pier Cesare Rivoltella e del progetto
+  Custodi Digitali, integrando anche le
+  <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank"
+    rel="noopener noreferrer">
+    Raccomandazioni di Milano
+  </a>
+   per l'educazione digitale.
+</p>
+
+  <div class="hero-cta-group">
+    <a href="#cerca" class="btn-primary-hero">Inizia dalla tua preoccupazione</a>
+    <a href="#come-funziona" class="btn-secondary-hero">Come funziona →</a>
+  </div>
+</section>
+
+<!-- RICERCA -->
+<section class="search-section" id="cerca">
+  <div class="search-section-inner">
+
+    <div class="search-eyebrow">Inizia da qui</div>
+    <h2>Qual è la tua preoccupazione?</h2>
+    <p>Descrivi la situazione con parole tue: ti mostreremo le aree più rilevanti con percorsi pratici.</p>
+
+    <div class="multi-search-wrap">
+      @for (campo of campi(); track ci; let ci = $index) {
+        <div class="search-input-row">
+          <div class="search-input-holder">
+            <input class="search-big" type="search" autocomplete="off"
+              [placeholder]="ci === 0 ? 'es. mio figlio passa troppo tempo sullo smartphone...' : 'Aggiungi un\'altra preoccupazione...'"
+              [ngModel]="campo"
+              (ngModelChange)="updateCampo(ci, $event)"
+              (focus)="onFocusCampo(ci)"
+              (blur)="onBlurCampo()"
+              (keydown)="onKeydown($event)" />
+            @if (activeInput() === ci && filtered().length > 0) {
+              <div class="autocomplete-list">
+                @for (m of filtered(); track m; let si = $index) {
+                  <div class="autocomplete-item" [class.active]="si === activeSuggestion()"
+                    (mousedown)="$event.preventDefault(); selectSuggestion(m)">{{ m }}</div>
+                }
+              </div>
+            }
+          </div>
+          @if (ci === 0 && canAddCampo) {
+            <button class="btn-add" (click)="aggiungiCampo()" title="Aggiungi un'altra preoccupazione">+</button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="search-actions">
+      <button class="btn-primary-hero" (click)="doSearch()">Cerca →</button>
+    </div>
+
+    <div class="search-divider"><span>oppure</span></div>
+
+    <div class="test-banner">
+      <div class="test-banner-text">
+        <strong>Non sai da dove iniziare?</strong>
+        <span>Rispondi a poche domande e scopri le tue aree di attenzione.</span>
+      </div>
+      <a routerLink="/test" class="btn-secondary-hero">Fai il test →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="how-section" id="come-funziona">
+
+  <div class="section-label">Il percorso</div>
+
+  <h2 class="section-title">
+    Dalla preoccupazione alla soluzione
+  </h2>
+
+  <p class="section-sub">
+    Ogni problema viene affrontato con un metodo strutturato in quattro passi.
+  </p>
+
+  <div class="steps-grid">
+
+    <div class="step-card">
+      <div class="step-number teal">1</div>
+      <h3>Test di valutazione</h3>
+      <p>Rispondi a domande mirate per capire la gravità della situazione.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number amber">2</div>
+      <h3>Spiegazione scientifica</h3>
+      <p>Comprendi il fenomeno grazie a teorie validate da esperti.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number coral">3</div>
+      <h3>Attività pratiche in famiglia</h3>
+      <p>Ricevi attività personalizzate da svolgere insieme ai tuoi figli.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number gray">4</div>
+      <h3>Patto PDF scaricabile</h3>
+      <p>Un documento con regole chiare e graduali da tenere a casa.</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="science-section" id="esperti">
+  <div class="science-inner">
+    <div class="science-text">
+      <div class="section-label">Fondamenti pedagogici</div>
+      <h2 class="section-title">Non consigli casuali.<br>Scienza applicata.</h2>
+      <p class="section-sub">
+        Ogni indicazione è radicata in ricerche riconosciute. Ci affidiamo a metodologie
+        consolidate per offrire strumenti realmente efficaci.
+      </p>
+    </div>
+    <div class="expert-cards">
+      <div class="expert-card">
+        <div class="expert-name">Serge Tisseron</div>
+        <div class="expert-method">Regola 3-6-9-12 · Autoregolazione</div>
+        <p class="expert-desc">Psichiatra e psicoanalista francese: definisce le tappe di accesso ai media digitali
+          per età, promuovendo lo sviluppo graduale dell'autocontrollo.</p>
+      </div>
+      <div class="expert-card">
+        <div class="expert-name">Pier Cesare Rivoltella</div>
+        <div class="expert-method">Pedagogia dell'Attenzione</div>
+        <p class="expert-desc">Professore all'Università Cattolica di Milano: studia come i media influenzano
+          l'attenzione nei minori e le strategie educative più efficaci.</p>
+      </div>
+      <div class="expert-card">
+        <div class="expert-name">Custodi Digitali</div>
+        <div class="expert-method">Linee guida preventive</div>
+        <p class="expert-desc">Associazione italiana di riferimento per la promozione di un uso sicuro e consapevole
+          delle tecnologie da parte di bambini e ragazzi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMI PRINCIPALI -->
+<section class="topics-section" id="temi">
+  <div class="section-label">Aree di intervento</div>
+  <h2 class="section-title">Esplora i temi principali</h2>
+  <p class="section-sub">
+    Seleziona l'area che ti preoccupa di più per accedere al percorso guidato dedicato.
+  </p>
+  <div class="topics-grid">
+    @if (categories().length === 0) {
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #E1F5EE;">📱</div>
+        <h3>Dipendenza dagli schermi</h3>
+        <p>Riconoscere i segnali di uso compulsivo e costruire regole di utilizzo sane e condivise.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAECE7;">🔞</div>
+        <h3>Contenuti inappropriati</h3>
+        <p>Strategie pratiche per la protezione e il dialogo aperto su ciò che i ragazzi incontrano online.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAEEDA;">🔒</div>
+        <h3>Privacy e sicurezza online</h3>
+        <p>Educare alla protezione dei dati personali e alle buone pratiche digitali fin da piccoli.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #E1F5EE;">😔</div>
+        <h3>Isolamento sociale</h3>
+        <p>Come distinguere relazioni online sane da dinamiche di ritiro dalla vita reale.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAECE7;">💬</div>
+        <h3>Social media e cyberbullismo</h3>
+        <p>Riconoscere, prevenire e affrontare situazioni di disagio legate all'uso dei social.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+      <a href="#" class="topic-card">
+        <div class="topic-icon" style="background: #FAEEDA;">🎮</div>
+        <h3>Videogiochi e gaming</h3>
+        <p>Regolare il tempo di gioco senza conflitti, valorizzando anche gli aspetti positivi.</p>
+        <span class="topic-link">Approfondisci →</span>
+      </a>
+    } @else {
+      @for (cat of categories(); track cat.id) {
+        <a [href]="cat.link || '#'" class="topic-card" target="_blank" rel="noopener noreferrer">
+          <div class="topic-icon" style="background: #E1F5EE;">📚</div>
+          <h3>{{ cat.nome }}</h3>
+          <p>{{ cat.descrizione }}</p>
+          <span class="topic-link">Approfondisci →</span>
+        </a>
+      }
+    }
+  </div>
+</section>
+
+<section class="about-section" id="chi-siamo">
+  <div class="about-inner">
+    <div class="section-label">Il progetto</div>
+    <h2 class="section-title">Chi siamo</h2>
+    <p class="section-sub">
+      Siamo docenti, studenti, genitori e nonni che hanno deciso di costruire questa piattaforma dopo gli incontri di approfondimento
+      sui Patti Digitali organizzati presso la scuola Quintino Di Vona.
+    </p>
+
+    <div class="about-grid">
+      <div class="about-card about-card-wide">
+        <p>
+          Il progetto nasce per discutere, condividere e diffondere strategie utili a promuovere un'educazione digitale efficace e responsabile,
+          in linea con le
+          <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank"
+            rel="noopener noreferrer">
+            dieci raccomandazioni del Comune di Milano
+          </a>.
+        </p>
+      </div>
+
+      <div class="about-card">
+        <div class="about-role">Ideazione e supervisione psicologica</div>
+        <div class="about-name">Nicola Iannaccone</div>
+      </div>
+
+      <div class="about-card">
+        <div class="about-role">Ideazione e supervisione tecnica</div>
+        <div class="about-name">Fabio Malizia</div>
+      </div>
+
+      <div class="about-card about-card-wide">
+        <div class="about-role">Sviluppo software</div>
+        <div class="about-name">Famlonga Nicolo e Petruzzelli Luca</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- PRIVACY -->
+<section class="privacy-section">
+  <div class="privacy-inner">
+
+    <div class="section-label">Tutela dei dati</div>
+
+    <h2 class="section-title">La tua privacy è una priorità</h2>
+
+    <p class="section-sub">
+      Questo strumento è progettato nel rispetto della riservatezza degli utenti e dei principi di protezione dei dati personali.
+    </p>
+
+    <div class="privacy-grid">
+      <div class="privacy-card privacy-card-highlight">
+        <div class="privacy-card-title">Cosa succede ai dati inseriti</div>
+        <p>
+          Le preoccupazioni espresse e le risposte ai test non vengono salvate, archiviate o condivise con terze parti.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <div class="privacy-card-title">Elaborazione temporanea</div>
+        <p>
+          Le informazioni vengono usate solo in tempo reale per generare suggerimenti educativi personalizzati e vengono eliminate al termine della sessione.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <div class="privacy-card-title">Principi applicati</div>
+        <p>
+          Il progetto segue i principi del <strong>Regolamento Generale sulla Protezione dei Dati (GDPR)</strong>: trasparenza, minimizzazione dei dati e uso responsabile delle informazioni.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <div class="privacy-card-title">Nessun uso commerciale</div>
+        <p>
+          Nessun dato personale viene utilizzato a fini commerciali o di profilazione.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA FINALE -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Pronto a iniziare?</h2>
+    <p>
+      Seleziona la tua preoccupazione, completa il test e ricevi un piano personalizzato
+      in PDF con regole chiare per la tua famiglia. Bastano pochi minuti.
+    </p>
+    <a href="#cerca" class="btn-primary-hero" style="background: #BA7517;">Trova la tua soluzione</a>
+  </div>
+</section>

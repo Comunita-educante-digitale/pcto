@@ -1,34 +1,19 @@
-# pcto
+# Educazione Digitale Familiare
 
-Questo progetto è stato migrato da un backend Python Flask a una soluzione frontend Angular con un server di distribuzione in TypeScript.
+App Angular per l'educazione digitale familiare. Nessun backend richiesto:
+il browser fa fetch diretto a Google Apps Script all'avvio, con cache in
+`localStorage` (TTL 5 minuti).
 
-## Avvio
+Il sorgente vive in [`angular-app/`](angular-app/README.md) — vedi il suo
+README per struttura, sviluppo e build.
 
-1. Installa le dipendenze:
-   ```bash
-   npm install
-   ```
+## Deploy su GitHub Pages
 
-2. Compila il server TypeScript:
-   ```bash
-   npm run build
-   ```
+Il workflow `.github/workflows/deploy.yml` compila l'app
+(`npm run build:pages`: base-href `/pcto/` + fallback SPA `404.html`) e
+pubblica `dist/angular-app/browser` sul branch `gh-pages`.
 
-3. Avvia l'applicazione:
-   ```bash
-   npm start
-   ```
+Si avvia **manualmente** dalla tab Actions (Run workflow), così un push del
+branch non sovrascrive il sito live per errore.
 
-   In alternativa puoi usare lo script equivalente:
-   ```bash
-   npm run serve
-   ```
-
-   Se la porta `8080` è già occupata, il server proverà automaticamente `8081`.
-
-   Per forzare una porta diversa, usa:
-   ```bash
-   PORT=8081 npm start
-   ```
-
-L'app frontend statico è servita dalla cartella `dist/angular-app-temp`.
+Configurazione Pages: Settings → Pages → Branch: `gh-pages` → / (root)
