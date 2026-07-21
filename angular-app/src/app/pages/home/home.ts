@@ -18,6 +18,7 @@ export class Home implements OnInit {
 
   campi = signal<string[]>(['']);
   navbarHidden = signal(false);
+  mobileMenuOpen = signal(false);
 
   suggestions: string[] = [];
   activeInput = signal(-1);
@@ -38,6 +39,21 @@ export class Home implements OnInit {
     const currentY = window.scrollY;
     this.navbarHidden.set(currentY > this.lastY && currentY > 60);
     this.lastY = currentY;
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (window.innerWidth > 768) {
+      this.mobileMenuOpen.set(false);
+    }
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen.update(open => !open);
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
   }
 
   get canAddCampo(): boolean {

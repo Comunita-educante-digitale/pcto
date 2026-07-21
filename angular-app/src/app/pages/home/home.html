@@ -4,12 +4,26 @@
     🌿 Comunità educante digitale
   </a>
 
-  <div class="d-flex align-items-center gap-2 flex-wrap">
-    <a href="#che-cose" class="nav-link-custom text-decoration-none me-4">Che cos'è?</a>
-    <a href="#come-funziona" class="nav-link-custom text-decoration-none me-4">Come funziona</a>
-    <a href="#esperti" class="nav-link-custom text-decoration-none me-4">Riferimenti teorici</a>
-    <a href="#temi" class="nav-link-custom text-decoration-none me-4">Categorie di rischio</a>
-    <a href="#chi-siamo" class="nav-link-custom text-decoration-none me-4">Chi siamo</a>
+  <button
+    type="button"
+    class="navbar-toggle"
+    [class.open]="mobileMenuOpen()"
+    (click)="toggleMobileMenu()"
+    [attr.aria-expanded]="mobileMenuOpen()"
+    aria-controls="navbar-links"
+    aria-label="Apri il menu di navigazione"
+  >
+    <span class="navbar-toggle-bar"></span>
+    <span class="navbar-toggle-bar"></span>
+    <span class="navbar-toggle-bar"></span>
+  </button>
+
+  <div class="navbar-links" id="navbar-links" [class.open]="mobileMenuOpen()">
+    <a href="#che-cose" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Che cos'è?</a>
+    <a href="#come-funziona" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Come funziona</a>
+    <a href="#esperti" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Riferimenti teorici</a>
+    <a href="#temi" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Categorie di rischio</a>
+    <a href="#chi-siamo" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Chi siamo</a>
   </div>
 </nav>
 
