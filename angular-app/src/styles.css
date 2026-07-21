@@ -79,6 +79,13 @@ body {
 .navbar-custom .nav-link-custom {
   margin-right: 0.8rem;
 }
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 .navbar-custom .search-bar {
   width: 320px;
   max-width: 42vw;
@@ -100,6 +107,68 @@ body {
 
 .nav-link-custom:hover,
 .nav-link-custom.active { color: var(--teal-mid); }
+
+/* Mobile navbar toggle (hamburger) */
+.navbar-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.navbar-toggle-bar {
+  width: 22px;
+  height: 2px;
+  background: var(--teal-dark);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.navbar-toggle.open .navbar-toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.navbar-toggle.open .navbar-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar-toggle.open .navbar-toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  .navbar-toggle {
+    display: flex;
+  }
+
+  .navbar-custom .navbar-links {
+    display: none !important;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 0.25rem;
+    padding-top: 0.5rem;
+  }
+
+  .navbar-custom .navbar-links.open {
+    display: flex !important;
+  }
+
+  .navbar-custom .navbar-links .nav-link-custom {
+    width: 100%;
+    margin-right: 0;
+    padding: 0.65rem 0;
+    border-bottom: 0.5px solid #eee;
+  }
+}
 
 .search-bar {
   border: 0.5px solid #ccc;
