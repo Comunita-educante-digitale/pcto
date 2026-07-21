@@ -96,7 +96,7 @@ export class TestRisultati implements OnInit {
           regolePerCategoria.push({ nome: nomeRegola, dati: regola, attivita: attivitaRegola });
         });
         return { id, info, regole: regolePerCategoria };
-      });
+      }).filter(categoria => categoria.regole.length > 0);
 
       this.pattoOriginale = JSON.parse(JSON.stringify(struttura));
       this.patto.set(struttura);
@@ -182,8 +182,9 @@ export class TestRisultati implements OnInit {
     pattoStruttura.forEach(categoria => {
       const catName = categoria.info.nome || categoria.id;
       categoria.regole.forEach(regola => {
-        if (regoleGiaViste.has(regola.nome)) return;
-        regoleGiaViste.add(regola.nome);
+        const chiave = categoria.id + '::' + regola.nome;
+        if (regoleGiaViste.has(chiave)) return;
+        regoleGiaViste.add(chiave);
         tutteLeRegole.push({ cat: catName, nome: regola.nome || '', desc: regola.dati.descrizione || '' });
       });
     });
@@ -254,8 +255,9 @@ export class TestRisultati implements OnInit {
     pattoOriginale.forEach(categoria => {
       const catName = categoria.info.nome || categoria.id;
       categoria.regole.forEach(regola => {
-        if (consigliateViste.has(regola.nome)) return;
-        consigliateViste.add(regola.nome);
+        const chiave = categoria.id + '::' + regola.nome;
+        if (consigliateViste.has(chiave)) return;
+        consigliateViste.add(chiave);
         righeConsigliate.push([
           catName,
           regola.nome || '',
