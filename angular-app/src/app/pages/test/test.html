@@ -1,35 +1,72 @@
-<nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2">
+<nav class="test-navbar">
   <a class="navbar-brand-text text-decoration-none" routerLink="/">
     🌿 Educazione Digitale Familiare
   </a>
-  <a href="javascript:void(0)" (click)="indietro()" class="btn-search" style="text-decoration:none;font-size:0.9rem;">Indietro</a>
+  <button type="button" class="btn-back" (click)="indietro()">
+    <span class="btn-back-arrow">←</span> Indietro
+  </button>
 </nav>
 
-<section style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
-  <div class="section-label">Patto Familiare</div>
-  <h2 class="section-title">Crea il tuo patto familiare</h2>
-  <p class="section-sub">Rispondi alle domande. Alla fine riceverai le regole consigliate per la tua famiglia.</p>
+<main class="test-main">
+  <div class="test-container">
 
-  <div style="background:#e0ddd5;border-radius:40px;height:6px;margin-bottom:2rem;">
-    <div style="background:var(--teal-mid);height:6px;border-radius:40px;transition:width 0.3s;" [style.width.%]="progress"></div>
-  </div>
+    <div class="test-header">
+      <div class="section-label">Patto Familiare</div>
+      <h2 class="section-title">Crea il tuo patto familiare</h2>
+      <p class="section-sub">Rispondi alle domande. Alla fine riceverai le regole consigliate per la tua famiglia.</p>
+    </div>
 
-  @if (loading()) {
-    <p style="color:var(--text-muted)">Caricamento domande...</p>
-  } @else if (errore()) {
-    <p style="color:#D85A30;">Errore: {{ errore() }}</p>
-  } @else if (nessunaDomanda()) {
-    <p style="color:#D85A30;">Nessuna domanda trovata per queste categorie.</p>
-  } @else if (domandaCorrente; as d) {
-    <div class="step-card" style="padding:2rem;">
-      <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.8rem;">
-        Domanda {{ current() + 1 }} di {{ domande().length }}
-      </div>
-      <h3 style="font-family:Lora,serif;font-size:1.2rem;margin-bottom:2rem;">{{ d.domanda }}</h3>
-      <div style="display:flex;gap:1rem;justify-content:center;">
-        <button class="btn-primary-hero" style="min-width:120px;" (click)="rispondi(d.se_si || '')">SI</button>
-        <button class="btn-secondary-hero" style="min-width:120px;" (click)="rispondi(d.se_no || '')">NO</button>
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="progress"></div>
       </div>
     </div>
-  }
-</section>
+
+    @if (loading()) {
+      <p class="state-message">Caricamento domande...</p>
+    } @else if (errore()) {
+      <p class="state-message state-error">Errore: {{ errore() }}</p>
+    } @else if (nessunaDomanda()) {
+      <p class="state-message state-error">Nessuna domanda trovata per queste categorie.</p>
+    } @else if (domandaCorrente; as d) {
+      <div class="question-card">
+        <div class="question-step">Domanda {{ current() + 1 }} di {{ domande().length }}</div>
+        <h3 class="question-text">{{ d.domanda }}</h3>
+        <div class="answer-buttons">
+          <button class="btn-answer btn-answer-yes" (click)="rispondi(d.se_si || '')">SI</button>
+          <button class="btn-answer btn-answer-no" (click)="rispondi(d.se_no || '')">NO</button>
+        </div>
+      </div>
+    }
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-brand-text">🌿 Educazione Digitale Familiare</div>
+      <p class="footer-copy">© 2026 Comunità educante digitale. Un approccio empatico alla crescita digitale.</p>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-col">
+        <span class="footer-col-title">Naviga</span>
+        <a routerLink="/" class="footer-link">Torna alla home</a>
+        <a routerLink="/test" class="footer-link">Rifai il test</a>
+      </div>
+
+      <div class="footer-col">
+        <span class="footer-col-title">Risorse</span>
+        <a routerLink="/" fragment="esperti" class="footer-link">Riferimenti teorici</a>
+        <a routerLink="/" fragment="temi" class="footer-link">Categorie di rischio</a>
+      </div>
+
+      <div class="footer-col">
+        <span class="footer-col-title">Chi siamo</span>
+        <a routerLink="/" fragment="chi-siamo" class="footer-link">Il progetto</a>
+      </div>
+    </div>
+  </div>
+</footer>

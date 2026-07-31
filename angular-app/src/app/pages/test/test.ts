@@ -6,7 +6,8 @@ import { DataService, DomandaTest } from '../../services/data.service';
 @Component({
   selector: 'app-test',
   imports: [RouterLink],
-  templateUrl: './test.html'
+  templateUrl: './test.html',
+  styleUrl: './test.css'
 })
 export class Test implements OnInit {
   private data = inject(DataService);

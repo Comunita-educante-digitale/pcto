@@ -13,7 +13,8 @@ interface RisultatoCard {
 @Component({
   selector: 'app-risultati',
   imports: [RouterLink],
-  templateUrl: './risultati.html'
+  templateUrl: './risultati.html',
+  styleUrl: './risultati.css'
 })
 export class Risultati implements OnInit {
   private data = inject(DataService);

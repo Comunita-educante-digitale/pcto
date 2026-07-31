@@ -21,7 +21,8 @@ type RGB = [number, number, number];
 @Component({
   selector: 'app-test-risultati',
   imports: [RouterLink],
-  templateUrl: './test-risultati.html'
+  templateUrl: './test-risultati.html',
+  styleUrl: './test-risultati.css'
 })
 export class TestRisultati implements OnInit {
   private data = inject(DataService);

@@ -1,6 +1,6 @@
 <!-- NAVBAR -->
-<nav class="navbar-custom d-flex align-items-center justify-content-between flex-wrap gap-2" [class.navbar-hidden]="navbarHidden()">
-  <a class="navbar-brand-text text-decoration-none" href="#">
+<nav class="navbar-custom" [class.navbar-hidden]="navbarHidden()">
+  <a class="navbar-brand-text text-decoration-none" routerLink="/">
     🌿 Comunità educante digitale
   </a>
 
@@ -19,11 +19,11 @@
   </button>
 
   <div class="navbar-links" id="navbar-links" [class.open]="mobileMenuOpen()">
-    <a href="#che-cose" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Che cos'è?</a>
-    <a href="#come-funziona" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Come funziona</a>
-    <a href="#esperti" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Riferimenti teorici</a>
-    <a href="#temi" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Categorie di rischio</a>
-    <a href="#chi-siamo" class="nav-link-custom text-decoration-none me-4" (click)="closeMobileMenu()">Chi siamo</a>
+    <a href="#che-cose" class="nav-link-custom text-decoration-none px-4" (click)="closeMobileMenu()">Che cos'è?</a>
+    <a href="#come-funziona" class="nav-link-custom text-decoration-none px-4" (click)="closeMobileMenu()">Come funziona</a>
+    <a href="#esperti" class="nav-link-custom text-decoration-none px-4" (click)="closeMobileMenu()">Riferimenti teorici</a>
+    <a href="#temi" class="nav-link-custom text-decoration-none px-4" (click)="closeMobileMenu()">Categorie di rischio</a>
+    <a href="#chi-siamo" class="nav-link-custom text-decoration-none px-4" (click)="closeMobileMenu()">Chi siamo</a>
   </div>
 </nav>
 
@@ -31,23 +31,20 @@
 <section class="hero" id="che-cose">
   <span class="hero-eyebrow">Guida interattiva per genitori</span>
 
-  <h1>
-    Educazione digitale familiare<br>
-    <em></em>
-  </h1>
+  <h1>Educazione digitale familiare</h1>
   <h3 class="hero-subtitle">Dalle preoccupazioni a un patto digitale di famiglia</h3>
   <p class="hero-sub">
-  Uno strumento pratico basato su evidenze scientifiche, che trasforma la ricerca pedagogica in regole semplici da
-  applicare ogni giorno in famiglia, aiutando i genitori ad accompagnare i propri figli verso un uso consapevole
-  della tecnologia. <br>Non si tratta di un'app individuale, ma di uno strumento della comunità educante nato da un lavoro collettivo.
-  I contenuti si ispirano ai contributi di Serge Tisseron, Pier Cesare Rivoltella e del progetto
-  Custodi Digitali, integrando anche le
-  <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank"
-    rel="noopener noreferrer">
-    Raccomandazioni di Milano
-  </a>
-   per l'educazione digitale.
-</p>
+    Uno strumento pratico basato su evidenze scientifiche, che trasforma la ricerca pedagogica in regole semplici da
+    applicare ogni giorno in famiglia, aiutando i genitori ad accompagnare i propri figli verso un uso consapevole
+    della tecnologia. <br><br>Non si tratta di un'app individuale, ma di uno strumento della comunità educante nato da un lavoro collettivo.
+    I contenuti si ispirano ai contributi di Serge Tisseron, Pier Cesare Rivoltella e del progetto
+    Custodi Digitali, integrando anche le
+    <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank"
+      rel="noopener noreferrer">
+      Raccomandazioni di Milano
+    </a>
+    per l'educazione digitale.
+  </p>
 
   <div class="hero-cta-group">
     <a href="#cerca" class="btn-primary-hero">Inizia dalla tua preoccupazione</a>
@@ -112,49 +109,46 @@
 
   <div class="section-label">Il percorso</div>
 
-  <h2 class="section-title">
-    Dalla preoccupazione alla soluzione
-  </h2>
+  <h2 class="section-title">Dalla preoccupazione alla soluzione</h2>
 
-  <p class="section-sub">
-    Ogni problema viene affrontato con un metodo strutturato in quattro passi.
-  </p>
+  <p class="section-sub">Ogni problema viene affrontato con un metodo strutturato in quattro passi.</p>
 
   <div class="steps-grid">
 
-  <div class="step-card">
-  <div class="step-number teal">1</div>
-  <h3>Esprimi le tue preoccupazioni</h3>
-  <p>Cerca tra i temi che ti preoccupano di più riguardo all'uso della tecnologia da parte di tuo figlio.</p>
-</div>
+    <div class="step-card">
+      <div class="step-number teal">1</div>
+      <h3>Esprimi le tue preoccupazioni</h3>
+      <p>Cerca tra i temi che ti preoccupano di più riguardo all'uso della tecnologia da parte di tuo figlio.</p>
+    </div>
 
-<div class="step-card">
-  <div class="step-number amber">2</div>
-  <h3>Test di valutazione</h3>
-  <p>Rispondi a poche domande mirate per capire quali aree richiedono maggiore attenzione.</p>
-</div>
+    <div class="step-card">
+      <div class="step-number amber">2</div>
+      <h3>Test di valutazione</h3>
+      <p>Rispondi a poche domande mirate per capire quali aree richiedono maggiore attenzione.</p>
+    </div>
 
-<div class="step-card">
-  <div class="step-number coral">3</div>
-  <h3>Regole e attività personalizzate</h3>
-  <p>Ricevi regole concrete e attività pratiche da svolgere insieme ai tuoi figli, calibrate sulla vostra situazione.</p>
-</div>
+    <div class="step-card">
+      <div class="step-number coral">3</div>
+      <h3>Regole e attività personalizzate</h3>
+      <p>Ricevi regole concrete e attività pratiche da svolgere insieme ai tuoi figli, calibrate sulla vostra situazione.</p>
+    </div>
 
-<div class="step-card">
-  <div class="step-number gray">4</div>
-  <h3>Personalizza il tuo patto</h3>
-  <p>Scegli quali regole e attività tenere, elimina quelle che non fanno per voi e adatta il patto alla tua famiglia.</p>
-</div>
+    <div class="step-card">
+      <div class="step-number gray">4</div>
+      <h3>Personalizza il tuo patto</h3>
+      <p>Scegli quali regole e attività tenere, elimina quelle che non fanno per voi e adatta il patto alla tua famiglia.</p>
+    </div>
 
-<div class="step-card">
-  <div class="step-number gray">5</div>
-  <h3>Scarica e appendi il patto</h3>
-  <p>Salva il documento PDF con le regole scelte e appendilo in casa come promemoria visibile per tutta la famiglia.</p>
-</div>
+    <div class="step-card">
+      <div class="step-number gray">5</div>
+      <h3>Scarica e appendi il patto</h3>
+      <p>Salva il documento PDF con le regole scelte e appendilo in casa come promemoria visibile per tutta la famiglia.</p>
+    </div>
 
   </div>
 </section>
 
+<!-- BASI SCIENTIFICHE -->
 <section class="science-section" id="esperti">
   <div class="science-inner">
     <div class="science-text">
@@ -210,7 +204,7 @@
         <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card">
-        <div class="topic-icon" style="background: #FAEEDA;">🔒</div>
+        <div class="topic-icon" style="background: #FFF8E1;">🔒</div>
         <h3>Privacy e sicurezza online</h3>
         <p>Educare alla protezione dei dati personali e alle buone pratiche digitali fin da piccoli.</p>
         <span class="topic-link">Approfondisci →</span>
@@ -228,7 +222,7 @@
         <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card">
-        <div class="topic-icon" style="background: #FAEEDA;">🎮</div>
+        <div class="topic-icon" style="background: #FFF8E1;">🎮</div>
         <h3>Videogiochi e gaming</h3>
         <p>Regolare il tempo di gioco senza conflitti, valorizzando anche gli aspetti positivi.</p>
         <span class="topic-link">Approfondisci →</span>
@@ -246,6 +240,7 @@
   </div>
 </section>
 
+<!-- CHI SIAMO -->
 <section class="about-section" id="chi-siamo">
   <div class="about-inner">
     <div class="section-label">Il progetto</div>
@@ -284,7 +279,6 @@
     </div>
   </div>
 </section>
-
 
 <!-- PRIVACY -->
 <section class="privacy-section">
@@ -331,4 +325,34 @@
   </div>
 </section>
 
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-brand-text">🌿 Comunità educante digitale</div>
+      <p class="footer-copy">© 2026 Comunità educante digitale. Un approccio empatico alla crescita digitale.</p>
+    </div>
 
+    <div class="footer-links">
+      <div class="footer-col">
+        <span class="footer-col-title">Esplora</span>
+        <a href="#che-cose" class="footer-link">Che cos'è?</a>
+        <a href="#come-funziona" class="footer-link">Come funziona</a>
+        <a href="#temi" class="footer-link">Categorie di rischio</a>
+      </div>
+
+      <div class="footer-col">
+        <span class="footer-col-title">Risorse</span>
+        <a href="#esperti" class="footer-link">Riferimenti teorici</a>
+        <a routerLink="/test" class="footer-link">Fai il test</a>
+      </div>
+
+      <div class="footer-col">
+        <span class="footer-col-title">Chi siamo</span>
+        <a href="#chi-siamo" class="footer-link">Il progetto</a>
+        <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti"
+          target="_blank" rel="noopener noreferrer" class="footer-link">Raccomandazioni di Milano</a>
+      </div>
+    </div>
+  </div>
+</footer>
