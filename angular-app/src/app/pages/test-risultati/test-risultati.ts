@@ -559,15 +559,16 @@ export class TestRisultati implements OnInit {
   nuovaPagina('LE ATTIVITÀ CHE HAI SCELTO', 'Esercizi pratici da fare insieme in famiglia. Queste attività fanno riferimento alle regole che hai scelto', ACCENTO.attivita);
   const GAP = 3;
 
-  interface AttivitaPoster { catName: string; regolaNome: string; att: Attivita; }
+  interface AttivitaPoster { catName: string; regolaNome: string; att: Attivita; colore: RGB; }
   const tutteLeAttivita: AttivitaPoster[] = [];
   pattoStruttura.forEach(categoria => {
     if (categoria.regole.length === 0) return;
     const catName = categoria.info.nome || categoria.id;
+    const colore = coloreCategoria.get(categoria.id) || ACCENTO.attivita;
     categoria.regole.forEach(regola => {
       if (!regola.attivita || regola.attivita.length === 0) return;
       regola.attivita.forEach(att => {
-        tutteLeAttivita.push({ catName, regolaNome: regola.nome, att });
+        tutteLeAttivita.push({ catName, regolaNome: regola.nome, att, colore });
       });
     });
   });
@@ -579,7 +580,7 @@ export class TestRisultati implements OnInit {
   const colX2 = [MARGIN, MARGIN + CARD_W2 + COL_GAP2];
   let colY2 = [HEADER_H + 6, HEADER_H + 6];
 
-  tutteLeAttivita.forEach(({ catName, regolaNome, att }) => {
+  tutteLeAttivita.forEach(({ catName, regolaNome, att, colore }) => {
     const descLines = doc.splitTextToSize(att.descrizione || '', CARD_W2 - 12);
     const info = [
       att.eta ? 'Età: ' + att.eta : '',
@@ -604,11 +605,11 @@ export class TestRisultati implements OnInit {
     const x = colX2[col];
     const y2 = colY2[col];
 
-    card(x, y2, CARD_W2, cardH2, ACCENTO.attivita);
+    card(x, y2, CARD_W2, cardH2, colore);
 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...ACCENTO.attivita);
+    doc.setTextColor(...colore);
     doc.text((catName + ' · ' + regolaNome).toUpperCase(), x + 6, y2 + 6);
 
     doc.setFontSize(10.5);
