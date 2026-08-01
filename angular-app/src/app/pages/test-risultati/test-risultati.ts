@@ -21,7 +21,8 @@ type RGB = [number, number, number];
 @Component({
   selector: 'app-test-risultati',
   imports: [RouterLink],
-  templateUrl: './test-risultati.html'
+  templateUrl: './test-risultati.html',
+  styleUrl: './test-risultati.css'
 })
 export class TestRisultati implements OnInit {
   private data = inject(DataService);
@@ -84,6 +85,7 @@ export class TestRisultati implements OnInit {
         if (!categorieIdsOrdine.includes(id)) categorieIdsOrdine.push(id);
       });
 
+      const regoleGiaAssegnate = new Set<string>();
       const struttura: CategoriaPatto[] = categorieIdsOrdine.map(id => {
         const info = categorieDb[id] || Object.values(categorieDb).find(item =>
           normalizeText(item.id) === normalizeText(id) || normalizeText(item.categoria) === normalizeText(id)
@@ -91,6 +93,10 @@ export class TestRisultati implements OnInit {
         const regolePerCategoria: RegolaPatto[] = [];
         const regoleNellaCategoria = categoriePerRegola[id] || [];
         regoleNellaCategoria.forEach(nomeRegola => {
+          // Una regola può appartenere a più ambiti di rischio nel database:
+          // va mostrata una sola volta, nel primo ambito in cui compare.
+          if (regoleGiaAssegnate.has(nomeRegola)) return;
+          regoleGiaAssegnate.add(nomeRegola);
           const regola = regoleDb[nomeRegola] || ({} as Regola);
           const attivitaRegola = attivitaArray.filter(att => normalizeText(att.regola) === normalizeText(nomeRegola));
           regolePerCategoria.push({ nome: nomeRegola, dati: regola, attivita: attivitaRegola });
@@ -516,7 +522,7 @@ export class TestRisultati implements OnInit {
   // =====================================================================
   // PAGINA 2 — Tutte le regole consigliate (tabella)
   // =====================================================================
-  nuovaPagina('TUTTE LE REGOLE CHE TI ABBIAMO CONSIGLATO', ' ', ACCENTO.consigliate);
+  nuovaPagina('TUTTE LE REGOLE CHE TI ABBIAMO CONSIGLATO', 'Qui trovi tutte le regole che potresti applicare, anche quelle che non hai selezionato, in caso volessi ripescarle ', ACCENTO.consigliate);
   const righeConsigliate: string[][] = [];
   const consigliateViste = new Set<string>();
   pattoOriginale.forEach(categoria => {
@@ -558,15 +564,16 @@ export class TestRisultati implements OnInit {
   nuovaPagina('LE ATTIVITÀ CHE HAI SCELTO', 'Esercizi pratici da fare insieme in famiglia. Queste attività fanno riferimento alle regole che hai scelto', ACCENTO.attivita);
   const GAP = 3;
 
-  interface AttivitaPoster { catName: string; regolaNome: string; att: Attivita; }
+  interface AttivitaPoster { catName: string; regolaNome: string; att: Attivita; colore: RGB; }
   const tutteLeAttivita: AttivitaPoster[] = [];
   pattoStruttura.forEach(categoria => {
     if (categoria.regole.length === 0) return;
     const catName = categoria.info.nome || categoria.id;
+    const colore = coloreCategoria.get(categoria.id) || ACCENTO.attivita;
     categoria.regole.forEach(regola => {
       if (!regola.attivita || regola.attivita.length === 0) return;
       regola.attivita.forEach(att => {
-        tutteLeAttivita.push({ catName, regolaNome: regola.nome, att });
+        tutteLeAttivita.push({ catName, regolaNome: regola.nome, att, colore });
       });
     });
   });
@@ -578,7 +585,7 @@ export class TestRisultati implements OnInit {
   const colX2 = [MARGIN, MARGIN + CARD_W2 + COL_GAP2];
   let colY2 = [HEADER_H + 6, HEADER_H + 6];
 
-  tutteLeAttivita.forEach(({ catName, regolaNome, att }) => {
+  tutteLeAttivita.forEach(({ catName, regolaNome, att, colore }) => {
     const descLines = doc.splitTextToSize(att.descrizione || '', CARD_W2 - 12);
     const info = [
       att.eta ? 'Età: ' + att.eta : '',
@@ -603,11 +610,11 @@ export class TestRisultati implements OnInit {
     const x = colX2[col];
     const y2 = colY2[col];
 
-    card(x, y2, CARD_W2, cardH2, ACCENTO.attivita);
+    card(x, y2, CARD_W2, cardH2, colore);
 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...ACCENTO.attivita);
+    doc.setTextColor(...colore);
     doc.text((catName + ' · ' + regolaNome).toUpperCase(), x + 6, y2 + 6);
 
     doc.setFontSize(10.5);
@@ -641,7 +648,7 @@ export class TestRisultati implements OnInit {
   });
 
   if (tutteRaccomandazioni.length > 0) {
-    nuovaPagina('TUTTE LE RACCOMANDAZIONI DEL COMUNE DI MILANO', 'Tutte le regole che proponiamo in questo progetto fanno riferimento a queste raccomandazioni', ACCENTO.raccomandazioni);
+    nuovaPagina('Le Raccomandazioni di Milano sul benessere e la sicurezza online di bambini e adolescenti', 'Tutte le regole che proponiamo in questo progetto fanno riferimento a queste raccomandazioni', ACCENTO.raccomandazioni);
 
     autoTable(doc, {
       startY: HEADER_H + 6,

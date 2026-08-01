@@ -248,6 +248,11 @@ const EMPTY_DATA: AppData = { categories: {}, keywords: [], testQuestions: [], r
 export class DataService {
 
   private async caricaGoogleAppScriptData(): Promise<Record<string, unknown> | null> {
+    // Alcuni URL di fallback puntano a versioni precedenti della web app e
+    // possono rispondere con successo ma senza la chiave "raccomandazioni":
+    // in tal caso si tenta l'URL successivo, tenendo da parte questa
+    // risposta incompleta come ultima spiaggia.
+    let payloadIncompleto: Record<string, unknown> | null = null;
     for (const url of GOOGLE_APPS_SCRIPT_URLS) {
       try {
         const controller = new AbortController();
@@ -257,12 +262,17 @@ export class DataService {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const payload = await response.json();
         if (!payload || typeof payload !== 'object') throw new Error('Risposta vuota');
+        if (!payload['raccomandazioni'] && !payload['RACCOMANDAZIONI']) {
+          console.warn('[data.service] risposta incompleta (manca "raccomandazioni") da', url);
+          if (!payloadIncompleto) payloadIncompleto = payload;
+          continue;
+        }
         return payload;
       } catch (e) {
         console.warn('[data.service] fetch fallito per', url, e);
       }
     }
-    return null;
+    return payloadIncompleto;
   }
 
   async getAppData(forceRefresh = false): Promise<{ data: AppData; source: 'cache' | 'google' | 'fallback' }> {
