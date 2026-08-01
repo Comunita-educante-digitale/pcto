@@ -85,6 +85,7 @@ export class TestRisultati implements OnInit {
         if (!categorieIdsOrdine.includes(id)) categorieIdsOrdine.push(id);
       });
 
+      const regoleGiaAssegnate = new Set<string>();
       const struttura: CategoriaPatto[] = categorieIdsOrdine.map(id => {
         const info = categorieDb[id] || Object.values(categorieDb).find(item =>
           normalizeText(item.id) === normalizeText(id) || normalizeText(item.categoria) === normalizeText(id)
@@ -92,6 +93,10 @@ export class TestRisultati implements OnInit {
         const regolePerCategoria: RegolaPatto[] = [];
         const regoleNellaCategoria = categoriePerRegola[id] || [];
         regoleNellaCategoria.forEach(nomeRegola => {
+          // Una regola può appartenere a più ambiti di rischio nel database:
+          // va mostrata una sola volta, nel primo ambito in cui compare.
+          if (regoleGiaAssegnate.has(nomeRegola)) return;
+          regoleGiaAssegnate.add(nomeRegola);
           const regola = regoleDb[nomeRegola] || ({} as Regola);
           const attivitaRegola = attivitaArray.filter(att => normalizeText(att.regola) === normalizeText(nomeRegola));
           regolePerCategoria.push({ nome: nomeRegola, dati: regola, attivita: attivitaRegola });

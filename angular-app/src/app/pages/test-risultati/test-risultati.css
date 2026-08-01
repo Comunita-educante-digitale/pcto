@@ -157,7 +157,7 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 
 .category-title { font-size: 1.5rem; }
 
-.category-desc { margin-bottom: 1.5rem; max-width: 42rem; }
+.category-desc { margin-bottom: 1.5rem; max-width: 42rem; overflow-wrap: break-word; word-break: break-word; }
 
 /* ─────────────────────────────
    REGOLA (rule card)
@@ -208,8 +208,8 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 }
 .btn-delete:hover { transform: scale(1.1); opacity: 0.8; }
 
-.rule-name { font-size: 1.15rem; margin-bottom: 0.5rem; }
-.rule-desc { font-size: 0.95rem; }
+.rule-name { font-size: 1.15rem; margin-bottom: 0.5rem; overflow-wrap: break-word; word-break: break-word; }
+.rule-desc { font-size: 0.95rem; overflow-wrap: break-word; word-break: break-word; }
 
 .rule-recommendation {
   margin-top: 0.75rem;
@@ -238,6 +238,8 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
   border-radius: 1rem;
   padding: 1.1rem 1.3rem;
   transition: box-shadow 0.2s ease;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .activity-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
 
