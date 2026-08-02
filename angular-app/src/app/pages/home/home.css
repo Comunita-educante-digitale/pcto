@@ -338,7 +338,9 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
   border-radius: 1rem;
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   z-index: 20;
-  overflow: hidden;
+  max-height: 280px;
+  overflow-y: auto;
+  overflow-x: hidden;
   text-align: left;
 }
 
@@ -663,7 +665,7 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 ───────────────────────────── */
 .about-section {
   padding: 8rem 1.5rem;
-  background: var(--primary);
+  background: var(--tertiary-container);
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
@@ -687,7 +689,7 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
   .about-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 1024px) {
-  .about-grid { grid-template-columns: repeat(4, 1fr); }
+  .about-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 .about-card {
@@ -699,10 +701,17 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 }
 .about-card:hover { background: rgba(255, 255, 255, 0.1); }
 .about-card p { color: var(--on-primary-container); }
-
-@media (min-width: 768px) {
-  .about-card-wide { grid-column: span 2; }
+.about-card a {
+  color: var(--tertiary-fixed);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(188, 238, 211, 0.4);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.3s ease;
 }
+.about-card a:hover { text-decoration-color: rgba(188, 238, 211, 0.9); }
+
+.about-card-wide { grid-column: 1 / -1; }
 
 .about-role {
   font-size: 11px;

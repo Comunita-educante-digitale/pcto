@@ -311,7 +311,7 @@ export class DataService {
 
   async getKeywords(): Promise<string[]> {
     const { data } = await this.getAppData();
-    return data.keywords.map(item => item.preoccupazione);
+    return Array.from(new Set(data.keywords.map(item => item.preoccupazione)));
   }
 
   async searchCategories(queries: string[]): Promise<{ success: boolean; risultati: RisultatoRicerca[] }> {
