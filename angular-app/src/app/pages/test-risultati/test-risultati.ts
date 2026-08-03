@@ -552,7 +552,7 @@ export class TestRisultati implements OnInit {
       0: { cellWidth: 33, fontStyle: 'bold' },
       1: { cellWidth: 40, fontStyle: 'bold' },
       2: { cellWidth: 65 },
-      3: { cellWidth: 42 }
+      3: { cellWidth: CONTENT_W - 33 - 40 - 65 }
     },
     margin: { left: MARGIN, right: MARGIN, bottom: FOOTER_H + 4, top: HEADER_H },
     didDrawPage: () => footer()

@@ -62,10 +62,13 @@ export interface RisultatoRicerca {
   descrizione: string;
 }
 
-const GOOGLE_APPS_SCRIPT_URLS = [
-  'https://script.google.com/macros/s/AKfycbzm25VHhONFiJejy76iWiK5DjqlURt1JEWP3dPylKcrNmkUzn1mYY_zMsQ4UUIrPzM/exec',
-  'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTUfZgfHyuJS46VG6WcEUZgQd_JbcTfP_y3pj_WaCGI7S6mplaIB8qRT_b0yRixTBUmmuWMeNzas8pt-G7YRUJUujPcriJepeguQ-8PdmGbRC5jbsH8GnXMD5HRIZ3SL8uFI7s5EffejU_uugUc-26Hi-8TmnAJgzg2dQPi9pvgl9fbxpJ_0yJf7S23Q0mU8z7wHKxbVz6BYiDDUiY9A3PktrZUNjOAkLyyHvUBmSgNtuApVO59G6jEtOxksTO9izjJinHh4TZC-tCDJcpq8T_ywi9pmw&lib=MlRCYSh2pVGq_cqM2lnE5VKR_QGq8bm1S'
-];
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm25VHhONFiJejy76iWiK5DjqlURt1JEWP3dPylKcrNmkUzn1mYY_zMsQ4UUIrPzM/exec';
+// Snapshot statico catturato in passato: il redirect di Google Apps Script genera un
+// user_content_key diverso ad ogni richiesta, quindi questo URL non può essere
+// "aggiornato" per restare valido. Va usato solo come ultimissima spiaggia: risale a
+// prima che il campo "raccomandazioni" esistesse nella risposta, quindi è per
+// definizione incompleto.
+const FALLBACK_SNAPSHOT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTUfZgfHyuJS46VG6WcEUZgQd_JbcTfP_y3pj_WaCGI7S6mplaIB8qRT_b0yRixTBUmmuWMeNzas8pt-G7YRUJUujPcriJepeguQ-8PdmGbRC5jbsH8GnXMD5HRIZ3SL8uFI7s5EffejU_uugUc-26Hi-8TmnAJgzg2dQPi9pvgl9fbxpJ_0yJf7S23Q0mU8z7wHKxbVz6BYiDDUiY9A3PktrZUNjOAkLyyHvUBmSgNtuApVO59G6jEtOxksTO9izjJinHh4TZC-tCDJcpq8T_ywi9pmw&lib=MlRCYSh2pVGq_cqM2lnE5VKR_QGq8bm1S';
 const CACHE_KEY = 'appData_cache';
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
@@ -247,32 +250,36 @@ const EMPTY_DATA: AppData = { categories: {}, keywords: [], testQuestions: [], r
 @Injectable({ providedIn: 'root' })
 export class DataService {
 
-  private async caricaGoogleAppScriptData(): Promise<Record<string, unknown> | null> {
-    // Alcuni URL di fallback puntano a versioni precedenti della web app e
-    // possono rispondere con successo ma senza la chiave "raccomandazioni":
-    // in tal caso si tenta l'URL successivo, tenendo da parte questa
-    // risposta incompleta come ultima spiaggia.
-    let payloadIncompleto: Record<string, unknown> | null = null;
-    for (const url of GOOGLE_APPS_SCRIPT_URLS) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-        const response = await fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const payload = await response.json();
-        if (!payload || typeof payload !== 'object') throw new Error('Risposta vuota');
-        if (!payload['raccomandazioni'] && !payload['RACCOMANDAZIONI']) {
-          console.warn('[data.service] risposta incompleta (manca "raccomandazioni") da', url);
-          if (!payloadIncompleto) payloadIncompleto = payload;
-          continue;
-        }
-        return payload;
-      } catch (e) {
-        console.warn('[data.service] fetch fallito per', url, e);
-      }
+  private async fetchGoogleAppScript(url: string, timeoutMs: number): Promise<Record<string, unknown> | null> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort('timeout'), timeoutMs);
+      const response = await fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const payload = await response.json();
+      if (!payload || typeof payload !== 'object') throw new Error('Risposta vuota');
+      return payload;
+    } catch (e) {
+      console.warn('[data.service] fetch fallito per', url, e);
+      return null;
     }
-    return payloadIncompleto;
+  }
+
+  private async caricaGoogleAppScriptData(): Promise<Record<string, unknown> | null> {
+    // L'endpoint principale è l'unica fonte sempre aggiornata: ritentiamo un paio
+    // di volte (l'Apps Script a volte ha un cold-start lento) prima di rassegnarci.
+    const MAX_TENTATIVI = 3;
+    let payloadIncompleto: Record<string, unknown> | null = null;
+    for (let tentativo = 1; tentativo <= MAX_TENTATIVI; tentativo++) {
+      const payload = await this.fetchGoogleAppScript(GOOGLE_APPS_SCRIPT_URL, 20000);
+      if (!payload) continue;
+      if (payload['raccomandazioni'] || payload['RACCOMANDAZIONI']) return payload;
+      console.warn(`[data.service] risposta incompleta (manca "raccomandazioni"), tentativo ${tentativo}/${MAX_TENTATIVI}`);
+      if (!payloadIncompleto) payloadIncompleto = payload;
+    }
+    // Ultima spiaggia: uno snapshot statico, sempre privo di "raccomandazioni".
+    return payloadIncompleto || await this.fetchGoogleAppScript(FALLBACK_SNAPSHOT_URL, 20000);
   }
 
   async getAppData(forceRefresh = false): Promise<{ data: AppData; source: 'cache' | 'google' | 'fallback' }> {
