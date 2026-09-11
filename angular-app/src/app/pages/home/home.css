@@ -227,6 +227,10 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 }
 
 .btn-primary-hero {
+  width: 300px !important;
+  height: 60px !important;
+  min-width: 350px !important;
+  max-width: 550px !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
