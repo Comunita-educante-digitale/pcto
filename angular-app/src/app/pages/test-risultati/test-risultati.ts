@@ -204,34 +204,42 @@ export class TestRisultati implements OnInit {
   }
 
   // ---- Helper: header minimale, coerente su tutte le pagine ----------
-  function header(titolo: string, sottotitolo: string, accento: RGB): void {
-    doc.setFillColor(...accento);
-    doc.rect(0, 0, PAGE_W, 3, 'F'); // barra sottile di accento in alto
+ function header(titolo: string, sottotitolo: string, accento: RGB): number {
+  // Bordo colorato in alto
+  doc.setFillColor(...accento);
+  doc.rect(0, 0, PAGE_W, 3, 'F');
 
-    doc.setTextColor(...NERO);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(18);
-    doc.text(titolo, MARGIN, 18);
+  // --- 1. TITOLO ---
+  doc.setTextColor(...NERO);
+  doc.setFont('helvetica', 'bold');
+  
+  // Divide il titolo in righe se supera la larghezza della pagina
+  const righeTitolo: string[] = doc.splitTextToSize(titolo, CONTENT_W);
+  const fontSizeTitolo = righeTitolo.length > 1 ? 12 : 15; 
+  doc.setFontSize(fontSizeTitolo);
 
-    doc.setTextColor(...GRIGIO);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    // Va a capo se il sottotitolo è lungo (max 2 righe, poi tronca con "…")
-    // così il testo non esce mai dal margine destro del foglio.
-    let righeSotto: string[] = doc.splitTextToSize(sottotitolo, CONTENT_W);
-    if (righeSotto.length > 2) {
-      let ultima = righeSotto[1];
-      while (ultima.length > 1 && doc.getTextWidth(ultima + '…') > CONTENT_W) {
-        ultima = ultima.slice(0, -1);
-      }
-      righeSotto = [righeSotto[0], ultima.trimEnd() + '…'];
-    }
-    doc.text(righeSotto, MARGIN, righeSotto.length > 1 ? 21 : 25);
+  const yTitolo = 10; // Inizio del titolo dall'alto
+  doc.text(righeTitolo, MARGIN, yTitolo);
 
-    doc.setDrawColor(...GRIGIO_CHIARO);
-    doc.setLineWidth(0.3);
-    doc.line(MARGIN, HEADER_H, PAGE_W - MARGIN, HEADER_H);
-  }
+  // Calcola l'altezza effettiva occupata dal titolo in mm
+  const altezzaTitolo = righeTitolo.length * (fontSizeTitolo * 0.45);
+
+  // --- 2. SOTTOTITOLO (Calcolato dinamicamente SOTTO il titolo) ---
+  const ySottotitolo = yTitolo + altezzaTitolo + 3; // +3mm di spazio dal titolo
+
+  doc.setTextColor(...GRIGIO);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+
+  const righeSottotitolo: string[] = doc.splitTextToSize(sottotitolo, CONTENT_W);
+  doc.text(righeSottotitolo, MARGIN, ySottotitolo);
+
+  // Calcola l'altezza occupata dal sottotitolo
+  const altezzaSottotitolo = righeSottotitolo.length * (9 * 0.45);
+
+  // Restituisce il punto Y esatto dove può iniziare la tabella (+6mm di stacco)
+  return ySottotitolo + altezzaSottotitolo + 6;
+}
 
   // ---- Helper: footer coerente, staccato dal bordo ---------------------
   function footer(): void {
@@ -246,11 +254,10 @@ export class TestRisultati implements OnInit {
     doc.text('Pag. ' + pageNum(), PAGE_W - MARGIN, PAGE_H - FOOTER_H + 7, { align: 'right' });
   }
 
-  function nuovaPagina(titolo: string, sottotitolo: string, accento: RGB): void {
-    doc.addPage();
-    sfondoPagina();
-    header(titolo, sottotitolo, accento);
-  }
+  function nuovaPagina(titolo: string, sottotitolo: string, accento: RGB): number {
+  doc.addPage();
+  return header(titolo, sottotitolo, accento);
+}
 
   // ---- Helper: card con bordo arrotondato + striscia di accento ------
   function card(x: number, y: number, w: number, h: number, accento: RGB): void {
@@ -647,18 +654,41 @@ export class TestRisultati implements OnInit {
     tutteRaccomandazioni.push([nome, racc.descrizione || '']);
   });
 
-  if (tutteRaccomandazioni.length > 0) {
-    nuovaPagina('Le Raccomandazioni di Milano sul benessere e la sicurezza online di bambini e adolescenti', 'Tutte le regole che proponiamo in questo progetto fanno riferimento a queste raccomandazioni', ACCENTO.raccomandazioni);
+ if (tutteRaccomandazioni.length > 0) {
+    // Salviamo la Y esatta restituita da nuovaPagina
+    const yTabella = nuovaPagina(
+      'Le Raccomandazioni di Milano sul benessere e la sicurezza online di bambini e adolescenti', 
+      'Tutte le regole che proponiamo in questo progetto fanno riferimento a queste raccomandazioni', 
+      ACCENTO.raccomandazioni
+    );
 
     autoTable(doc, {
-      startY: HEADER_H + 6,
+      startY: yTabella, // La tabella parte esattamente sotto il sottotitolo!
       head: [['Raccomandazione', 'Descrizione']],
       body: tutteRaccomandazioni,
       theme: 'grid',
-      headStyles: { fillColor: ACCENTO.raccomandazioni, textColor: BIANCO, fontStyle: 'bold', fontSize: 10, halign: 'center' },
-      bodyStyles: { fontSize: 8.5, textColor: NERO, valign: 'top', lineColor: GRIGIO_CHIARO, lineWidth: 0.2 },
+      pageBreak: 'auto',
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+        overflow: 'linebreak',
+        textColor: NERO,
+        valign: 'top',
+        lineColor: GRIGIO_CHIARO,
+        lineWidth: 0.2
+      },
+      headStyles: { 
+        fillColor: ACCENTO.raccomandazioni, 
+        textColor: BIANCO, 
+        fontStyle: 'bold', 
+        fontSize: 9, 
+        halign: 'center' 
+      },
       alternateRowStyles: { fillColor: SFONDO },
-      columnStyles: { 0: { cellWidth: 48, fontStyle: 'bold' }, 1: { cellWidth: CONTENT_W - 48 } },
+      columnStyles: { 
+        0: { cellWidth: 48, fontStyle: 'bold' }, 
+        1: { cellWidth: CONTENT_W - 48 } 
+      },
       margin: { left: MARGIN, right: MARGIN, bottom: FOOTER_H + 4, top: HEADER_H },
       didDrawPage: () => footer()
     });
