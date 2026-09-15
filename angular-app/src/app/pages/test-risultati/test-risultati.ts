@@ -522,7 +522,7 @@ export class TestRisultati implements OnInit {
   // =====================================================================
   // PAGINA 2 — Tutte le regole consigliate (tabella)
   // =====================================================================
-  nuovaPagina('TUTTE LE REGOLE CHE TI ABBIAMO CONSIGLATO', 'Qui trovi tutte le regole che potresti applicare, anche quelle che non hai selezionato, in caso volessi ripescarle ', ACCENTO.consigliate);
+  nuovaPagina('TUTTE LE REGOLE CHE TI ABBIAMO CONSIGLIATO', 'Qui trovi tutte le regole che potresti applicare, anche quelle che non hai selezionato, in caso volessi ripescarle ', ACCENTO.consigliate);
   const righeConsigliate: string[][] = [];
   const consigliateViste = new Set<string>();
   pattoOriginale.forEach(categoria => {
@@ -648,7 +648,7 @@ export class TestRisultati implements OnInit {
   });
 
   if (tutteRaccomandazioni.length > 0) {
-    nuovaPagina('Le Raccomandazioni di Milano sul benessere e la sicurezza online di bambini e adolescenti', 'Tutte le regole che proponiamo in questo progetto fanno riferimento a queste raccomandazioni', ACCENTO.raccomandazioni);
+    nuovaPagina('Le Raccomandazioni di Milano sul benessere e la sicurezza online', 'Tutte le regole che proponiamo in questo progetto fanno riferimento a queste raccomandazioni', ACCENTO.raccomandazioni);
 
     autoTable(doc, {
       startY: HEADER_H + 6,
