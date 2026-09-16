@@ -212,10 +212,10 @@ export class TestRisultati implements OnInit {
   // --- 1. TITOLO ---
   doc.setTextColor(...NERO);
   doc.setFont('helvetica', 'bold');
-  
+
   // Divide il titolo in righe se supera la larghezza della pagina
   const righeTitolo: string[] = doc.splitTextToSize(titolo, CONTENT_W);
-  const fontSizeTitolo = righeTitolo.length > 1 ? 12 : 15; 
+  const fontSizeTitolo = righeTitolo.length > 1 ? 12 : 15;
   doc.setFontSize(fontSizeTitolo);
 
   const yTitolo = 10; // Inizio del titolo dall'alto
@@ -529,7 +529,7 @@ export class TestRisultati implements OnInit {
   // =====================================================================
   // PAGINA 2 — Tutte le regole consigliate (tabella)
   // =====================================================================
-  nuovaPagina('TUTTE LE REGOLE CHE TI ABBIAMO CONSIGLATO', 'Qui trovi tutte le regole che potresti applicare, anche quelle che non hai selezionato, in caso volessi ripescarle ', ACCENTO.consigliate);
+  nuovaPagina('TUTTE LE REGOLE CHE TI ABBIAMO CONSIGLIATO', 'Qui trovi tutte le regole che potresti applicare, anche quelle che non hai selezionato, in caso volessi ripescarle ', ACCENTO.consigliate);
   const righeConsigliate: string[][] = [];
   const consigliateViste = new Set<string>();
   pattoOriginale.forEach(categoria => {
@@ -654,11 +654,11 @@ export class TestRisultati implements OnInit {
     tutteRaccomandazioni.push([nome, racc.descrizione || '']);
   });
 
- if (tutteRaccomandazioni.length > 0) {
+  if (tutteRaccomandazioni.length > 0) {
     // Salviamo la Y esatta restituita da nuovaPagina
     const yTabella = nuovaPagina(
-      'Le Raccomandazioni di Milano sul benessere e la sicurezza online di bambini e adolescenti', 
-      'Tutte le regole che proponiamo in questo progetto fanno riferimento a queste raccomandazioni', 
+      'Le Raccomandazioni di Milano sul benessere e la sicurezza online',
+      'Tutte le regole che proponiamo in questo progetto fanno riferimento a queste raccomandazioni',
       ACCENTO.raccomandazioni
     );
 
@@ -677,17 +677,17 @@ export class TestRisultati implements OnInit {
         lineColor: GRIGIO_CHIARO,
         lineWidth: 0.2
       },
-      headStyles: { 
-        fillColor: ACCENTO.raccomandazioni, 
-        textColor: BIANCO, 
-        fontStyle: 'bold', 
-        fontSize: 9, 
-        halign: 'center' 
+      headStyles: {
+        fillColor: ACCENTO.raccomandazioni,
+        textColor: BIANCO,
+        fontStyle: 'bold',
+        fontSize: 9,
+        halign: 'center'
       },
       alternateRowStyles: { fillColor: SFONDO },
-      columnStyles: { 
-        0: { cellWidth: 48, fontStyle: 'bold' }, 
-        1: { cellWidth: CONTENT_W - 48 } 
+      columnStyles: {
+        0: { cellWidth: 48, fontStyle: 'bold' },
+        1: { cellWidth: CONTENT_W - 48 }
       },
       margin: { left: MARGIN, right: MARGIN, bottom: FOOTER_H + 4, top: HEADER_H },
       didDrawPage: () => footer()

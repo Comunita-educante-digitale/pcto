@@ -160,11 +160,11 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 .hero-eyebrowns {
   display: inline-block;
   font-family: 'DM Sans', sans-serif;
-  font-size: 16px; 
+  font-size: 16px;
   font-weight: 700;
-  color: #1a1a1a; 
-  background: #beb201; 
-  padding: 0.6rem 1.4rem; 
+  color: #1a1a1a;
+  background: #beb201;
+  padding: 0.6rem 1.4rem;
   border-radius: 9999px;
   margin-bottom: 2rem;
   text-transform: uppercase;
@@ -288,9 +288,9 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 }
 
 @media (min-width: 768px) {
-  .search-section { 
-    padding-left: 2.5rem; 
-    padding-right: 2.5rem; 
+  .search-section {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
   }
 }
 
@@ -313,8 +313,8 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
   font-weight: 700;
 }
 
-.search-section h2 { 
-  font-size: 1.9rem; 
+.search-section h2 {
+  font-size: 1.9rem;
   margin-bottom: 0.75rem;
 }
 
