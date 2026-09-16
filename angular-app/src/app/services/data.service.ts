@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MotoreRicerca, normalizeText as normalizeTextAvanzata } from './ricerca-avanzata';
 
 export interface Categoria {
   id: string;
@@ -78,21 +79,6 @@ export function normalizeText(value: unknown): string {
 
 export function slugify(value: unknown): string {
   return normalizeText(value).replace(/\s+/g, '-');
-}
-
-// Parole troppo generiche per contare come sovrapposizione significativa tra
-// la preoccupazione dell'utente e le frasi chiave del database
-const STOPWORDS = new Set([
-  'non', 'per', 'che', 'con', 'come', 'del', 'dei', 'dello', 'della', 'delle', 'degli',
-  'nel', 'nella', 'nelle', 'sul', 'sullo', 'sulla', 'sui', 'alla', 'alle', 'allo', 'agli',
-  'mio', 'mia', 'miei', 'mie', 'suo', 'sua', 'suoi', 'sue', 'gli', 'una', 'uno',
-  'ancora', 'anche', 'quando', 'sempre', 'mai', 'cosa', 'fare', 'essere', 'avere',
-  'viene', 'stato', 'solo', 'tutto', 'tutti', 'tutta', 'tutte', 'poco', 'molto',
-  'qualcosa', 'qualcuno'
-]);
-
-function significantTokens(normalized: string): string[] {
-  return normalized.split(/\s+/).filter(t => t.length > 2 && !STOPWORDS.has(t));
 }
 
 function getObjectEntries(value: unknown): [string, unknown][] {
@@ -209,46 +195,49 @@ function mapRemoteData(payload: Record<string, unknown>): AppData {
   return { categories, keywords, testQuestions, rules, activities, recommendations };
 }
 
-function findMatchingCategoriesForQuery(query: string, data: AppData): string[] {
-  const normalizedQuery = normalizeText(query);
-  if (!normalizedQuery) return [];
-  const matchedCategories = new Set<string>();
-  const queryTokens = normalizedQuery.split(/\s+/).filter(t => t.length > 2);
-  for (const item of data.keywords) {
-    const normalizedPhrase = normalizeText(item.preoccupazione);
-    if (!normalizedPhrase) continue;
-    let isMatch = false;
-    if (normalizedPhrase === normalizedQuery || normalizedPhrase.includes(normalizedQuery) || normalizedQuery.includes(normalizedPhrase)) {
-      isMatch = true;
-    } else if (queryTokens.length > 0) {
-      const phraseTokens = normalizedPhrase.split(/\s+/).filter(t => t.length > 2);
-      if (phraseTokens.length > 0 && (phraseTokens.every(t => queryTokens.includes(t)) || queryTokens.every(t => phraseTokens.includes(t)))) {
-        isMatch = true;
-      } else {
-        // Match parziale: almeno 2 parole significative in comune che coprano
-        // metà della frase chiave (tollera frasi libere tipo
-        // "mio figlio passa troppo tempo sullo smartphone")
-        const querySignificant = significantTokens(normalizedQuery);
-        const phraseSignificant = significantTokens(normalizedPhrase);
-        const comuni = phraseSignificant.filter(t => querySignificant.includes(t));
-        if (comuni.length >= 2 && comuni.length >= Math.ceil(phraseSignificant.length / 2)) isMatch = true;
-      }
-    }
-    if (isMatch) {
-      for (const categoryName of item.categorie ?? []) {
-        const norm = normalizeText(categoryName);
-        const categoryId = Object.values(data.categories).find(c => normalizeText(c.categoria) === norm || normalizeText(c.nome) === norm || normalizeText(c.slug) === norm)?.id || '';
-        if (categoryId) matchedCategories.add(categoryId);
-      }
+/**
+ * Risolve il nome-categoria così come compare nella colonna "categorie" del
+ * foglio keywords (es. "dipendenza") nell'id interno della categoria
+ * (data.categories[id]). Stessa logica di risoluzione già usata altrove nel
+ * file in fase di import, riusata qui in fase di ricerca.
+ */
+function risolviCategoriaId(nomeCategoria: string, data: AppData): string {
+  const norm = normalizeTextAvanzata(nomeCategoria);
+  return Object.values(data.categories).find(
+    c => normalizeTextAvanzata(c.categoria) === norm || normalizeTextAvanzata(c.nome) === norm || normalizeTextAvanzata(c.slug) === norm
+  )?.id || '';
+}
+
+function findMatchingCategoriesForQuery(query: string, data: AppData, motore: MotoreRicerca): { id: string; punteggio: number }[] {
+  const risultati = motore.cerca(query);
+  const out: { id: string; punteggio: number }[] = [];
+  const visti = new Set<string>();
+  for (const r of risultati) {
+    const id = risolviCategoriaId(r.categoria, data);
+    if (id && !visti.has(id)) {
+      visti.add(id);
+      out.push({ id, punteggio: r.punteggio });
     }
   }
-  return Array.from(matchedCategories);
+  return out;
 }
 
 const EMPTY_DATA: AppData = { categories: {}, keywords: [], testQuestions: [], rules: {}, activities: {}, recommendations: {} };
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
+  // Il motore va ricostruito solo quando cambia il set di keyword (dopo un
+  // fetch riuscito), non a ogni ricerca: costruirlo costa ~2ms su ~900 righe,
+  // ma farlo a ogni tasto premuto sarebbe comunque uno spreco inutile.
+  private motore: MotoreRicerca | null = null;
+  private motoreKeywords: Keyword[] | null = null;
+
+  private getMotore(data: AppData): MotoreRicerca {
+    if (this.motore && this.motoreKeywords === data.keywords) return this.motore;
+    this.motore = new MotoreRicerca(data.keywords);
+    this.motoreKeywords = data.keywords;
+    return this.motore;
+  }
 
   private async fetchGoogleAppScript(url: string, timeoutMs: number): Promise<Record<string, unknown> | null> {
     try {
@@ -321,20 +310,30 @@ export class DataService {
     return Array.from(new Set(data.keywords.map(item => item.preoccupazione)));
   }
 
+  /** Autocomplete tollerante a refusi e ordine delle parole diverso. */
+  async suggerisciKeywords(parziale: string): Promise<string[]> {
+    const { data } = await this.getAppData();
+    return this.getMotore(data).suggerisci(parziale);
+  }
+
   async searchCategories(queries: string[]): Promise<{ success: boolean; risultati: RisultatoRicerca[] }> {
     if (!queries || !Array.isArray(queries) || queries.length === 0) return { success: false, risultati: [] };
     const { data } = await this.getAppData();
-    const risultati: RisultatoRicerca[] = [];
-    const foundIds = new Set<string>();
+    const motore = this.getMotore(data);
+    // Se l'utente ha compilato più campi, sommiamo i punteggi: una categoria
+    // toccata da due preoccupazioni diverse deve salire, non solo comparire.
+    const punteggi = new Map<string, number>();
     for (const query of queries) {
-      const matchedIds = findMatchingCategoriesForQuery(query, data);
-      for (const categoryId of matchedIds) {
-        if (!categoryId || foundIds.has(categoryId)) continue;
-        foundIds.add(categoryId);
-        const category = data.categories[categoryId];
-        risultati.push({ id: categoryId, nome: category?.nome || categoryId, descrizione: category?.descrizione || '' });
+      for (const m of findMatchingCategoriesForQuery(query, data, motore)) {
+        punteggi.set(m.id, (punteggi.get(m.id) ?? 0) + m.punteggio);
       }
     }
+    const risultati: RisultatoRicerca[] = Array.from(punteggi.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([categoryId]) => {
+        const category = data.categories[categoryId];
+        return { id: categoryId, nome: category?.nome || categoryId, descrizione: category?.descrizione || '' };
+      });
     return risultati.length > 0 ? { success: true, risultati } : { success: false, risultati: [] };
   }
 

@@ -20,7 +20,6 @@ export class Home implements OnInit {
   navbarHidden = signal(false);
   mobileMenuOpen = signal(false);
 
-  suggestions: string[] = [];
   activeInput = signal(-1);
   activeSuggestion = signal(-1);
   filtered = signal<string[]>([]);
@@ -28,7 +27,6 @@ export class Home implements OnInit {
   private lastY = 0;
 
   ngOnInit(): void {
-    this.data.getKeywords().then(k => (this.suggestions = k)).catch(() => (this.suggestions = []));
     this.data.getCategorie()
       .then(c => this.categories.set(Object.values(c)))
       .catch(() => this.categories.set([]));
@@ -90,13 +88,13 @@ export class Home implements OnInit {
   }
 
   private updateFiltered(query: string): void {
-    const q = query.trim().toLowerCase();
+    const q = query.trim();
     if (!q) {
       this.filtered.set([]);
       this.activeSuggestion.set(-1);
       return;
     }
-    this.filtered.set(this.suggestions.filter(s => s.toLowerCase().includes(q)));
+    this.data.suggerisciKeywords(q).then(s => this.filtered.set(s));
     this.activeSuggestion.set(-1);
   }
 
