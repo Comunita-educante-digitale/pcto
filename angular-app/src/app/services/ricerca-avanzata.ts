@@ -287,12 +287,13 @@ export class MotoreRicerca {
       .map(([categoria, v]) => ({ categoria, punteggio: v.score, frasiSimili: v.frasi }))
       .sort((a, b) => b.punteggio - a.punteggio);
 
-    // normalizzazione 0..1 sul migliore e taglio delle code irrilevanti
+    // normalizzazione 0..1 sul migliore: il 30% era troppo rigido per keyword
+    // che si riferiscono a più categorie collegate allo stesso comportamento.
     const max = risultati[0].punteggio || 1;
-    return risultati
-      .map(r => ({ ...r, punteggio: r.punteggio / max }))
-      .filter((r, i) => i === 0 || r.punteggio >= 0.3)
-      .slice(0, maxRisultati);
+    const normalizzati = risultati.map(r => ({ ...r, punteggio: r.punteggio / max }));
+    const pertinenti = normalizzati.filter(r => r.punteggio >= 0.25);
+    const finale = pertinenti.length > 0 ? pertinenti : normalizzati.slice(0, Math.min(3, normalizzati.length));
+    return finale.slice(0, maxRisultati);
   }
 
   /** Autocomplete migliore di `includes`: tollera ordine diverso e refusi. */

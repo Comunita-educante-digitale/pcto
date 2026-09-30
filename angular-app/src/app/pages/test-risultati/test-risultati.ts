@@ -213,31 +213,27 @@ export class TestRisultati implements OnInit {
   doc.setTextColor(...NERO);
   doc.setFont('helvetica', 'bold');
 
-  // Divide il titolo in righe se supera la larghezza della pagina
   const righeTitolo: string[] = doc.splitTextToSize(titolo, CONTENT_W);
-  const fontSizeTitolo = righeTitolo.length > 1 ? 12 : 15;
+  const fontSizeTitolo = righeTitolo.length > 1 ? 13 : 18;
   doc.setFontSize(fontSizeTitolo);
 
-  const yTitolo = 10; // Inizio del titolo dall'alto
-  doc.text(righeTitolo, MARGIN, yTitolo);
+  const yTitolo = 18;
+  doc.text(righeTitolo, PAGE_W / 2, yTitolo, { align: 'center' });
 
-  // Calcola l'altezza effettiva occupata dal titolo in mm
   const altezzaTitolo = righeTitolo.length * (fontSizeTitolo * 0.45);
 
-  // --- 2. SOTTOTITOLO (Calcolato dinamicamente SOTTO il titolo) ---
-  const ySottotitolo = yTitolo + altezzaTitolo + 3; // +3mm di spazio dal titolo
+  // --- 2. SOTTOTITOLO ---
+  const ySottotitolo = yTitolo + altezzaTitolo + 5;
 
   doc.setTextColor(...GRIGIO);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
 
-  const righeSottotitolo: string[] = doc.splitTextToSize(sottotitolo, CONTENT_W);
-  doc.text(righeSottotitolo, MARGIN, ySottotitolo);
+  const righeSottotitolo: string[] = doc.splitTextToSize(sottotitolo, CONTENT_W - 18);
+  doc.text(righeSottotitolo, PAGE_W / 2, ySottotitolo, { align: 'center' });
 
-  // Calcola l'altezza occupata dal sottotitolo
   const altezzaSottotitolo = righeSottotitolo.length * (9 * 0.45);
 
-  // Restituisce il punto Y esatto dove può iniziare la tabella (+6mm di stacco)
   return ySottotitolo + altezzaSottotitolo + 6;
 }
 
@@ -314,7 +310,7 @@ export class TestRisultati implements OnInit {
   // e vincolato a stare TUTTO su una sola pagina (nessun overflow).
   // =====================================================================
   sfondoPagina();
-  header('LE TUE REGOLE PERSONALIZZATE', 'Il patto che abbiamo scelto insieme per usare bene la tecnologia', PRIMARIO);
+  header('PATTO DIGITALE', 'Le regole che abbiamo scelto per preservare il benessere della nostra famiglia.', PRIMARIO);
 
   interface RegolaPoster { cat: string; nome: string; desc: string; colore: RGB; }
 
@@ -523,6 +519,21 @@ export class TestRisultati implements OnInit {
       y += layout.h + tagliaScelta.gap;
     });
   });
+
+  const firmaY = PAGE_H - FOOTER_H - 26;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...NERO);
+  doc.text('Sottoscritto da:', MARGIN, firmaY);
+
+  const lineeFirma = [
+    { x: MARGIN, w: 60 },
+    { x: PAGE_W / 2 - 30, w: 60 },
+    { x: PAGE_W - MARGIN - 60, w: 60 }
+  ];
+  for (const firma of lineeFirma) {
+    doc.line(firma.x, firmaY + 6, firma.x + firma.w, firmaY + 6);
+  }
 
   footer();
 
