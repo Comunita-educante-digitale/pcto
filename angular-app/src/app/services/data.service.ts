@@ -231,6 +231,14 @@ export class DataService {
   // ma farlo a ogni tasto premuto sarebbe comunque uno spreco inutile.
   private motore: MotoreRicerca | null = null;
   private motoreKeywords: Keyword[] | null = null;
+  private appDataInit: Promise<void> | null = null;
+
+  initializeAppData(): Promise<void> {
+    if (!this.appDataInit) {
+      this.appDataInit = this.getAppData().then(() => undefined);
+    }
+    return this.appDataInit;
+  }
 
   private getMotore(data: AppData): MotoreRicerca {
     if (this.motore && this.motoreKeywords === data.keywords) return this.motore;
