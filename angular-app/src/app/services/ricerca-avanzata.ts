@@ -184,14 +184,24 @@ export class MotoreRicerca {
   private vocabolario: string[] = [];
 
   constructor(keywords: KeywordRow[]) {
-    // scarta le righe vuote o senza categorie (il foglio ne ha parecchie in fondo)
-    const righe = keywords.filter(k => k.preoccupazione?.trim() && k.categorie?.some(c => c.trim()));
+    // unifica eventuali duplicati della stessa keyword (stessa frase, categorie diverse):
+    // i suggerimenti devono comparire una sola volta ma conservare tutte le categorie di origine.
+    const righePerFrase = new Map<string, Set<string>>();
+    for (const k of keywords) {
+      const frase = k.preoccupazione?.trim();
+      const categorie = (k.categorie ?? []).map(c => c.trim()).filter(Boolean);
+      if (!frase || categorie.length === 0) continue;
+
+      const set = righePerFrase.get(frase) ?? new Set<string>();
+      for (const cat of categorie) set.add(cat);
+      righePerFrase.set(frase, set);
+    }
 
     const df = new Map<string, number>();
-    const parziali = righe.map(k => {
-      const tokens = Array.from(new Set(tokenize(k.preoccupazione)));
+    const parziali = Array.from(righePerFrase.entries()).map(([frase, categorie]) => {
+      const tokens = Array.from(new Set(tokenize(frase)));
       for (const t of tokens) df.set(t, (df.get(t) ?? 0) + 1);
-      return { frase: k.preoccupazione, tokens, categorie: k.categorie.map(c => c.trim()).filter(Boolean) };
+      return { frase, tokens, categorie: Array.from(categorie) };
     });
 
     const N = parziali.length || 1;
@@ -302,6 +312,7 @@ export class MotoreRicerca {
       .filter(x => x.s > 0)
       .sort((a, b) => b.s - a.s || a.frase.length - b.frase.length)
       .slice(0, max)
-      .map(x => x.frase);
+      .map(x => x.frase)
+      .filter((frase, index, array) => array.indexOf(frase) === index);
   }
 }
