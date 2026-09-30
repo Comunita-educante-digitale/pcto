@@ -223,7 +223,7 @@ export class TestRisultati implements OnInit {
   const altezzaTitolo = righeTitolo.length * (fontSizeTitolo * 0.45);
 
   // --- 2. SOTTOTITOLO ---
-  const ySottotitolo = yTitolo + altezzaTitolo + 5;
+  const ySottotitolo = yTitolo + altezzaTitolo + 2;
 
   doc.setTextColor(...GRIGIO);
   doc.setFont('helvetica', 'normal');
@@ -519,21 +519,6 @@ export class TestRisultati implements OnInit {
       y += layout.h + tagliaScelta.gap;
     });
   });
-
-  const firmaY = PAGE_H - FOOTER_H - 26;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(...NERO);
-  doc.text('Sottoscritto da:', MARGIN, firmaY);
-
-  const lineeFirma = [
-    { x: MARGIN, w: 60 },
-    { x: PAGE_W / 2 - 30, w: 60 },
-    { x: PAGE_W - MARGIN - 60, w: 60 }
-  ];
-  for (const firma of lineeFirma) {
-    doc.line(firma.x, firmaY + 6, firma.x + firma.w, firmaY + 6);
-  }
 
   footer();
 
