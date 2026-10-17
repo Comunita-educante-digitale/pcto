@@ -1,7 +1,7 @@
 <!-- ═══════════════ NAVBAR ═══════════════ -->
 <nav class="navbar-custom" [class.navbar-hidden]="navbarHidden()">
   <a class="brand text-decoration-none" routerLink="/">
-    <span class="brand-badge">🏠</span>
+    <span class="brand-mark">🌿</span>
     <span class="brand-text">Comunità educante digitale</span>
   </a>
 
@@ -21,8 +21,9 @@
 
   <div class="navbar-links" id="navbar-links" [class.open]="mobileMenuOpen()">
     <a href="#che-cose" class="nav-link-custom text-decoration-none" (click)="closeMobileMenu()">Che cos'è?</a>
-    <a href="#come-funziona" class="nav-link-custom text-decoration-none" (click)="closeMobileMenu()">Il percorso</a>
-    <a href="#temi" class="nav-link-custom text-decoration-none" (click)="closeMobileMenu()">Temi</a>
+    <a href="#come-funziona" class="nav-link-custom text-decoration-none" (click)="closeMobileMenu()">Come funziona</a>
+    <a href="#esperti" class="nav-link-custom text-decoration-none" (click)="closeMobileMenu()">Riferimenti teorici</a>
+    <a href="#temi" class="nav-link-custom text-decoration-none" (click)="closeMobileMenu()">Categorie di rischio</a>
     <a href="#chi-siamo" class="nav-link-custom text-decoration-none" (click)="closeMobileMenu()">Chi siamo</a>
     <a routerLink="/test" class="nav-cta text-decoration-none" (click)="closeMobileMenu()">Fai il test</a>
   </div>
@@ -30,80 +31,82 @@
 
 <!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero" id="che-cose">
-  <div class="hero-blob hero-blob--1"></div>
-  <div class="hero-blob hero-blob--2"></div>
-  <div class="hero-blob hero-blob--3"></div>
-
   <div class="hero-grid">
     <div class="hero-copy reveal">
-      <span class="hero-eyebrow">👨‍👩‍👧 Guida per genitori · <span class="hero-beta">beta</span></span>
-      <h1 class="hero-title">Il digitale in famiglia,<br><span class="hl hl--coral">un passo alla volta</span></h1>
-      <p class="hero-lead">
-        Trasformiamo la ricerca pedagogica in un <strong>percorso-gioco</strong>: dalle tue preoccupazioni
-        a un <strong>patto digitale di famiglia</strong> fatto di poche regole chiare, costruite insieme a tuo figlio.
+      <div class="hero-eyebrow">
+        <span class="hero-eyebrow-text">Guida interattiva per genitori</span>
+        <span class="hero-beta">Versione Beta</span>
+      </div>
+
+      <h1>Educazione digitale familiare</h1>
+      <h3 class="hero-subtitle">Dalle preoccupazioni a un patto digitale di famiglia</h3>
+
+      <p class="hero-sub">
+        Uno strumento pratico basato su evidenze scientifiche, che trasforma la ricerca pedagogica in regole semplici da
+        applicare ogni giorno in famiglia, aiutando i genitori ad accompagnare i propri figli verso un uso consapevole
+        della tecnologia.
+      </p>
+
+      <div class="collapsible" [class.open]="heroExpanded()">
+        <div class="collapsible-inner">
+          <p class="hero-sub">
+            Non si tratta di un'app individuale, ma di uno strumento della comunità educante, pensato per essere
+            usato insieme alla scuola, non solo a casa. Le otto aree, il test e le regole proposte nascono da un
+            lavoro collettivo — genitori, insegnanti, pediatri ed esperti che si sono confrontati sulle stesse
+            preoccupazioni che oggi affronti tu — e restano un percorso aperto: la scuola di tuo figlio può
+            proporlo in un incontro comune prima che tu lo usi in famiglia, e le scelte che farai potranno, in
+            forma aggregata e anonima, aiutare la comunità a capire quali aree preoccupano di più e ad
+            aggiornare lo strumento nel tempo.
+          </p>
+          <p class="hero-sub">
+            I contenuti si ispirano ai contributi di Serge Tisseron, Pier Cesare Rivoltella e del progetto
+            Custodi Digitali, integrando anche le
+            <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank" rel="noopener noreferrer">Raccomandazioni di Milano</a>
+            per l'educazione digitale.
+          </p>
+        </div>
+      </div>
+      <button type="button" class="link-toggle" (click)="toggleHero()" [attr.aria-expanded]="heroExpanded()">
+        {{ heroExpanded() ? 'Leggi meno' : 'Leggi di più' }}<span class="chev" [class.up]="heroExpanded()">▾</span>
+      </button>
+
+      <p class="hero-audience">
+        Questa app è pensata per i genitori di ragazzi e ragazze tra i 10 e i 14 anni, l'età in cui
+        lo smartphone entra, o sta per entrare, nella loro vita. Che abbiate scelto di rinviarlo o no,
+        vi aiuta a costruire con i vostri figli la consapevolezza e la competenza che serviranno per
+        usarlo in autonomia.
+      </p>
+      <p class="hero-beta-note">
+        Versione beta. <a routerLink="/come-nasce">Scopri come nasce l'app →</a>
       </p>
 
       <div class="hero-cta-group">
-        <a href="#cerca" class="btn btn--primary">🚀 Inizia dalla tua preoccupazione</a>
-        <a href="#come-funziona" class="btn btn--ghost">Come funziona</a>
+        <a href="#cerca" class="btn btn--primary">Inizia dalla tua preoccupazione</a>
+        <a href="#come-funziona" class="btn btn--ghost">Come funziona →</a>
       </div>
-
-      <p class="hero-audience">
-        Pensata per genitori di ragazzi tra i <strong>10 e i 14 anni</strong> — l'età in cui lo smartphone entra, o sta
-        per entrare, nella loro vita. <a routerLink="/come-nasce">Scopri come nasce l'app →</a>
-      </p>
     </div>
 
     <div class="hero-art reveal" aria-hidden="true">
-      <!-- Illustrazione: famiglia + dispositivo "amico" sotto un tetto di casa -->
-      <svg class="hero-illu" viewBox="0 0 320 300" role="img" aria-label="Una famiglia usa i dispositivi con serenità">
-        <defs>
-          <linearGradient id="roof" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#FF8A5B"/><stop offset="1" stop-color="#FF6B5E"/>
-          </linearGradient>
-        </defs>
-        <!-- tetto -->
-        <path d="M40 120 L160 40 L280 120 Z" fill="url(#roof)"/>
-        <!-- parete casa -->
-        <rect x="58" y="118" width="204" height="150" rx="18" fill="#FFFFFF" stroke="#2A2340" stroke-width="3"/>
-        <!-- telefono-amico -->
-        <g class="illu-phone">
-          <rect x="135" y="150" width="50" height="86" rx="12" fill="#4FB7E8" stroke="#2A2340" stroke-width="3"/>
-          <circle cx="150" cy="182" r="4" fill="#2A2340"/>
-          <circle cx="170" cy="182" r="4" fill="#2A2340"/>
-          <path d="M149 198 q11 10 22 0" stroke="#2A2340" stroke-width="3" fill="none" stroke-linecap="round"/>
-        </g>
-        <!-- genitore -->
-        <g class="illu-pop">
-          <circle cx="96" cy="196" r="20" fill="#8B6FE0"/>
-          <rect x="78" y="214" width="36" height="46" rx="16" fill="#8B6FE0"/>
-          <circle cx="90" cy="194" r="3" fill="#fff"/><circle cx="102" cy="194" r="3" fill="#fff"/>
-        </g>
-        <!-- figlio -->
-        <g class="illu-pop illu-pop--late">
-          <circle cx="224" cy="204" r="16" fill="#FFC94D"/>
-          <rect x="210" y="218" width="28" height="42" rx="13" fill="#FFC94D"/>
-          <circle cx="219" cy="203" r="2.5" fill="#2A2340"/><circle cx="229" cy="203" r="2.5" fill="#2A2340"/>
-        </g>
-        <!-- scintille -->
-        <g class="illu-spark">
-          <path d="M250 70 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z" fill="#FFC94D"/>
-          <circle cx="70" cy="80" r="6" fill="#46C9A0"/>
-          <circle cx="285" cy="170" r="5" fill="#FF6B5E"/>
-        </g>
+      <!-- Mini-mappa del metodo: un percorso sobrio a tappe -->
+      <svg class="hero-illu" viewBox="0 0 300 320" role="img" aria-label="Il percorso in cinque tappe">
+        <rect x="4" y="4" width="292" height="312" rx="26" fill="#FFFFFF" stroke="var(--line)" />
+        <path class="hero-illu-path" d="M60 70 C 160 40, 180 120, 90 150 S 20 230, 150 250 S 260 230, 240 290"
+              fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 12" opacity="0.5"/>
+        <g class="hero-node" style="--d:0s"><circle cx="60" cy="70" r="20" fill="var(--green)"/><text x="60" y="76" text-anchor="middle" font-size="18" fill="#fff" font-family="DM Sans, sans-serif" font-weight="700">1</text></g>
+        <g class="hero-node" style="--d:.5s"><circle cx="90" cy="150" r="20" fill="var(--green)"/><text x="90" y="156" text-anchor="middle" font-size="18" fill="#fff" font-family="DM Sans, sans-serif" font-weight="700">2</text></g>
+        <g class="hero-node" style="--d:1s"><circle cx="150" cy="250" r="20" fill="var(--green)"/><text x="150" y="256" text-anchor="middle" font-size="18" fill="#fff" font-family="DM Sans, sans-serif" font-weight="700">3</text></g>
+        <g class="hero-node" style="--d:1.5s"><circle cx="240" cy="290" r="22" fill="var(--amber)"/><text x="240" y="297" text-anchor="middle" font-size="20" fill="#3f2d02" font-family="DM Sans, sans-serif" font-weight="700">✓</text></g>
       </svg>
     </div>
   </div>
-
-  <a href="#cerca" class="scroll-hint" aria-label="Scorri">↓</a>
 </section>
 
 <!-- ═══════════════ RICERCA ═══════════════ -->
 <section class="search-section reveal" id="cerca">
   <div class="search-card">
-    <div class="search-eyebrow">✍️ Inizia da qui</div>
+    <div class="search-eyebrow">Inizia da qui</div>
     <h2 class="search-title">Qual è la tua preoccupazione?</h2>
-    <p class="search-sub">Scrivila con parole tue: ti mostriamo le aree più rilevanti con percorsi pratici.</p>
+    <p class="search-sub">Descrivi la situazione con parole tue: ti mostreremo le aree più rilevanti con percorsi pratici.</p>
 
     <div class="multi-search-wrap">
       @for (campo of campi(); track ci; let ci = $index) {
@@ -140,131 +143,181 @@
 
     <div class="test-banner">
       <div class="test-banner-text">
-        <strong>Non sai da dove iniziare? 🎯</strong>
+        <strong>Non sai da dove iniziare?</strong>
         <span>Rispondi a poche domande e scopri le tue aree di attenzione.</span>
       </div>
-      <a routerLink="/test" class="btn btn--sun">Fai il test →</a>
+      <a routerLink="/test" class="btn btn--amber">Fai il test →</a>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════ PERCORSO (gioco a tappe) ═══════════════ -->
+<!-- ═══════════════ COME FUNZIONA (stepper) ═══════════════ -->
 <section class="percorso" id="come-funziona">
   <div class="section-head reveal">
-    <div class="section-label">🗺️ Il percorso</div>
-    <h2 class="section-title">Dalla preoccupazione al patto, giocando d'anticipo</h2>
-    <p class="section-sub">Cinque tappe, un solo obiettivo: regole condivise che durano.</p>
+    <div class="section-label">Il percorso</div>
+    <h2 class="section-title">Dalla preoccupazione alla soluzione</h2>
+    <p class="section-sub">Ogni problema viene affrontato con un metodo strutturato in cinque passaggi.</p>
   </div>
 
-  <div class="trail reveal">
-    <!-- sentiero animato dietro le tappe -->
-    <svg class="trail-line" viewBox="0 0 1000 230" preserveAspectRatio="none" aria-hidden="true">
-      <path class="trail-path"
-        d="M30 180 C 160 60, 230 60, 330 140 S 520 240, 620 130 S 820 40, 970 150"
-        fill="none" stroke="#FFD39B" stroke-width="8" stroke-linecap="round" stroke-dasharray="14 20"/>
-    </svg>
+  <div class="stepper reveal">
+    <div class="stepper-progress"><span [style.width.%]="stepProgress"></span></div>
 
-    <ol class="stations">
-      <li class="station station--coral" style="--i:0">
-        <span class="station-dot">1</span>
-        <span class="station-emoji">💬</span>
-        <h3>Esprimi le preoccupazioni</h3>
-        <p>Cerca tra i temi che ti stanno più a cuore sull'uso della tecnologia.</p>
-      </li>
-      <li class="station station--sky" style="--i:1">
-        <span class="station-dot">2</span>
-        <span class="station-emoji">🎯</span>
-        <h3>Fai il test</h3>
-        <p>Poche domande mirate per capire quali aree richiedono attenzione.</p>
-      </li>
-      <li class="station station--grape" style="--i:2">
-        <span class="station-dot">3</span>
-        <span class="station-emoji">🧩</span>
-        <h3>Regole e attività</h3>
-        <p>Ricevi regole concrete e attività da fare insieme, su misura per voi.</p>
-      </li>
-      <li class="station station--mint" style="--i:3">
-        <span class="station-dot">4</span>
-        <span class="station-emoji">✏️</span>
-        <h3>Personalizza</h3>
-        <p>Tieni le regole che fanno per voi, togli le altre, adatta il patto.</p>
-      </li>
-      <li class="station station--sun" style="--i:4">
-        <span class="station-dot">5</span>
-        <span class="station-emoji">📌</span>
-        <h3>Scarica e appendi</h3>
-        <p>Salva il patto in PDF e appendilo in casa come promemoria per tutti.</p>
-      </li>
+    <ol class="stepper-dots">
+      @for (s of steps; track s.n; let i = $index) {
+        <li>
+          <button class="dot" [class.active]="i === currentStep()" [class.done]="i < currentStep()"
+            (click)="goToStep(i)" [attr.aria-label]="'Vai al passo ' + s.n" [attr.aria-current]="i === currentStep()">
+            {{ i < currentStep() ? '✓' : s.n }}
+          </button>
+        </li>
+      }
     </ol>
+
+    <div class="step-panel">
+      @for (s of steps; track s.n; let i = $index) {
+        @if (i === currentStep()) {
+          <div class="step-content">
+            <span class="step-ico">{{ s.icon }}</span>
+            <div class="step-kicker">Passo {{ s.n }} di {{ steps.length }}</div>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.desc }}</p>
+          </div>
+        }
+      }
+    </div>
+
+    <div class="stepper-nav">
+      <button class="btn btn--ghost" (click)="prevStep()" [disabled]="isFirstStep">← Indietro</button>
+      @if (!isLastStep) {
+        <button class="btn btn--primary" (click)="nextStep()">Prosegui →</button>
+      } @else {
+        <a class="btn btn--primary" href="#cerca">Inizia ora →</a>
+      }
+    </div>
   </div>
 
-  <div class="note-cards">
-    <div class="note-card reveal">
-      <div class="note-ico">🤝</div>
-      <h3>Prima di cominciare da soli</h3>
-      <p>
-        Se la tua scuola ha aderito al Patto Educativo Digitale, il percorso funziona meglio se parte da un
-        momento comune tra genitori, insegnanti e referenti. Non è obbligatorio — ma un patto condiviso ha più
-        forza: un ragazzo che segue regole diverse dai compagni si sente meno solo se sa che anche altre famiglie
-        hanno fatto scelte simili, discusse insieme.
-      </p>
+  <!-- Note comunità in accordion -->
+  <div class="accordion reveal">
+    <div class="acc-item" [class.open]="notesOpen()[0]">
+      <button type="button" class="acc-head" (click)="toggleNote(0)" [attr.aria-expanded]="notesOpen()[0]">
+        <span class="acc-title">Prima di cominciare da soli</span>
+        <span class="acc-chevron">▾</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-body-inner">
+          <p>
+            Se la tua scuola ha aderito al Patto Educativo Digitale, il percorso funziona meglio se parte da un
+            momento comune: un incontro tra genitori, insegnanti e referenti scolastici in cui si condividono le
+            preoccupazioni più diffuse e si adatta lo strumento al contesto della classe o dell'istituto. Non è un
+            passaggio obbligato — puoi comunque usare il percorso da solo — ma il patto che nascerà avrà più
+            forza se altre famiglie della stessa comunità lo conoscono e lo condividono: un ragazzo che segue
+            regole diverse dai compagni si sente meno solo se sa che anche altre famiglie hanno fatto scelte
+            simili, discusse insieme.
+          </p>
+        </div>
+      </div>
     </div>
-    <div class="note-card reveal">
-      <div class="note-ico">🌱</div>
-      <h3>Il tuo patto, la comunità</h3>
-      <p>
-        Il patto resta tuo e della tua famiglia. Se vuoi, puoi condividerlo in forma anonima e aggregata con la
-        scuola o il gruppo di genitori: aiuta a capire quali preoccupazioni e quali regole funzionano davvero, e a
-        migliorare lo strumento per le famiglie che verranno dopo di te.
-      </p>
+
+    <div class="acc-item" [class.open]="notesOpen()[1]">
+      <button type="button" class="acc-head" (click)="toggleNote(1)" [attr.aria-expanded]="notesOpen()[1]">
+        <span class="acc-title">Il tuo patto, la comunità</span>
+        <span class="acc-chevron">▾</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-body-inner">
+          <p>
+            Il patto che hai costruito resta tuo e della tua famiglia. Se lo desideri, puoi condividerlo — in forma
+            anonima e aggregata, mai con i dettagli della tua situazione personale — con la scuola o il gruppo
+            di genitori della tua comunità educante, contribuendo a costruire un quadro di quali preoccupazioni
+            e quali regole funzionano davvero, aggiornando così lo strumento per le famiglie che verranno dopo
+            di te. La comunità educante cresce anche grazie a questo scambio: la tua esperienza, sommata a
+            quella di altri, aiuta a capire meglio come accompagnare i ragazzi in questa fase.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════ TEMI ═══════════════ -->
+<!-- ═══════════════ BASI SCIENTIFICHE ═══════════════ -->
+<section class="science-section reveal" id="esperti">
+  <div class="section-head">
+    <div class="section-label">Fondamenti pedagogici</div>
+    <h2 class="section-title">Non consigli casuali.<br>Scienza applicata.</h2>
+    <p class="section-sub">
+      Ogni indicazione è radicata in ricerche riconosciute. Ci affidiamo a metodologie
+      consolidate per offrire strumenti realmente efficaci.
+    </p>
+  </div>
+  <div class="expert-cards">
+    <div class="expert-card">
+      <div class="expert-name">Serge Tisseron</div>
+      <div class="expert-method">Regola 3-6-9-12 · Autoregolazione</div>
+      <p class="expert-desc">Psichiatra e psicoanalista francese: definisce le tappe di accesso ai media digitali
+        per età, promuovendo lo sviluppo graduale dell'autocontrollo.</p>
+      <a class="topic-link" href="https://docs.google.com/document/d/19qmBE8xmMvI-98pJ5vxqS4nX2TkrLri_/edit?usp=sharing&ouid=106160229544751676897&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer">Approfondisci →</a>
+    </div>
+    <div class="expert-card">
+      <div class="expert-name">Pier Cesare Rivoltella</div>
+      <div class="expert-method">Pedagogia dell'Attenzione</div>
+      <p class="expert-desc">Professore ordinario di Media e Tecnologie per la didattica all'Università di Bologna,
+        fondatore del CREMIT: sviluppa il modello della Media Education,
+        orientato alla formazione di competenze critiche nell'uso dei media digitali.</p>
+      <a class="topic-link" href="https://docs.google.com/document/d/1BDXl1nfQ_tXVcQJBrfVHnog4VRYF7F6U/edit?usp=sharing&ouid=106160229544751676897&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer">Approfondisci →</a>
+    </div>
+    <div class="expert-card">
+      <div class="expert-name">Custodi Digitali</div>
+      <div class="expert-method">Linee guida preventive</div>
+      <p class="expert-desc">Associazione italiana di riferimento per la promozione di un uso sicuro e consapevole
+        delle tecnologie da parte di bambini e ragazzi.</p>
+      <a class="topic-link" href="https://docs.google.com/document/d/1K9d5BWM9C9FqmgIkohh-ho6HNqyyml8Q/edit?usp=sharing&ouid=106160229544751676897&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer">Approfondisci →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ TEMI PRINCIPALI ═══════════════ -->
 <section class="topics-section" id="temi">
   <div class="section-head reveal">
-    <div class="section-label">🎲 Aree di intervento</div>
-    <h2 class="section-title">Scegli il tema che ti preoccupa di più</h2>
-    <p class="section-sub">Ogni area ha un percorso guidato dedicato.</p>
+    <div class="section-label">Aree di intervento</div>
+    <h2 class="section-title">Seleziona la categoria che ti preoccupa di più per approfondirla</h2>
+    <p class="section-sub">Seleziona l'area che ti preoccupa di più per accedere al percorso guidato dedicato.</p>
   </div>
-
   <div class="topics-grid reveal">
     @if (categories().length === 0) {
       <a href="#" class="topic-card topic-card--c0">
         <div class="topic-icon">📱</div>
         <h3>Dipendenza dagli schermi</h3>
-        <p>Riconoscere i segnali di uso compulsivo e costruire regole sane e condivise.</p>
+        <p>Riconoscere i segnali di uso compulsivo e costruire regole di utilizzo sane e condivise.</p>
         <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card topic-card--c1">
         <div class="topic-icon">🔞</div>
         <h3>Contenuti inappropriati</h3>
-        <p>Strategie pratiche per la protezione e il dialogo aperto su ciò che incontrano online.</p>
+        <p>Strategie pratiche per la protezione e il dialogo aperto su ciò che i ragazzi incontrano online.</p>
         <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card topic-card--c2">
         <div class="topic-icon">🔒</div>
         <h3>Privacy e sicurezza online</h3>
-        <p>Educare alla protezione dei dati personali e alle buone pratiche digitali.</p>
+        <p>Educare alla protezione dei dati personali e alle buone pratiche digitali fin da piccoli.</p>
         <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card topic-card--c3">
         <div class="topic-icon">😔</div>
         <h3>Isolamento sociale</h3>
-        <p>Distinguere relazioni online sane da dinamiche di ritiro dalla vita reale.</p>
+        <p>Come distinguere relazioni online sane da dinamiche di ritiro dalla vita reale.</p>
         <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card topic-card--c4">
         <div class="topic-icon">💬</div>
-        <h3>Social e cyberbullismo</h3>
-        <p>Riconoscere, prevenire e affrontare situazioni di disagio legate ai social.</p>
+        <h3>Social media e cyberbullismo</h3>
+        <p>Riconoscere, prevenire e affrontare situazioni di disagio legate all'uso dei social.</p>
         <span class="topic-link">Approfondisci →</span>
       </a>
       <a href="#" class="topic-card topic-card--c5">
         <div class="topic-icon">🎮</div>
         <h3>Videogiochi e gaming</h3>
-        <p>Regolare il tempo di gioco senza conflitti, valorizzando gli aspetti positivi.</p>
+        <p>Regolare il tempo di gioco senza conflitti, valorizzando anche gli aspetti positivi.</p>
         <span class="topic-link">Approfondisci →</span>
       </a>
     } @else {
@@ -280,66 +333,40 @@
   </div>
 </section>
 
-<!-- ═══════════════ BASI SCIENTIFICHE ═══════════════ -->
-<section class="science-section reveal" id="esperti">
-  <div class="section-head">
-    <div class="section-label">📚 Fondamenti pedagogici</div>
-    <h2 class="section-title">Non consigli casuali. Scienza applicata.</h2>
-    <p class="section-sub">Ogni indicazione è radicata in ricerche riconosciute e metodologie consolidate.</p>
-  </div>
-  <div class="expert-cards">
-    <div class="expert-card">
-      <div class="expert-avatar">🧠</div>
-      <div class="expert-name">Serge Tisseron</div>
-      <div class="expert-method">Regola 3-6-9-12 · Autoregolazione</div>
-      <p class="expert-desc">Psichiatra e psicoanalista francese: definisce le tappe di accesso ai media digitali
-        per età, promuovendo lo sviluppo graduale dell'autocontrollo.</p>
-      <a class="topic-link" href="https://docs.google.com/document/d/19qmBE8xmMvI-98pJ5vxqS4nX2TkrLri_/edit?usp=sharing&ouid=106160229544751676897&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer">Approfondisci →</a>
-    </div>
-    <div class="expert-card">
-      <div class="expert-avatar">🎓</div>
-      <div class="expert-name">Pier Cesare Rivoltella</div>
-      <div class="expert-method">Pedagogia dell'Attenzione</div>
-      <p class="expert-desc">Professore ordinario di Media e Tecnologie per la didattica all'Università di Bologna,
-        fondatore del CREMIT: sviluppa il modello della Media Education per competenze critiche nell'uso dei media.</p>
-      <a class="topic-link" href="https://docs.google.com/document/d/1BDXl1nfQ_tXVcQJBrfVHnog4VRYF7F6U/edit?usp=sharing&ouid=106160229544751676897&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer">Approfondisci →</a>
-    </div>
-    <div class="expert-card">
-      <div class="expert-avatar">🛡️</div>
-      <div class="expert-name">Custodi Digitali</div>
-      <div class="expert-method">Linee guida preventive</div>
-      <p class="expert-desc">Associazione italiana di riferimento per la promozione di un uso sicuro e consapevole
-        delle tecnologie da parte di bambini e ragazzi.</p>
-      <a class="topic-link" href="https://docs.google.com/document/d/1K9d5BWM9C9FqmgIkohh-ho6HNqyyml8Q/edit?usp=sharing&ouid=106160229544751676897&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer">Approfondisci →</a>
-    </div>
-  </div>
-</section>
-
 <!-- ═══════════════ CHI SIAMO ═══════════════ -->
 <section class="about-section reveal" id="chi-siamo">
   <div class="about-inner">
     <div class="section-head">
-      <div class="section-label">✨ Il progetto</div>
+      <div class="section-label">Il progetto</div>
       <h2 class="section-title">Chi siamo</h2>
       <p class="section-sub">
-        Docenti, studenti, genitori e nonni che hanno costruito questa piattaforma dopo gli incontri sui Patti
-        Digitali alla scuola Quintino Di Vona, in linea con le
-        <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank" rel="noopener noreferrer">dieci raccomandazioni del Comune di Milano</a>.
+        Siamo docenti, studenti, genitori e nonni che hanno deciso di costruire questa piattaforma dopo gli incontri di approfondimento
+        sui Patti Digitali organizzati presso la scuola Quintino Di Vona.
       </p>
     </div>
 
     <div class="about-grid">
+      <div class="about-card about-card-wide">
+        <p>
+          Il progetto nasce per discutere, condividere e diffondere strategie utili a promuovere un'educazione digitale efficace e responsabile,
+          in linea con le
+          <a href="https://www.comune.milano.it/argomenti/partecipazione-civica/raccomandazioni-per-il-benessere-e-la-sicurezza-digitale-di-bambini-e-e-pre-adolescenti" target="_blank" rel="noopener noreferrer">dieci raccomandazioni del Comune di Milano</a>.
+        </p>
+      </div>
+
       <div class="about-card">
         <div class="about-role">Ideazione e supervisione psicologica</div>
         <div class="about-name">Nicola Iannaccone</div>
       </div>
+
       <div class="about-card">
         <div class="about-role">Ideazione e supervisione tecnica</div>
         <div class="about-name">Fabio Malizia</div>
       </div>
+
       <div class="about-card">
         <div class="about-role">Sviluppo software</div>
-        <div class="about-name">Nicolò Famlonga e Luca Petruzzelli</div>
+        <div class="about-name">Famlonga Nicolo e Petruzzelli Luca</div>
       </div>
     </div>
   </div>
@@ -348,26 +375,28 @@
 <!-- ═══════════════ PRIVACY ═══════════════ -->
 <section class="privacy-section reveal">
   <div class="section-head">
-    <div class="section-label">🔐 Tutela dei dati</div>
+    <div class="section-label">Tutela dei dati</div>
     <h2 class="section-title">La tua privacy è una priorità</h2>
-    <p class="section-sub">Lo strumento rispetta la riservatezza e i principi di protezione dei dati personali.</p>
+    <p class="section-sub">
+      Questo strumento è progettato nel rispetto della riservatezza degli utenti e dei principi di protezione dei dati personali.
+    </p>
   </div>
   <div class="privacy-grid">
     <div class="privacy-card">
-      <div class="privacy-card-title">Cosa succede ai dati</div>
+      <div class="privacy-card-title">Cosa succede ai dati inseriti</div>
       <p>Le preoccupazioni espresse e le risposte ai test non vengono salvate, archiviate o condivise con terze parti.</p>
     </div>
     <div class="privacy-card">
       <div class="privacy-card-title">Elaborazione temporanea</div>
-      <p>Le informazioni vengono usate solo in tempo reale per generare i suggerimenti e poi eliminate a fine sessione.</p>
+      <p>Le informazioni vengono usate solo in tempo reale per generare suggerimenti educativi personalizzati e vengono eliminate al termine della sessione.</p>
     </div>
     <div class="privacy-card">
       <div class="privacy-card-title">Principi applicati</div>
-      <p>Seguiamo i principi del <strong>GDPR</strong>: trasparenza, minimizzazione dei dati e uso responsabile.</p>
+      <p>Il progetto segue i principi del <strong>Regolamento Generale sulla Protezione dei Dati (GDPR)</strong>: trasparenza, minimizzazione dei dati e uso responsabile delle informazioni.</p>
     </div>
     <div class="privacy-card">
       <div class="privacy-card-title">Nessun uso commerciale</div>
-      <p>Nessun dato personale viene usato a fini commerciali o di profilazione.</p>
+      <p>Nessun dato personale viene utilizzato a fini commerciali o di profilazione.</p>
     </div>
   </div>
 </section>
@@ -376,7 +405,7 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <div class="footer-brand-text">🏠 Comunità educante digitale</div>
+      <div class="footer-brand-text">🌿 Comunità educante digitale</div>
       <p class="footer-copy">© 2026 Comunità educante digitale. Un approccio empatico alla crescita digitale.</p>
     </div>
 
@@ -384,8 +413,8 @@
       <div class="footer-col">
         <span class="footer-col-title">Esplora</span>
         <a href="#che-cose" class="footer-link">Che cos'è?</a>
-        <a href="#come-funziona" class="footer-link">Il percorso</a>
-        <a href="#temi" class="footer-link">Temi</a>
+        <a href="#come-funziona" class="footer-link">Come funziona</a>
+        <a href="#temi" class="footer-link">Categorie di rischio</a>
       </div>
       <div class="footer-col">
         <span class="footer-col-title">Risorse</span>

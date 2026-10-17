@@ -47,6 +47,20 @@ export class Home implements OnInit {
   activeSuggestion = signal(-1);
   filtered = signal<string[]>([]);
 
+  // ── Percorso interattivo (stepper) ──
+  readonly steps = [
+    { n: 1, icon: '🔍', title: 'Esprimi le tue preoccupazioni', desc: 'Cerca tra i temi che ti preoccupano di più riguardo all\'uso della tecnologia da parte di tuo figlio.' },
+    { n: 2, icon: '🧭', title: 'Test di valutazione', desc: 'Rispondi a poche domande mirate per capire quali aree richiedono maggiore attenzione.' },
+    { n: 3, icon: '🧩', title: 'Regole e attività personalizzate', desc: 'Ricevi regole concrete e attività pratiche da svolgere insieme ai tuoi figli, calibrate sulla vostra situazione.' },
+    { n: 4, icon: '✍️', title: 'Personalizza il tuo patto', desc: 'Scegli quali regole e attività tenere, elimina quelle che non fanno per voi e adatta il patto alla tua famiglia.' },
+    { n: 5, icon: '📌', title: 'Scarica e appendi il patto', desc: 'Salva il documento PDF con le regole scelte e appendilo in casa come promemoria visibile per tutta la famiglia.' },
+  ];
+  currentStep = signal(0);
+
+  // ── Espandi/accordion ──
+  heroExpanded = signal(false);
+  notesOpen = signal<[boolean, boolean]>([false, false]);
+
   private lastY = 0;
 
   ngOnInit(): void {
@@ -159,5 +173,19 @@ export class Home implements OnInit {
     } else {
       alert('Nessuna categoria trovata. Prova con parole diverse.');
     }
+  }
+
+  // ── Stepper ──
+  get isFirstStep(): boolean { return this.currentStep() === 0; }
+  get isLastStep(): boolean { return this.currentStep() === this.steps.length - 1; }
+  get stepProgress(): number { return ((this.currentStep() + 1) / this.steps.length) * 100; }
+  nextStep(): void { this.currentStep.update(i => Math.min(i + 1, this.steps.length - 1)); }
+  prevStep(): void { this.currentStep.update(i => Math.max(i - 1, 0)); }
+  goToStep(i: number): void { this.currentStep.set(i); }
+
+  // ── Espandi/accordion ──
+  toggleHero(): void { this.heroExpanded.update(v => !v); }
+  toggleNote(i: number): void {
+    this.notesOpen.update(a => a.map((v, idx) => (idx === i ? !v : v)) as [boolean, boolean]);
   }
 }
