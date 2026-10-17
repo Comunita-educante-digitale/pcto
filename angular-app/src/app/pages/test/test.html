@@ -36,7 +36,7 @@
         <!-- testo della domanda / esito -->
         @if (!finished()) {
           <div class="q-head">
-            <div class="question-step">Domanda {{ current() + 1 }} di {{ domande().length }}</div>
+            <div class="question-step">Domanda {{ current() + 1 }}@if (!adattivo()) { di {{ domande().length }}}</div>
             <h3 class="question-text">{{ domandaCorrente?.domanda }}</h3>
           </div>
         } @else {

@@ -4,7 +4,6 @@ import { Location } from '@angular/common';
 import { DataService, DomandaTest } from '../../services/data.service';
 
 const START = 60;
-const MAX_FULL = 12; // nel test completo: tetto di domande (bilanciate tra le aree)
 
 @Component({
   selector: 'app-test',
@@ -21,16 +20,17 @@ export class Test implements OnInit {
   loading = signal(true);
   errore = signal<string | null>(null);
   nessunaDomanda = signal(false);
-  domande = signal<DomandaTest[]>([]);
+  domande = signal<DomandaTest[]>([]);   // "rotta": piano di domande (può crescere in modalità adattiva)
   current = signal(0);
+  adattivo = signal(false);
 
   // ── Stato di gioco ──
-  benessere = signal(START);        // 0..100, pilota la barra e l'aspetto del personaggio
+  benessere = signal(START);
   reaction = signal<'up' | 'down' | null>(null);
   lastDelta = signal<number | null>(null);
   locked = signal(false);
   finished = signal(false);
-  serene = signal(0);               // numero di risposte "serene"
+  serene = signal(0);
 
   mood = computed<'bene' | 'ok' | 'giu'>(() => {
     const b = this.benessere();
@@ -39,21 +39,22 @@ export class Test implements OnInit {
 
   esitoTitolo = computed(() => {
     switch (this.mood()) {
-      case 'bene': return 'Rotta serena! ⛵';
-      case 'ok': return 'Buona rotta, con qualche onda';
-      default: return 'Mare un po\' mosso';
+      case 'bene': return 'Sei arrivato in un porto sereno ⛵';
+      case 'ok': return 'In porto, con qualche onda da sistemare';
+      default: return 'Approdo tra acque un po\' mosse';
     }
   });
   esitoTesto = computed(() => {
     switch (this.mood()) {
       case 'bene': return 'La gestione del digitale in famiglia sembra equilibrata. Bastano poche attenzioni: ecco le regole suggerite in base alle tue risposte.';
       case 'ok': return 'Ci sono alcune aree da curare insieme. Qui sotto trovi le regole consigliate per la tua famiglia.';
-      default: return 'Diverse risposte segnalano preoccupazioni: niente panico, il patto qui sotto raccoglie le regole che possono aiutarvi.';
+      default: return 'Diverse risposte segnalano preoccupazioni: niente panico, il patto qui sotto raccoglie le regole che possono aiutarvi, un passo alla volta.';
     }
   });
 
   private risposteRegole: string[] = [];
-  private step = 8;
+  private followUps = new Map<DomandaTest, DomandaTest[]>(); // sentinella → approfondimenti della sua area
+  private step = 10;
 
   ngOnInit(): void {
     this.carica();
@@ -79,28 +80,6 @@ export class Test implements OnInit {
     return Math.min(1, Math.max(0, this.current() / (tot - 1)));
   }
 
-  /** Sceglie max domande distribuite il più possibile tra le aree, mantenendo l'ordine originale. */
-  private bilancia(tutte: DomandaTest[], max: number): DomandaTest[] {
-    if (tutte.length <= max) return tutte;
-    const perCat = new Map<string, DomandaTest[]>();
-    for (const d of tutte) {
-      const k = (d.categoria || 'altro').toLowerCase();
-      if (!perCat.has(k)) perCat.set(k, []);
-      perCat.get(k)!.push(d);
-    }
-    const code = Array.from(perCat.values());
-    const scelte = new Set<DomandaTest>();
-    while (scelte.size < max) {
-      let aggiunta = false;
-      for (const coda of code) {
-        const d = coda.shift();
-        if (d) { scelte.add(d); aggiunta = true; if (scelte.size >= max) break; }
-      }
-      if (!aggiunta) break;
-    }
-    return tutte.filter(d => scelte.has(d));
-  }
-
   private async carica(): Promise<void> {
     try {
       const categorieParam = this.route.snapshot.queryParamMap.get('categorie');
@@ -116,8 +95,10 @@ export class Test implements OnInit {
       } else if (categoriaParam) {
         domande = tutte.filter(d => d.categoria && d.categoria.toLowerCase() === categoriaParam.toLowerCase());
       } else {
-        // test completo: riduciamo a un sottoinsieme bilanciato tra le aree
-        domande = this.bilancia(tutte, MAX_FULL);
+        // TEST COMPLETO · modalità adattiva "a imbuto":
+        // 1 domanda-sentinella per area; gli approfondimenti si aprono solo se la sentinella segnala un problema.
+        domande = this.costruisciImbuto(tutte);
+        this.adattivo.set(true);
       }
 
       if (domande.length === 0) {
@@ -134,9 +115,29 @@ export class Test implements OnInit {
     }
   }
 
+  /** Prima domanda per ogni area = sentinella; le altre restano come approfondimenti da aprire su richiesta. */
+  private costruisciImbuto(tutte: DomandaTest[]): DomandaTest[] {
+    const perArea = new Map<string, DomandaTest[]>();
+    for (const d of tutte) {
+      const k = (d.categoria || 'altro').toLowerCase();
+      const arr = perArea.get(k);
+      if (arr) arr.push(d); else perArea.set(k, [d]);
+    }
+    const sentinelle: DomandaTest[] = [];
+    this.followUps = new Map();
+    for (const qs of perArea.values()) {
+      if (!qs.length) continue;
+      const [prima, ...resto] = qs;
+      sentinelle.push(prima);
+      if (resto.length) this.followUps.set(prima, resto);
+    }
+    return sentinelle;
+  }
+
   /** Una risposta senza regola = scelta serena (bene); con regola = preoccupazione (male). */
   rispondi(regola: string): void {
     if (this.locked()) return;
+    const q = this.domandaCorrente;
     const buona = !regola;
     const delta = buona ? this.step : -this.step;
 
@@ -148,15 +149,23 @@ export class Test implements OnInit {
 
     setTimeout(() => {
       if (regola) this.risposteRegole.push(regola);
+
+      // imbuto: se una sentinella segnala una preoccupazione, inserisci gli approfondimenti della sua area
+      if (regola && q && this.followUps.has(q)) {
+        const extra = this.followUps.get(q)!;
+        this.followUps.delete(q);
+        this.domande.update(plan => {
+          const copy = [...plan];
+          copy.splice(this.current() + 1, 0, ...extra);
+          return copy;
+        });
+      }
+
       this.reaction.set(null);
       this.lastDelta.set(null);
       const next = this.current() + 1;
-      if (next >= this.domande().length) {
-        this.current.set(next);
-        this.finished.set(true);
-      } else {
-        this.current.set(next);
-      }
+      this.current.set(next);
+      if (next >= this.domande().length) this.finished.set(true);
       this.locked.set(false);
     }, 750);
   }
