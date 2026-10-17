@@ -86,27 +86,6 @@
       </div>
     </div>
 
-    <div class="hero-art reveal">
-      <div class="pm">
-        <p class="pm-hint">Tocca i pallini per scoprire il percorso 👇</p>
-        <ol class="pm-list" role="tablist" aria-label="Le cinque tappe del percorso">
-          @for (s of steps; track s.n; let i = $index) {
-            <li class="pm-item" [class.active]="heroStep() === i" [class.done]="i < heroStep()">
-              <button class="pm-dot" type="button" role="tab"
-                [attr.aria-selected]="heroStep() === i"
-                [attr.aria-label]="'Passo ' + s.n + ': ' + s.title"
-                (click)="setHeroStep(i)" (mouseenter)="setHeroStep(i)" (focus)="setHeroStep(i)">{{ s.n }}</button>
-              <div class="pm-content">
-                <h4 class="pm-title"><span class="pm-ico">{{ s.icon }}</span>{{ s.title }}</h4>
-                <div class="pm-desc">
-                  <div class="pm-desc-inner"><p>{{ s.desc }}</p></div>
-                </div>
-              </div>
-            </li>
-          }
-        </ol>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -169,27 +148,30 @@
   </div>
 
   <div class="stepper reveal">
-    <div class="stepper-progress"><span [style.width.%]="stepProgress"></span></div>
+    <div class="stepper-rail">
+      <div class="dots-track"><span class="dots-fill" [style.width.%]="trackFill"></span></div>
+      <ol class="stepper-dots">
+        @for (s of steps; track s.n; let i = $index) {
+          <li>
+            <button class="dot" [class.active]="i === currentStep()" [class.done]="i < currentStep()"
+              (click)="goToStep(i)" [attr.aria-label]="'Vai al passo ' + s.n + ': ' + s.title" [attr.aria-current]="i === currentStep()">
+              {{ i < currentStep() ? '✓' : s.n }}
+            </button>
+          </li>
+        }
+      </ol>
+    </div>
 
-    <ol class="stepper-dots">
-      @for (s of steps; track s.n; let i = $index) {
-        <li>
-          <button class="dot" [class.active]="i === currentStep()" [class.done]="i < currentStep()"
-            (click)="goToStep(i)" [attr.aria-label]="'Vai al passo ' + s.n" [attr.aria-current]="i === currentStep()">
-            {{ i < currentStep() ? '✓' : s.n }}
-          </button>
-        </li>
-      }
-    </ol>
-
-    <div class="step-panel">
+    <div class="step-stage">
       @for (s of steps; track s.n; let i = $index) {
         @if (i === currentStep()) {
-          <div class="step-content">
-            <span class="step-ico">{{ s.icon }}</span>
-            <div class="step-kicker">Passo {{ s.n }} di {{ steps.length }}</div>
-            <h3>{{ s.title }}</h3>
-            <p>{{ s.desc }}</p>
+          <div class="step-content" [class.from-left]="stepDir() === -1">
+            <div class="step-badge" aria-hidden="true"><span class="step-badge-ico">{{ s.icon }}</span></div>
+            <div class="step-text">
+              <div class="step-kicker">Passo {{ s.n }} di {{ steps.length }}</div>
+              <h3>{{ s.title }}</h3>
+              <p>{{ s.desc }}</p>
+            </div>
           </div>
         }
       }
