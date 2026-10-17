@@ -17,28 +17,6 @@ export class Home implements OnInit {
   private host = inject(ElementRef) as ElementRef<HTMLElement>;
   categories = signal<Categoria[]>([]);
 
-  constructor() {
-    // Scroll-reveal giocoso: solo nel browser (SSR-safe), rispetta prefers-reduced-motion.
-    afterNextRender(() => {
-      const root: HTMLElement = this.host.nativeElement;
-      const targets = Array.from(root.querySelectorAll<HTMLElement>('.reveal'));
-      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-      if (reduce || !('IntersectionObserver' in window)) {
-        targets.forEach(el => el.classList.add('is-visible'));
-        return;
-      }
-      const io = new IntersectionObserver((entries, obs) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-visible');
-            obs.unobserve(e.target);
-          }
-        }
-      }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
-      targets.forEach(el => io.observe(el));
-    });
-  }
-
   campi = signal<string[]>(['']);
   navbarHidden = signal(false);
   mobileMenuOpen = signal(false);
@@ -47,22 +25,82 @@ export class Home implements OnInit {
   activeSuggestion = signal(-1);
   filtered = signal<string[]>([]);
 
-  // ── Percorso interattivo (stepper) ──
+  // ── Le 5 tappe del percorso (testi invariati) ──
   readonly steps = [
-    { n: 1, icon: '🔍', title: 'Esprimi le tue preoccupazioni', desc: 'Cerca tra i temi che ti preoccupano di più riguardo all\'uso della tecnologia da parte di tuo figlio.' },
-    { n: 2, icon: '🧭', title: 'Test di valutazione', desc: 'Rispondi a poche domande mirate per capire quali aree richiedono maggiore attenzione.' },
+    { n: 1, icon: '🧭', title: 'Esprimi le tue preoccupazioni', desc: 'Cerca tra i temi che ti preoccupano di più riguardo all\'uso della tecnologia da parte di tuo figlio.' },
+    { n: 2, icon: '📝', title: 'Test di valutazione', desc: 'Rispondi a poche domande mirate per capire quali aree richiedono maggiore attenzione.' },
     { n: 3, icon: '🧩', title: 'Regole e attività personalizzate', desc: 'Ricevi regole concrete e attività pratiche da svolgere insieme ai tuoi figli, calibrate sulla vostra situazione.' },
     { n: 4, icon: '✍️', title: 'Personalizza il tuo patto', desc: 'Scegli quali regole e attività tenere, elimina quelle che non fanno per voi e adatta il patto alla tua famiglia.' },
-    { n: 5, icon: '📌', title: 'Scarica e appendi il patto', desc: 'Salva il documento PDF con le regole scelte e appendilo in casa come promemoria visibile per tutta la famiglia.' },
+    { n: 5, icon: '📜', title: 'Scarica e appendi il patto', desc: 'Salva il documento PDF con le regole scelte e appendilo in casa come promemoria visibile per tutta la famiglia.' },
   ];
-  currentStep = signal(0);
-  stepDir = signal(1);
+
+  // ── Porti della traversata (rail laterale) ──
+  readonly ports = [
+    { id: 'che-cose', icon: '⚓', label: 'Partenza' },
+    { id: 'cerca', icon: '🧭', label: 'La rotta' },
+    { id: 'come-funziona', icon: '🗺️', label: 'Il percorso' },
+    { id: 'esperti', icon: '⭐', label: 'Le guide' },
+    { id: 'temi', icon: '🏝️', label: 'Le acque' },
+    { id: 'chi-siamo', icon: '🏠', label: 'Equipaggio' },
+  ];
+  activeScene = signal('che-cose');
 
   // ── Espandi/accordion ──
   heroExpanded = signal(false);
   notesOpen = signal<[boolean, boolean]>([false, false]);
 
   private lastY = 0;
+
+  constructor() {
+    // Tutto scroll/DOM solo nel browser (SSR-safe) e nel rispetto di prefers-reduced-motion.
+    afterNextRender(() => {
+      const root: HTMLElement = this.host.nativeElement;
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+      // Reveal degli elementi che accompagnano il testo
+      const targets = Array.from(root.querySelectorAll<HTMLElement>('.reveal'));
+      if (reduce || !('IntersectionObserver' in window)) {
+        targets.forEach(el => el.classList.add('in'));
+      } else {
+        const io = new IntersectionObserver((entries, obs) => {
+          for (const e of entries) {
+            if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+          }
+        }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
+        targets.forEach(el => io.observe(el));
+      }
+
+      // Scena attiva (per il rail laterale)
+      if ('IntersectionObserver' in window) {
+        const sceneIO = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              const id = (e.target as HTMLElement).dataset['scene'];
+              if (id) this.activeScene.set(id);
+            }
+          }
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+        root.querySelectorAll<HTMLElement>('[data-scene]').forEach(s => sceneIO.observe(s));
+      }
+
+      // La nave avanza e la rotta si riempie con lo scroll
+      const ship = root.querySelector<HTMLElement>('.voyage-ship');
+      const fill = root.querySelector<HTMLElement>('.voyage-fill');
+      const track = root.querySelector<HTMLElement>('.voyage-track');
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        if (fill) fill.style.height = (p * 100).toFixed(2) + '%';
+        if (ship && track) ship.style.top = (p * (track.clientHeight - ship.offsetHeight)).toFixed(1) + 'px';
+      };
+      const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      update();
+    });
+  }
 
   ngOnInit(): void {
     this.data.getCategorie()
@@ -79,22 +117,13 @@ export class Home implements OnInit {
 
   @HostListener('window:resize')
   onResize(): void {
-    if (window.innerWidth > 768) {
-      this.mobileMenuOpen.set(false);
-    }
+    if (window.innerWidth > 768) this.mobileMenuOpen.set(false);
   }
 
-  toggleMobileMenu(): void {
-    this.mobileMenuOpen.update(open => !open);
-  }
+  toggleMobileMenu(): void { this.mobileMenuOpen.update(open => !open); }
+  closeMobileMenu(): void { this.mobileMenuOpen.set(false); }
 
-  closeMobileMenu(): void {
-    this.mobileMenuOpen.set(false);
-  }
-
-  get canAddCampo(): boolean {
-    return this.campi().length < MAX_CAMPI;
-  }
+  get canAddCampo(): boolean { return this.campi().length < MAX_CAMPI; }
 
   aggiungiCampo(): void {
     if (!this.canAddCampo) return;
@@ -117,7 +146,6 @@ export class Home implements OnInit {
   }
 
   onBlurCampo(): void {
-    // Ritarda la chiusura per lasciar arrivare il mousedown sulla voce selezionata
     setTimeout(() => {
       this.activeInput.set(-1);
       this.filtered.set([]);
@@ -127,11 +155,7 @@ export class Home implements OnInit {
 
   private updateFiltered(query: string): void {
     const q = query.trim();
-    if (!q) {
-      this.filtered.set([]);
-      this.activeSuggestion.set(-1);
-      return;
-    }
+    if (!q) { this.filtered.set([]); this.activeSuggestion.set(-1); return; }
     this.data.suggerisciKeywords(q).then(s => this.filtered.set(s));
     this.activeSuggestion.set(-1);
   }
@@ -155,13 +179,9 @@ export class Home implements OnInit {
       this.activeSuggestion.update(i => Math.max(i - 1, 0));
     } else if (event.key === 'Enter') {
       const i = this.activeSuggestion();
-      if (i >= 0 && items[i]) {
-        event.preventDefault();
-        this.selectSuggestion(items[i]);
-      }
+      if (i >= 0 && items[i]) { event.preventDefault(); this.selectSuggestion(items[i]); }
     } else if (event.key === 'Escape') {
-      this.filtered.set([]);
-      this.activeSuggestion.set(-1);
+      this.filtered.set([]); this.activeSuggestion.set(-1);
     }
   }
 
@@ -175,14 +195,6 @@ export class Home implements OnInit {
       alert('Nessuna categoria trovata. Prova con parole diverse.');
     }
   }
-
-  // ── Stepper ──
-  get isFirstStep(): boolean { return this.currentStep() === 0; }
-  get isLastStep(): boolean { return this.currentStep() === this.steps.length - 1; }
-  get trackFill(): number { return (this.currentStep() / (this.steps.length - 1)) * 100; }
-  nextStep(): void { this.stepDir.set(1); this.currentStep.update(i => Math.min(i + 1, this.steps.length - 1)); }
-  prevStep(): void { this.stepDir.set(-1); this.currentStep.update(i => Math.max(i - 1, 0)); }
-  goToStep(i: number): void { this.stepDir.set(i >= this.currentStep() ? 1 : -1); this.currentStep.set(i); }
 
   // ── Espandi/accordion ──
   toggleHero(): void { this.heroExpanded.update(v => !v); }
