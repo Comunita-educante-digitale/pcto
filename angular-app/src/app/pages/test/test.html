@@ -1,6 +1,6 @@
 <nav class="test-navbar">
   <a class="navbar-brand-text text-decoration-none" routerLink="/">
-    🌿 Educazione Digitale Familiare
+    🧭 Comunità educante digitale
   </a>
   <button type="button" class="btn-back" (click)="indietro()">
     <span class="btn-back-arrow">←</span> Indietro
@@ -20,26 +20,133 @@
       </p>
     </div>
 
-    <div class="progress-wrap">
-      <div class="progress-track">
-        <div class="progress-fill" [style.width.%]="progress"></div>
-      </div>
-    </div>
-
     @if (loading()) {
       <p class="state-message">Caricamento domande...</p>
     } @else if (errore()) {
       <p class="state-message state-error">Errore: {{ errore() }}</p>
     } @else if (nessunaDomanda()) {
       <p class="state-message state-error">Nessuna domanda trovata per queste categorie.</p>
-    } @else if (domandaCorrente; as d) {
-      <div class="question-card">
-        <div class="question-step">Domanda {{ current() + 1 }} di {{ domande().length }}</div>
-        <h3 class="question-text">{{ d.domanda }}</h3>
-        <div class="answer-buttons">
-          <button class="btn-answer btn-answer-yes" (click)="rispondi(d.se_si || '')">SI</button>
-          <button class="btn-answer btn-answer-no" (click)="rispondi(d.se_no || '')">NO</button>
+    } @else {
+
+      <div class="game">
+
+        <!-- avanzamento domande -->
+        <div class="progress-wrap">
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="progress"></div>
+          </div>
         </div>
+
+        <!-- personaggio + barra benessere -->
+        <div class="hud">
+          <div class="companion-stage">
+            <div class="companion-aura" [style.--b]="benessere()"></div>
+
+            <div class="companion"
+              [class.mood-bene]="mood() === 'bene'"
+              [class.mood-ok]="mood() === 'ok'"
+              [class.mood-giu]="mood() === 'giu'"
+              [class.react-up]="reaction() === 'up'"
+              [class.react-down]="reaction() === 'down'">
+              <svg viewBox="0 0 160 172" role="img" aria-label="Il tuo compagno di viaggio">
+                <!-- nuvoletta di pioggia quando è giù -->
+                @if (mood() === 'giu') {
+                  <g class="c-cloud">
+                    <ellipse cx="80" cy="20" rx="30" ry="13" fill="#B7C0C7"/>
+                    <ellipse cx="62" cy="24" rx="16" ry="11" fill="#C6CDD3"/>
+                    <ellipse cx="98" cy="24" rx="16" ry="11" fill="#C6CDD3"/>
+                    <line x1="66" y1="34" x2="62" y2="44" stroke="#8FA7C0" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="82" y1="34" x2="78" y2="46" stroke="#8FA7C0" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="98" y1="34" x2="94" y2="44" stroke="#8FA7C0" stroke-width="3" stroke-linecap="round"/>
+                  </g>
+                }
+                <!-- scintille quando è sereno -->
+                @if (mood() === 'bene') {
+                  <g class="c-spark">
+                    <path d="M30 40 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#FFCF5B"/>
+                    <path d="M132 32 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5 z" fill="#FFCF5B"/>
+                    <circle cx="122" cy="70" r="3" fill="#48B39B"/>
+                  </g>
+                }
+
+                <!-- antenna -->
+                <line x1="80" y1="46" x2="80" y2="30" class="c-antenna"/>
+                <circle cx="80" cy="27" r="5" class="c-antenna-dot"/>
+
+                <!-- corpo -->
+                <ellipse cx="80" cy="98" rx="54" ry="52" class="c-body"/>
+                <ellipse cx="80" cy="110" rx="34" ry="30" class="c-belly"/>
+
+                <!-- occhi -->
+                <circle cx="63" cy="90" r="8" fill="#fff"/>
+                <circle cx="97" cy="90" r="8" fill="#fff"/>
+                <circle cx="64" cy="91" r="4" fill="#1b2b3a"/>
+                <circle cx="98" cy="91" r="4" fill="#1b2b3a"/>
+                @if (mood() === 'giu') {
+                  <path d="M55 86 Q63 82 71 86" stroke="#6b7680" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                  <path d="M89 86 Q97 82 105 86" stroke="#6b7680" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                }
+
+                <!-- guance -->
+                @if (mood() === 'bene') {
+                  <circle cx="50" cy="104" r="6" fill="#F6A6A0" opacity=".8"/>
+                  <circle cx="110" cy="104" r="6" fill="#F6A6A0" opacity=".8"/>
+                }
+
+                <!-- bocca -->
+                @if (mood() === 'bene') {
+                  <path d="M60 108 Q80 132 100 108" class="c-mouth" />
+                } @else if (mood() === 'ok') {
+                  <path d="M66 116 Q80 124 94 116" class="c-mouth" />
+                } @else {
+                  <path d="M66 122 Q80 110 94 122" class="c-mouth" />
+                }
+              </svg>
+            </div>
+
+            @if (lastDelta() !== null) {
+              <span class="delta" [class.pos]="(lastDelta() ?? 0) > 0">
+                {{ (lastDelta() ?? 0) > 0 ? '+' : '' }}{{ lastDelta() }}
+              </span>
+            }
+          </div>
+
+          <div class="gauge">
+            <div class="gauge-top">
+              <span class="gauge-label">Benessere digitale</span>
+              <span class="gauge-count">✦ {{ serene() }} scelte serene</span>
+            </div>
+            <div class="gauge-track">
+              <div class="gauge-fill"
+                [class.mood-bene]="mood() === 'bene'"
+                [class.mood-ok]="mood() === 'ok'"
+                [class.mood-giu]="mood() === 'giu'"
+                [style.width.%]="benessere()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- domanda / fine -->
+        @if (!finished()) {
+          @if (domandaCorrente; as d) {
+            <div class="question-card" [class.is-locked]="locked()">
+              <div class="question-step">Domanda {{ current() + 1 }} di {{ domande().length }}</div>
+              <h3 class="question-text">{{ d.domanda }}</h3>
+              <div class="answer-buttons">
+                <button class="btn-answer btn-answer-yes" [disabled]="locked()" (click)="rispondi(d.se_si || '')">SÌ</button>
+                <button class="btn-answer btn-answer-no" [disabled]="locked()" (click)="rispondi(d.se_no || '')">NO</button>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="endcard">
+            <div class="question-step">Traversata completata</div>
+            <h3 class="end-title">{{ esitoTitolo() }}</h3>
+            <p class="end-text">{{ esitoTesto() }}</p>
+            <button class="btn-proceed" (click)="proceed()">Vedi le regole per la tua famiglia →</button>
+          </div>
+        }
+
       </div>
     }
 
@@ -50,7 +157,7 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <div class="footer-brand-text">🌿 Educazione Digitale Familiare</div>
+      <div class="footer-brand-text">🧭 Comunità educante digitale</div>
       <p class="footer-copy">© 2026 Comunità educante digitale. Un approccio empatico alla crescita digitale.</p>
     </div>
 
