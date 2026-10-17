@@ -86,17 +86,26 @@
       </div>
     </div>
 
-    <div class="hero-art reveal" aria-hidden="true">
-      <!-- Mini-mappa del metodo: un percorso sobrio a tappe -->
-      <svg class="hero-illu" viewBox="0 0 300 320" role="img" aria-label="Il percorso in cinque tappe">
-        <rect x="4" y="4" width="292" height="312" rx="26" fill="#FFFFFF" stroke="var(--line)" />
-        <path class="hero-illu-path" d="M60 70 C 160 40, 180 120, 90 150 S 20 230, 150 250 S 260 230, 240 290"
-              fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 12" opacity="0.5"/>
-        <g class="hero-node" style="--d:0s"><circle cx="60" cy="70" r="20" fill="var(--green)"/><text x="60" y="76" text-anchor="middle" font-size="18" fill="#fff" font-family="DM Sans, sans-serif" font-weight="700">1</text></g>
-        <g class="hero-node" style="--d:.5s"><circle cx="90" cy="150" r="20" fill="var(--green)"/><text x="90" y="156" text-anchor="middle" font-size="18" fill="#fff" font-family="DM Sans, sans-serif" font-weight="700">2</text></g>
-        <g class="hero-node" style="--d:1s"><circle cx="150" cy="250" r="20" fill="var(--green)"/><text x="150" y="256" text-anchor="middle" font-size="18" fill="#fff" font-family="DM Sans, sans-serif" font-weight="700">3</text></g>
-        <g class="hero-node" style="--d:1.5s"><circle cx="240" cy="290" r="22" fill="var(--amber)"/><text x="240" y="297" text-anchor="middle" font-size="20" fill="#3f2d02" font-family="DM Sans, sans-serif" font-weight="700">✓</text></g>
-      </svg>
+    <div class="hero-art reveal">
+      <div class="pm">
+        <p class="pm-hint">Tocca i pallini per scoprire il percorso 👇</p>
+        <ol class="pm-list" role="tablist" aria-label="Le cinque tappe del percorso">
+          @for (s of steps; track s.n; let i = $index) {
+            <li class="pm-item" [class.active]="heroStep() === i" [class.done]="i < heroStep()">
+              <button class="pm-dot" type="button" role="tab"
+                [attr.aria-selected]="heroStep() === i"
+                [attr.aria-label]="'Passo ' + s.n + ': ' + s.title"
+                (click)="setHeroStep(i)" (mouseenter)="setHeroStep(i)" (focus)="setHeroStep(i)">{{ s.n }}</button>
+              <div class="pm-content">
+                <h4 class="pm-title"><span class="pm-ico">{{ s.icon }}</span>{{ s.title }}</h4>
+                <div class="pm-desc">
+                  <div class="pm-desc-inner"><p>{{ s.desc }}</p></div>
+                </div>
+              </div>
+            </li>
+          }
+        </ol>
+      </div>
     </div>
   </div>
 </section>

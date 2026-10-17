@@ -56,6 +56,7 @@ export class Home implements OnInit {
     { n: 5, icon: '📌', title: 'Scarica e appendi il patto', desc: 'Salva il documento PDF con le regole scelte e appendilo in casa come promemoria visibile per tutta la famiglia.' },
   ];
   currentStep = signal(0);
+  heroStep = signal(0);
 
   // ── Espandi/accordion ──
   heroExpanded = signal(false);
@@ -182,6 +183,7 @@ export class Home implements OnInit {
   nextStep(): void { this.currentStep.update(i => Math.min(i + 1, this.steps.length - 1)); }
   prevStep(): void { this.currentStep.update(i => Math.max(i - 1, 0)); }
   goToStep(i: number): void { this.currentStep.set(i); }
+  setHeroStep(i: number): void { this.heroStep.set(i); }
 
   // ── Espandi/accordion ──
   toggleHero(): void { this.heroExpanded.update(v => !v); }

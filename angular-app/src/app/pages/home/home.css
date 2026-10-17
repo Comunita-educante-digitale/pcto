@@ -105,13 +105,28 @@
 .hero-beta-note a:hover { text-decoration: underline; }
 .hero-cta-group { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.8rem; }
 
-.hero-art { display: grid; place-items: center; }
-.hero-illu { width: min(100%, 360px); height: auto; filter: drop-shadow(var(--shadow)); }
-.hero-illu-path { animation: dashflow 9s linear infinite; }
-@keyframes dashflow { to { stroke-dashoffset: -28; } }
-.hero-node { opacity: 0; transform: scale(.5); transform-box: fill-box; transform-origin: center; }
-.hero-art.is-visible .hero-node { animation: nodePop .55s cubic-bezier(.2,.8,.3,1.25) forwards; animation-delay: var(--d); }
-@keyframes nodePop { to { opacity: 1; transform: scale(1); } }
+.hero-art { display: flex; justify-content: center; }
+
+/* ── Percorso interattivo a pallini (hero) ── */
+.pm { width: 100%; max-width: 420px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem 1.6rem 1.7rem; }
+.pm-hint { font-size: .82rem; color: var(--ink-soft); text-align: center; margin-bottom: 1.3rem; }
+.pm-list { list-style: none; margin: 0; padding: 0; }
+.pm-item { position: relative; display: grid; grid-template-columns: 40px 1fr; column-gap: .9rem; padding-bottom: 1.1rem; }
+.pm-item:last-child { padding-bottom: 0; }
+.pm-item:not(:last-child)::before { content: ""; position: absolute; left: 19px; top: 42px; bottom: -2px; width: 2px; background: var(--line); transition: background .3s ease; }
+.pm-item.done:not(:last-child)::before { background: var(--green); }
+.pm-dot { grid-row: 1; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line); background: #fff; color: var(--ink-soft); font-family: var(--sans); font-weight: 700; font-size: 1rem; cursor: pointer; transition: all .25s ease; position: relative; z-index: 1; }
+.pm-dot:hover { border-color: var(--green); color: var(--green-deep); }
+.pm-item.done .pm-dot { background: var(--green-tint); border-color: var(--green); color: var(--green-deep); }
+.pm-item.active .pm-dot { background: var(--green); border-color: var(--green); color: #fff; transform: scale(1.1); box-shadow: 0 6px 14px rgba(30,107,82,.3); }
+.pm-content { align-self: start; padding-top: .35rem; }
+.pm-title { font-family: var(--sans); font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0; display: flex; align-items: center; gap: .45rem; cursor: default; }
+.pm-item.active .pm-title { color: var(--green-deep); }
+.pm-ico { font-size: 1.05rem; }
+.pm-desc { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .32s ease, opacity .32s ease, margin-top .32s ease; }
+.pm-item.active .pm-desc { grid-template-rows: 1fr; opacity: 1; margin-top: .4rem; }
+.pm-desc-inner { overflow: hidden; min-height: 0; }
+.pm-desc-inner p { font-size: .9rem; }
 
 /* ═══════════════ TITOLI DI SEZIONE ═══════════════ */
 .section-head { max-width: 46rem; margin: 0 auto 2.6rem; text-align: center; }
@@ -243,7 +258,6 @@
 /* ═══════════════ MOTION RIDOTTO ═══════════════ */
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1 !important; transform: none !important; transition: none; }
-  .hero-illu-path, .hero-node, .step-content { animation: none !important; }
-  .hero-node { opacity: 1 !important; transform: none !important; }
-  .collapsible, .acc-body, .stepper-progress span { transition: none !important; }
+  .step-content { animation: none !important; }
+  .collapsible, .acc-body, .stepper-progress span, .pm-desc, .pm-dot { transition: none !important; }
 }
