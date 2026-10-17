@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { DataService, DomandaTest } from '../../services/data.service';
 
 const START = 60;
+const MAX_FULL = 12; // nel test completo: tetto di domande (bilanciate tra le aree)
 
 @Component({
   selector: 'app-test',
@@ -71,6 +72,35 @@ export class Test implements OnInit {
     return this.domande()[this.current()] ?? null;
   }
 
+  /** Posizione della barca lungo la rotta (0 = partenza a sinistra, 1 = porto a destra). */
+  get rotta(): number {
+    const tot = this.domande().length;
+    if (tot <= 1) return this.finished() ? 1 : 0;
+    return Math.min(1, Math.max(0, this.current() / (tot - 1)));
+  }
+
+  /** Sceglie max domande distribuite il più possibile tra le aree, mantenendo l'ordine originale. */
+  private bilancia(tutte: DomandaTest[], max: number): DomandaTest[] {
+    if (tutte.length <= max) return tutte;
+    const perCat = new Map<string, DomandaTest[]>();
+    for (const d of tutte) {
+      const k = (d.categoria || 'altro').toLowerCase();
+      if (!perCat.has(k)) perCat.set(k, []);
+      perCat.get(k)!.push(d);
+    }
+    const code = Array.from(perCat.values());
+    const scelte = new Set<DomandaTest>();
+    while (scelte.size < max) {
+      let aggiunta = false;
+      for (const coda of code) {
+        const d = coda.shift();
+        if (d) { scelte.add(d); aggiunta = true; if (scelte.size >= max) break; }
+      }
+      if (!aggiunta) break;
+    }
+    return tutte.filter(d => scelte.has(d));
+  }
+
   private async carica(): Promise<void> {
     try {
       const categorieParam = this.route.snapshot.queryParamMap.get('categorie');
@@ -86,7 +116,8 @@ export class Test implements OnInit {
       } else if (categoriaParam) {
         domande = tutte.filter(d => d.categoria && d.categoria.toLowerCase() === categoriaParam.toLowerCase());
       } else {
-        domande = tutte;
+        // test completo: riduciamo a un sottoinsieme bilanciato tra le aree
+        domande = this.bilancia(tutte, MAX_FULL);
       }
 
       if (domande.length === 0) {
