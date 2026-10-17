@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, afterNextRender, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DataService, Categoria } from '../../services/data.service';
@@ -14,7 +14,30 @@ const MAX_CAMPI = 3;
 export class Home implements OnInit {
   private data = inject(DataService);
   private router = inject(Router);
+  private host = inject(ElementRef) as ElementRef<HTMLElement>;
   categories = signal<Categoria[]>([]);
+
+  constructor() {
+    // Scroll-reveal giocoso: solo nel browser (SSR-safe), rispetta prefers-reduced-motion.
+    afterNextRender(() => {
+      const root: HTMLElement = this.host.nativeElement;
+      const targets = Array.from(root.querySelectorAll<HTMLElement>('.reveal'));
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) {
+        targets.forEach(el => el.classList.add('is-visible'));
+        return;
+      }
+      const io = new IntersectionObserver((entries, obs) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible');
+            obs.unobserve(e.target);
+          }
+        }
+      }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+      targets.forEach(el => io.observe(el));
+    });
+  }
 
   campi = signal<string[]>(['']);
   navbarHidden = signal(false);
