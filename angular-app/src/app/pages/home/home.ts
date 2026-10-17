@@ -92,6 +92,8 @@ export class Home implements OnInit {
         ticking = false;
         const max = document.documentElement.scrollHeight - window.innerHeight;
         const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        // progresso globale 0→1: pilota il mare che evolve (tempesta → porto)
+        root.style.setProperty('--p', p.toFixed(3));
         if (fill) fill.style.height = (p * 100).toFixed(2) + '%';
         if (ship && track) ship.style.top = (p * (track.clientHeight - ship.offsetHeight)).toFixed(1) + 'px';
       };

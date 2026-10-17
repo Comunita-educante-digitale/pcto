@@ -1,3 +1,29 @@
+<!-- ═══════════════ MARE CONTINUO CHE EVOLVE (tempesta → porto) ═══════════════ -->
+<div class="seascape" aria-hidden="true">
+  <div class="sky sky--calm"></div>
+  <div class="sky sky--storm"></div>
+  <div class="sun"></div>
+  <div class="clouds">
+    <span class="cloud cloud--1"></span>
+    <span class="cloud cloud--2"></span>
+    <span class="cloud cloud--3"></span>
+  </div>
+  <div class="gulls">
+    <svg class="gull gull--1" viewBox="0 0 30 12"><path d="M1 10 Q7.5 1 15 8 Q22.5 1 29 10" fill="none" stroke="#38444e" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg class="gull gull--2" viewBox="0 0 30 12"><path d="M1 10 Q7.5 1 15 8 Q22.5 1 29 10" fill="none" stroke="#38444e" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg class="gull gull--3" viewBox="0 0 30 12"><path d="M1 10 Q7.5 1 15 8 Q22.5 1 29 10" fill="none" stroke="#38444e" stroke-width="2" stroke-linecap="round"/></svg>
+  </div>
+  <div class="sea">
+    <div class="sea-fill sea-fill--calm"></div>
+    <div class="sea-fill sea-fill--rough"></div>
+    <svg class="sea-wave sea-wave--rough" viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0 64 Q 120 22 240 64 T 480 64 T 720 64 T 960 64 T 1200 64 T 1440 64 V120 H0 Z"/></svg>
+    <svg class="sea-wave sea-wave--calm" viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0 70 Q 180 56 360 70 T 720 70 T 1080 70 T 1440 70 V120 H0 Z"/></svg>
+    <div class="sea-ship" aria-hidden="true">
+      <svg viewBox="0 0 120 130"><path d="M60 16 L60 86 L98 86 Z" fill="#F3EBD8"/><path d="M55 26 L55 86 L24 86 Z" fill="#E7DBBE"/><line x1="60" y1="12" x2="60" y2="90" stroke="#1C2B3A" stroke-width="2.5" stroke-linecap="round"/><path d="M22 92 H98 L86 114 H34 Z" fill="#9A6420"/></svg>
+    </div>
+  </div>
+</div>
+
 <div class="voyage">
 
 <!-- ═══════════════ NAVBAR ═══════════════ -->
@@ -37,14 +63,6 @@
 
 <!-- ═══════════════ SCENA 1 · PARTENZA (hero) ═══════════════ -->
 <section class="scene scene--hero" id="che-cose" data-scene="che-cose">
-  <div class="sea" aria-hidden="true">
-    <svg class="sea-waves" viewBox="0 0 1440 160" preserveAspectRatio="none">
-      <path class="wave wave--1" d="M0 80 Q 180 40 360 80 T 720 80 T 1080 80 T 1440 80 V160 H0 Z"/>
-      <path class="wave wave--2" d="M0 100 Q 180 70 360 100 T 720 100 T 1080 100 T 1440 100 V160 H0 Z"/>
-      <path class="wave wave--3" d="M0 120 Q 180 95 360 120 T 720 120 T 1080 120 T 1440 120 V160 H0 Z"/>
-    </svg>
-  </div>
-
   <div class="scene-inner hero-copy reveal">
     <div class="hero-eyebrow">
       <span class="hero-eyebrow-text">Guida interattiva per genitori</span>
@@ -95,16 +113,6 @@
       <a href="#cerca" class="btn btn--primary">Inizia dalla tua preoccupazione</a>
       <a href="#come-funziona" class="btn btn--ghost">Come funziona →</a>
     </div>
-  </div>
-
-  <div class="hero-ship reveal" aria-hidden="true">
-    <svg viewBox="0 0 160 170" role="img" aria-label="Una barca a vela">
-      <path class="ship-sail" d="M80 18 L80 96 L128 96 Z" fill="#F3EBD8"/>
-      <path class="ship-sail2" d="M74 30 L74 96 L34 96 Z" fill="#E7DBBE"/>
-      <line x1="80" y1="12" x2="80" y2="100" stroke="#1C2B3A" stroke-width="3" stroke-linecap="round"/>
-      <path class="ship-hull" d="M26 104 H134 L118 132 H42 Z" fill="#9A6420"/>
-      <circle cx="80" cy="12" r="4" fill="#C98A3C"/>
-    </svg>
   </div>
 
   <a href="#cerca" class="scroll-cue" aria-label="Scorri">↓</a>
@@ -225,19 +233,11 @@
 </section>
 
 <!-- ═══════════════ SCENA 4 · LE GUIDE (esperti · stelle) ═══════════════ -->
-<section class="scene scene--dark scene--pad" id="esperti" data-scene="esperti">
-  <div class="stars reveal" aria-hidden="true">
-    <span class="star" style="--x:12%; --y:18%; --t:0s"></span>
-    <span class="star" style="--x:28%; --y:40%; --t:.6s"></span>
-    <span class="star" style="--x:48%; --y:12%; --t:1.2s"></span>
-    <span class="star" style="--x:70%; --y:34%; --t:.3s"></span>
-    <span class="star" style="--x:86%; --y:16%; --t:.9s"></span>
-    <span class="star" style="--x:62%; --y:56%; --t:1.5s"></span>
-  </div>
+<section class="scene scene--pad" id="esperti" data-scene="esperti">
   <div class="section-head reveal">
-    <div class="section-label section-label--light">Fondamenti pedagogici</div>
+    <div class="section-label">Fondamenti pedagogici</div>
     <h2 class="section-title">Non consigli casuali.<br>Scienza applicata.</h2>
-    <p class="section-sub section-sub--light">
+    <p class="section-sub">
       Ogni indicazione è radicata in ricerche riconosciute. Ci affidiamo a metodologie
       consolidate per offrire strumenti realmente efficaci.
     </p>
