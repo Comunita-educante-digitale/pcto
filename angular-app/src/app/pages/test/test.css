@@ -343,7 +343,7 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 }
 
 /* ═══════════════════════════════════════════════
-   MODALITÀ GIOCO · mare (calmo→mosso) e barca (avanzamento)
+   MODALITÀ GIOCO · mare vivo + feedback manga
 ═══════════════════════════════════════════════ */
 .quiz {
   display: flex; flex-direction: column; align-items: center; gap: 1.6rem;
@@ -358,36 +358,80 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 .question-text { font-size: 1.3rem; max-width: 34rem; margin: 0; }
 @media (min-width: 768px) { .question-text { font-size: 1.55rem; } }
 
-/* ── fascia di mare + barca ── */
-.sea-strip {
-  position: relative; width: 100%; max-width: 34rem; height: 130px;
-  border-radius: 1.1rem; overflow: hidden; border: 1px solid var(--outline-variant);
-}
-.sea-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #EAF4F2 0%, #DCEDEE 55%); transition: background .6s ease; }
-.quiz.mosso .sea-sky { background: linear-gradient(180deg, #DCE3E6 0%, #CcD5D9 55%); }
-.sea-layer { position: absolute; left: 0; bottom: 0; width: 200%; height: 86px; }
+/* ── fascia di mare ── */
+.sea-strip { position: relative; width: 100%; max-width: 34rem; height: 160px; border-radius: 1.1rem; overflow: hidden; border: 1px solid var(--outline-variant); }
+.sea-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #EAF4F2 0%, #DCEDEE 60%); transition: background .6s ease; }
+.quiz.mosso .sea-sky { background: linear-gradient(180deg, #D8DFE2 0%, #C8D1D5 60%); }
+
+/* cielo vivo: gabbiani, nuvole, vento */
+.sky-life { position: absolute; inset: 0; pointer-events: none; }
+.gull { position: absolute; width: 26px; height: 11px; opacity: .8; }
+.gull--1 { top: 16%; animation: flyX 17s linear infinite; }
+.gull--2 { top: 30%; animation: flyX 23s linear infinite 7s; }
+@keyframes flyX { 0% { left: -12%; transform: translateY(0); } 50% { transform: translateY(-9px); } 100% { left: 112%; transform: translateY(0); } }
+.quiz.mosso .gull { opacity: .3; }
+.cloud { position: absolute; background: rgba(255,255,255,.6); border-radius: 50%; filter: blur(6px); }
+.cloud--1 { width: 72px; height: 20px; top: 10%; animation: driftX 32s linear infinite; }
+.cloud--2 { width: 48px; height: 15px; top: 24%; animation: driftX 44s linear infinite 9s; }
+@keyframes driftX { from { left: -22%; } to { left: 122%; } }
+.quiz.mosso .cloud { background: rgba(214,221,225,.85); }
+.wind { position: absolute; width: 44px; height: 14px; border-top: 2px solid rgba(90,107,116,.5); border-radius: 50%; opacity: 0; }
+.wind--1 { top: 40%; animation: windX 3.4s linear infinite; }
+.wind--2 { top: 52%; width: 30px; animation: windX 2.7s linear infinite 1.1s; }
+@keyframes windX { 0% { left: -16%; opacity: 0; } 25% { opacity: var(--wo, .5); } 75% { opacity: var(--wo, .5); } 100% { left: 116%; opacity: 0; } }
+.quiz.calmo .wind { --wo: 0; }
+.quiz.mezzo .wind { --wo: .32; }
+.quiz.mosso .wind { --wo: .6; }
+
+/* onde */
+.sea-layer { position: absolute; left: 0; bottom: 0; width: 200%; height: 94px; }
 .sea-layer--calm { fill: #2E8D8E; opacity: calc(var(--b, 60) / 100); animation: seaDrift 12s linear infinite reverse; }
 .sea-layer--rough { fill: #5F7D84; opacity: calc(1 - var(--b, 60) / 100); animation: seaDrift 6s linear infinite; }
 @keyframes seaDrift { from { transform: translateX(0); } to { transform: translateX(-300px); } }
 
-.harbor { position: absolute; right: 2%; bottom: 44px; width: 46px; z-index: 2; }
+/* pesce che salta (sparisce col mare mosso) */
+.fish { position: absolute; left: 28%; bottom: 42px; width: 30px; opacity: 0; animation: fishJump 8s ease-in-out 2.5s infinite; }
+.fish svg { width: 100%; height: auto; }
+.quiz.mosso .fish { display: none; }
+@keyframes fishJump {
+  0%, 72%, 100% { opacity: 0; transform: translateY(18px) rotate(14deg); }
+  77% { opacity: 1; transform: translateY(-16px) rotate(-20deg); }
+  84% { opacity: 1; transform: translateY(-18px) rotate(2deg); }
+  92% { opacity: 0; transform: translateY(14px) rotate(26deg); }
+}
+
+/* porto */
+.harbor { position: absolute; right: 2%; bottom: 52px; width: 46px; z-index: 2; }
 .harbor svg { width: 100%; height: auto; }
-.harbor-sun, .harbor-cloud { position: absolute; top: -14px; right: -2px; font-size: 1.1rem; }
+.harbor-sun, .harbor-cloud { position: absolute; top: -14px; right: -4px; font-size: 1.15rem; }
 
-.boat { position: absolute; bottom: 46px; width: 60px; z-index: 3; transform: translateX(-50%);
-  transition: left .7s cubic-bezier(.3,.7,.3,1); animation: boatRock 4s ease-in-out infinite; transform-origin: 50% 90%; }
-.boat svg { width: 100%; height: auto; filter: drop-shadow(0 4px 5px rgba(16,43,48,.25)); }
-@keyframes boatRock { 0%,100% { transform: translateX(-50%) rotate(-4deg); } 50% { transform: translateX(-50%) rotate(4deg); } }
-.quiz.mosso .boat { animation-duration: 1.6s; }
-.quiz.mezzo .boat { animation-duration: 2.8s; }
-.sea-strip.react-down .boat { animation: boatSplash .6s ease; }
-@keyframes boatSplash { 0%,100% { transform: translateX(-50%) rotate(0); } 25% { transform: translateX(-50%) rotate(-12deg) translateY(2px); } 60% { transform: translateX(-50%) rotate(10deg); } }
+/* barca: posizione + planata orizzontale */
+.boat { position: absolute; bottom: 52px; width: 60px; z-index: 3; transform: translateX(-50%); transition: left .7s cubic-bezier(.3,.7,.3,1); }
+/* la barca cavalca le onde (bob + beccheggio), separata dalla planata */
+.boat-body { animation: ride 3.4s ease-in-out infinite; transform-origin: 50% 90%; }
+.boat-body svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 4px 5px rgba(16,43,48,.25)); }
+@keyframes ride { 0%,100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-6px) rotate(5deg); } }
+.quiz.calmo .boat-body { animation-duration: 4s; }
+.quiz.mezzo .boat-body { animation-duration: 2.6s; }
+.quiz.mosso .boat-body { animation: rideRough 1.4s ease-in-out infinite; }
+@keyframes rideRough { 0%,100% { transform: translateY(2px) rotate(-11deg); } 50% { transform: translateY(-9px) rotate(11deg); } }
+.sea-strip.react-down .boat-body { animation: splash .5s ease; }
+@keyframes splash { 0%,100% { transform: translateY(0) rotate(0); } 30% { transform: translateY(3px) rotate(-14deg); } 60% { transform: translateY(-4px) rotate(12deg); } }
 
-.delta { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); z-index: 4;
-  font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--error);
-  animation: floatUp .75s ease forwards; pointer-events: none; }
-.delta.pos { color: #1C8A6B; }
-@keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 6px) scale(.8); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -26px) scale(1.1); } }
+/* ── feedback manga ── */
+.fx { position: absolute; left: 50%; top: -30px; transform: translateX(-50%); z-index: 5; pointer-events: none; }
+.fx-stars span { position: absolute; left: 0; top: 0; color: #E8B23A; font-weight: 700; text-shadow: 0 1px 0 #fff; animation: starPop .75s ease-out forwards; }
+.fx-stars span:nth-child(1) { --dx: -28px; --dy: -8px; font-size: 1.1rem; animation-delay: 0s; }
+.fx-stars span:nth-child(2) { --dx: -10px; --dy: -28px; font-size: .9rem; animation-delay: .05s; }
+.fx-stars span:nth-child(3) { --dx: 14px; --dy: -24px; font-size: .8rem; animation-delay: .1s; }
+.fx-stars span:nth-child(4) { --dx: 28px; --dy: -8px; font-size: 1rem; animation-delay: .04s; }
+.fx-stars span:nth-child(5) { --dx: 2px; --dy: -36px; font-size: 1.25rem; animation-delay: .12s; }
+@keyframes starPop { 0% { opacity: 0; transform: translate(0,0) scale(.3); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.1); } }
+
+.fx-bang { top: -42px; animation: bangPop .55s cubic-bezier(.2,.9,.3,1.5); }
+.bang-burst { width: 46px; height: 46px; display: block; filter: drop-shadow(0 3px 4px rgba(16,43,48,.2)); }
+.bang-mark { position: absolute; inset: 0; display: grid; place-items: center; font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 1.5rem; color: #C14733; }
+@keyframes bangPop { 0% { opacity: 0; transform: translateX(-50%) scale(.3) rotate(-12deg); } 60% { opacity: 1; transform: translateX(-50%) scale(1.15) rotate(5deg); } 100% { transform: translateX(-50%) scale(1) rotate(0); } }
 
 /* ── barra benessere ── */
 .gauge { width: 100%; max-width: 30rem; }
@@ -413,7 +457,8 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 .btn-proceed:hover { transform: translateY(-2px); background: var(--primary-container); }
 
 @media (prefers-reduced-motion: reduce) {
-  .sea-layer--calm, .sea-layer--rough, .boat, .sea-strip.react-down .boat, .delta { animation: none !important; }
+  .gull, .cloud, .wind, .sea-layer--calm, .sea-layer--rough, .fish,
+  .boat-body, .sea-strip.react-down .boat-body, .fx-stars span, .fx-bang { animation: none !important; }
   .boat, .gauge-fill, .sea-sky { transition: none !important; }
-  .delta { opacity: 1; }
+  .fish { display: none; }
 }

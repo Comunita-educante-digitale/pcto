@@ -53,12 +53,28 @@
           [style.--b]="benessere()">
           <div class="sea-sky"></div>
 
+          <!-- vita nel cielo: gabbiani, nuvole, raffiche di vento -->
+          <div class="sky-life" aria-hidden="true">
+            <span class="cloud cloud--1"></span>
+            <span class="cloud cloud--2"></span>
+            <span class="wind wind--1"></span>
+            <span class="wind wind--2"></span>
+            <svg class="gull gull--1" viewBox="0 0 30 12"><path d="M1 10 Q7.5 1 15 8 Q22.5 1 29 10" fill="none" stroke="#5a6b74" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg class="gull gull--2" viewBox="0 0 30 12"><path d="M1 10 Q7.5 1 15 8 Q22.5 1 29 10" fill="none" stroke="#5a6b74" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+
+          <!-- onde -->
           <svg class="sea-layer sea-layer--calm" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
             <path d="M0 72 Q 75 60 150 72 T 300 72 T 450 72 T 600 72 V120 H0 Z"/>
           </svg>
           <svg class="sea-layer sea-layer--rough" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
             <path d="M0 66 Q 50 34 100 66 T 200 66 T 300 66 T 400 66 T 500 66 T 600 66 V120 H0 Z"/>
           </svg>
+
+          <!-- pesce che salta ogni tanto -->
+          <div class="fish" aria-hidden="true">
+            <svg viewBox="0 0 36 22"><path d="M3 11 Q12 1 26 7 Q31 9 33 11 Q31 13 26 15 Q12 21 3 11 Z" fill="#4FB7C4"/><path d="M26 7 l8 -4 -2 8 z" fill="#3B9BA8"/><circle cx="10" cy="10" r="1.7" fill="#0d2f36"/></svg>
+          </div>
 
           <!-- porto d'arrivo (a destra) -->
           <div class="harbor" aria-hidden="true">
@@ -73,17 +89,29 @@
             </svg>
           </div>
 
-          <!-- barca: avanza con le risposte -->
+          <!-- barca: cavalca le onde e avanza con le risposte -->
           <div class="boat" [style.left.%]="6 + rotta * 80">
-            @if (lastDelta() !== null) {
-              <span class="delta" [class.pos]="(lastDelta() ?? 0) > 0">{{ (lastDelta() ?? 0) > 0 ? '+' : '' }}{{ lastDelta() }}</span>
+
+            @if (reaction() === 'up') {
+              <div class="fx fx-stars" aria-hidden="true">
+                <span>✦</span><span>★</span><span>✧</span><span>★</span><span>✦</span>
+              </div>
             }
-            <svg viewBox="0 0 90 82" aria-hidden="true">
-              <path d="M45 10 L45 52 L74 52 Z" fill="#F3EBD8"/>
-              <path d="M41 20 L41 52 L19 52 Z" fill="#E7DBBE"/>
-              <line x1="45" y1="6" x2="45" y2="56" stroke="#1C2B3A" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M16 56 H74 L64 72 H26 Z" fill="#9A6420"/>
-            </svg>
+            @if (reaction() === 'down') {
+              <div class="fx fx-bang" aria-hidden="true">
+                <svg class="bang-burst" viewBox="0 0 50 50"><path d="M25 1 l5 12 12-6 -4 13 12 3 -10 8 7 11 -13-2 -2 12 -9-9 -9 9 -2-12 -13 2 7-11 -10-8 12-3 -4-13 12 6 z" fill="#FFF6E4" stroke="#1C2B3A" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                <span class="bang-mark">!</span>
+              </div>
+            }
+
+            <div class="boat-body">
+              <svg viewBox="0 0 90 82" aria-hidden="true">
+                <path d="M45 10 L45 52 L74 52 Z" fill="#F3EBD8"/>
+                <path d="M41 20 L41 52 L19 52 Z" fill="#E7DBBE"/>
+                <line x1="45" y1="6" x2="45" y2="56" stroke="#1C2B3A" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M16 56 H74 L64 72 H26 Z" fill="#9A6420"/>
+              </svg>
+            </div>
           </div>
         </div>
 
