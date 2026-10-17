@@ -273,7 +273,7 @@ export class TestRisultati implements OnInit {
       'Le regole e le attività proposte rappresentano suggerimenti basati sulle evidenze ' +
       'scientifiche. Ogni famiglia può modificare, eliminare o adattare le regole e le ' +
       'attività in base alle proprie esigenze, possibilità e contesto familiare. ' +
-      "L'obiettivo è costruire un patto digitale realmente sostenibile.";
+      "L'obiettivo è costruire Accordi e regole digitali di famiglia realmente sostenibili.";
 
     doc.setFontSize(9);
     doc.setFont('helvetica', 'italic');
@@ -283,7 +283,7 @@ export class TestRisultati implements OnInit {
     let y = yStart;
     if (y + boxH > CONTENT_BOTTOM) {
       footer();
-      nuovaPagina('NOTA', 'Informazioni utili sul patto digitale', PRIMARIO_CHIARO as RGB);
+      nuovaPagina('NOTA', 'Informazioni utili sugli Accordi e regole digitali di famiglia', PRIMARIO_CHIARO as RGB);
       y = HEADER_H + 10;
     }
 
@@ -310,7 +310,7 @@ export class TestRisultati implements OnInit {
   // e vincolato a stare TUTTO su una sola pagina (nessun overflow).
   // =====================================================================
   sfondoPagina();
-  header('PATTO DIGITALE', 'Le regole che abbiamo scelto per preservare il benessere della nostra famiglia.', PRIMARIO);
+  header('ACCORDI E REGOLE DIGITALI DI FAMIGLIA', 'Le regole che abbiamo scelto per preservare il benessere della nostra famiglia.', PRIMARIO);
 
   interface RegolaPoster { cat: string; nome: string; desc: string; colore: RGB; }
 
