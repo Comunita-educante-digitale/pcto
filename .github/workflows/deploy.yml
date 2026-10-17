@@ -4,28 +4,54 @@ on:
   push:
     branches:
       - main
+      - esperimento-grafico
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del codice
+      - name: Checkout sito principale (main)
         uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+
+      - name: Checkout esperimento grafico
+        uses: actions/checkout@v4
+        with:
+          ref: esperimento-grafico
+          path: esperimento
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: angular-app/package-lock.json
-      - name: Installa dipendenze
-        working-directory: angular-app
-        run: npm ci
-      - name: Build con base-href /pcto/ e fallback SPA (404.html)
-        working-directory: angular-app
-        run: npm run build:pages
+          cache-dependency-path: main/angular-app/package-lock.json
+
+      - name: Build sito principale (base-href /pcto/)
+        working-directory: main/angular-app
+        run: |
+          npm ci
+          npm run build:pages
+
+      - name: Build esperimento (base-href /pcto/esperimento-grafico/)
+        working-directory: esperimento/angular-app
+        run: |
+          npm ci
+          npx ng build --base-href /pcto/esperimento-grafico/
+          cp dist/angular-app/browser/index.html dist/angular-app/browser/404.html
+
+      - name: Assembla output (principale alla radice + esperimento in sottocartella)
+        run: |
+          rm -rf public
+          mkdir -p public/esperimento-grafico
+          cp -r main/angular-app/dist/angular-app/browser/. public/
+          cp -r esperimento/angular-app/dist/angular-app/browser/. public/esperimento-grafico/
+
       - name: Deploy su gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: angular-app/dist/angular-app/browser
+          publish_dir: public
           publish_branch: gh-pages
