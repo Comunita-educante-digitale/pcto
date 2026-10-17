@@ -92,7 +92,10 @@
           <!-- barca: cavalca le onde e avanza con le risposte -->
           <div class="boat" [style.left.%]="6 + rotta * 80">
 
+            @if (mood() === 'giu') { <span class="stress" aria-hidden="true">💢</span> }
+
             @if (reaction() === 'up') {
+              <div class="fx fx-flash" aria-hidden="true"></div>
               <div class="fx fx-stars" aria-hidden="true">
                 <span>✦</span><span>★</span><span>✧</span><span>★</span><span>✦</span>
               </div>
@@ -101,6 +104,7 @@
               <div class="fx fx-bang" aria-hidden="true">
                 <svg class="bang-burst" viewBox="0 0 50 50"><path d="M25 1 l5 12 12-6 -4 13 12 3 -10 8 7 11 -13-2 -2 12 -9-9 -9 9 -2-12 -13 2 7-11 -10-8 12-3 -4-13 12 6 z" fill="#FFF6E4" stroke="#1C2B3A" stroke-width="1.6" stroke-linejoin="round"/></svg>
                 <span class="bang-mark">!</span>
+                <span class="sweat">💧</span>
               </div>
             }
 

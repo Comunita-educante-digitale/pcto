@@ -433,6 +433,21 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 .bang-mark { position: absolute; inset: 0; display: grid; place-items: center; font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 1.5rem; color: #C14733; }
 @keyframes bangPop { 0% { opacity: 0; transform: translateX(-50%) scale(.3) rotate(-12deg); } 60% { opacity: 1; transform: translateX(-50%) scale(1.15) rotate(5deg); } 100% { transform: translateX(-50%) scale(1) rotate(0); } }
 
+/* gocciolina di sudore manga (sul feedback negativo) */
+.sweat { position: absolute; top: -26px; right: -12px; font-size: .95rem; animation: sweatDrop .7s ease forwards; }
+@keyframes sweatDrop { 0% { opacity: 0; transform: translateY(-5px) scale(.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(16px) scale(1); } }
+
+/* segno di stress 💢 quando il mare è molto mosso */
+.stress { position: absolute; top: -18px; right: -8px; font-size: 1rem; z-index: 5; animation: stressPulse 1.2s ease-in-out infinite; }
+@keyframes stressPulse { 0%,100% { transform: scale(1); opacity: .7; } 50% { transform: scale(1.2); opacity: 1; } }
+
+/* lampo "kira" dietro le stelline (dorato se la rotta è serena) */
+.fx-flash { z-index: 4; top: -26px; width: 72px; height: 72px; left: 50%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(91,194,166,.55) 0%, rgba(91,194,166,0) 70%);
+  animation: flashPop .6s ease-out forwards; }
+.quiz.calmo .fx-flash { width: 86px; height: 86px; background: radial-gradient(circle, rgba(232,178,58,.6) 0%, rgba(232,178,58,0) 70%); }
+@keyframes flashPop { 0% { opacity: 0; transform: translateX(-50%) scale(.3); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) scale(1.3); } }
+
 /* ── barra benessere ── */
 .gauge { width: 100%; max-width: 30rem; }
 .gauge-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .45rem; }
@@ -458,7 +473,8 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 
 @media (prefers-reduced-motion: reduce) {
   .gull, .cloud, .wind, .sea-layer--calm, .sea-layer--rough, .fish,
-  .boat-body, .sea-strip.react-down .boat-body, .fx-stars span, .fx-bang { animation: none !important; }
+  .boat-body, .sea-strip.react-down .boat-body, .fx-stars span, .fx-bang,
+  .sweat, .stress, .fx-flash { animation: none !important; }
   .boat, .gauge-fill, .sea-sky { transition: none !important; }
   .fish { display: none; }
 }
