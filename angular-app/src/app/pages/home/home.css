@@ -215,6 +215,26 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 }
 .hero-sub a:hover { text-decoration-color: rgba(33, 79, 59, 0.6); }
 
+.hero-audience {
+  max-width: 720px;
+  margin: 0 auto 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-deep);
+  line-height: 1.6;
+}
+.hero-beta-note {
+  margin: 0 auto;
+  font-size: 0.95rem;
+  color: var(--on-surface-variant);
+}
+.hero-beta-note a {
+  color: var(--tertiary-container);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 .hero-cta-group {
   display: flex;
   flex-direction: column;

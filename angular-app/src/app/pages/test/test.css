@@ -133,6 +133,18 @@ p { color: var(--on-surface-variant); line-height: 1.625; letter-spacing: 0.025e
 
 .section-sub { font-size: 1rem; }
 
+.test-audience-note {
+  max-width: 34rem;
+  margin: 1.25rem auto 0;
+  padding: 0.9rem 1.25rem;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-left: 4px solid var(--tertiary-fixed-dim);
+  border-radius: 0.9rem;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
 /* ─────────────────────────────
    PROGRESS
 ───────────────────────────── */
