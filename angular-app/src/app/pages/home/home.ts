@@ -30,8 +30,8 @@ export class Home implements OnInit {
     { n: 1, icon: '🧭', title: 'Esprimi le tue preoccupazioni', desc: 'Cerca tra i temi che ti preoccupano di più riguardo all\'uso della tecnologia da parte di tuo figlio.' },
     { n: 2, icon: '📝', title: 'Test di valutazione', desc: 'Rispondi a poche domande mirate per capire quali aree richiedono maggiore attenzione.' },
     { n: 3, icon: '🧩', title: 'Regole e attività personalizzate', desc: 'Ricevi regole concrete e attività pratiche da svolgere insieme ai tuoi figli, calibrate sulla vostra situazione.' },
-    { n: 4, icon: '✍️', title: 'Personalizza il tuo patto', desc: 'Scegli quali regole e attività tenere, elimina quelle che non fanno per voi e adatta il patto alla tua famiglia.' },
-    { n: 5, icon: '📜', title: 'Scarica e appendi il patto', desc: 'Salva il documento PDF con le regole scelte e appendilo in casa come promemoria visibile per tutta la famiglia.' },
+    { n: 4, icon: '✍️', title: 'Personalizza i tuoi Accordi e regole digitali', desc: 'Scegli quali regole e attività tenere, elimina quelle che non fanno per voi e adattali alla tua famiglia.' },
+    { n: 5, icon: '📜', title: 'Scarica e appendi i tuoi Accordi e regole digitali', desc: 'Salva il documento PDF con le regole scelte e appendilo in casa come promemoria visibile per tutta la famiglia.' },
   ];
 
   // ── Porti della traversata (rail laterale) ──

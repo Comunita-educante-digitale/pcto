@@ -13,10 +13,10 @@ Replica pagina per pagina la versione HTML/JS vanilla del branch `backend_only`.
 - `src/app/pages/home` — homepage: hero, ricerca multi-campo (max 3) con
   autocomplete, sezioni "come funziona", esperti, temi, privacy, CTA.
 - `src/app/pages/risultati` — categorie trovate dalla ricerca (`?data=...`),
-  card espandibili, link "Crea il tuo patto familiare".
+  card espandibili, link "Crea i tuoi Accordi e regole digitali".
 - `src/app/pages/test` — domande SI/NO filtrate per categorie
   (`?categorie=[...]` oppure `?categoria=x`), con progress bar.
-- `src/app/pages/test-risultati` — il patto familiare: regole e attività
+- `src/app/pages/test-risultati` — gli Accordi e regole digitali: regole e attività
   eliminabili, download del PDF a 5 sezioni (jsPDF + jspdf-autotable).
 
 ## Sviluppo

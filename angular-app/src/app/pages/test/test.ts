@@ -48,7 +48,7 @@ export class Test implements OnInit {
     switch (this.mood()) {
       case 'bene': return 'La gestione del digitale in famiglia sembra equilibrata. Bastano poche attenzioni: ecco le regole suggerite in base alle tue risposte.';
       case 'ok': return 'Ci sono alcune aree da curare insieme. Qui sotto trovi le regole consigliate per la tua famiglia.';
-      default: return 'Diverse risposte segnalano preoccupazioni: niente panico, il patto qui sotto raccoglie le regole che possono aiutarvi, un passo alla volta.';
+      default: return 'Diverse risposte segnalano preoccupazioni: niente panico, gli Accordi e regole digitali qui sotto raccolgono le regole che possono aiutarvi, un passo alla volta.';
     }
   });
 
