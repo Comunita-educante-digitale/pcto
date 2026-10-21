@@ -716,4 +716,4 @@ export class TestRisultati implements OnInit {
     });
   }
 
-  doc.save('regole_famiglia.pdf');}}
+  doc.save('accordi_regole_digitali.pdf');}}
