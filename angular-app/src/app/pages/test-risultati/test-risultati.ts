@@ -716,4 +716,4 @@ export class TestRisultati implements OnInit {
     });
   }
 
-  doc.save('patto_familiare.pdf');}}
+  doc.save('regole_famiglia.pdf');}}

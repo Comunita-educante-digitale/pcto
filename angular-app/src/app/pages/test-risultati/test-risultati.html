@@ -10,13 +10,13 @@
   <section class="results-hero">
     <span class="results-eyebrow">I tuoi Accordi e regole digitali di famiglia</span>
     <h1 class="results-title">Regole e attività per la tua famiglia</h1>
-    <p class="results-sub">Queste sono le regole e le attività consigliate in base alle tue risposte. Rimuovi quelle che non fanno per voi e scarica il patto personalizzato da appendere in casa.</p>
+    <p class="results-sub">Queste sono le regole e le attività consigliate in base alle tue risposte. Rimuovi quelle che non fanno per voi e scarica le regole personalizzate da appendere in casa.</p>
   </section>
 
   @if (loading()) {
     <p class="state-message">Caricamento...</p>
   } @else if (errore()) {
-    <p class="state-message state-error">Errore nel caricamento del patto familiare.</p>
+    <p class="state-message state-error">Errore nel caricamento delle regole di famiglia.</p>
   } @else if (patto().length === 0) {
     <div class="empty-box">
       <span class="empty-box-icon">✅</span>
@@ -95,7 +95,7 @@
   <section class="cta-cluster">
     <button class="cta-card cta-card-primary" [disabled]="!pdfAbilitato()" (click)="downloadPDF()">
       <span class="cta-card-label">Esporta</span>
-      <span class="cta-card-title">Salva il patto in PDF</span>
+      <span class="cta-card-title">Salva le regole in PDF</span>
     </button>
     <a routerLink="/test" [queryParams]="rifaiQueryParams" class="cta-card cta-card-outline">
       <span class="cta-card-label">Aggiorna</span>
